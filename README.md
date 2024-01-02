@@ -9,7 +9,7 @@ Make sure that you can always get banned by OwO when on our server every time<br
 
 
 🤖 [Support Server](https://discord.gg/KNYphawBHN) 🤖<br>
-💳 [Donating doesn't cost money](https://link1s.com/realphandat) 💳 <br>
+💳 [Donating doesn't cost money](https://link1s.com/RealPhandat) 💳 <br>
 [⭐・Star History](#star-history)<br>
 [🔮・Features](#features)<br>
 [⚙・Config](#config)<br>
