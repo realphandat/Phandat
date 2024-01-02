@@ -1,0 +1,18 @@
+{
+  "token": "none",
+  "channel": "none",
+  "grind": true,
+  "exp": true,
+  "coinflip": true,
+  "cfbet": "30",
+  "cfrate": "2",
+  "slot": true,
+  "sbet": "30",
+  "srate": "2",
+  "command": false,
+  "prefix": ".",
+  "allow": "none",
+  "webhook": false,
+  "link": "none",
+  "ping": "none"
+}
