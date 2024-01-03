@@ -41,29 +41,7 @@ Make sure that you can always get banned by OwO when on our server every time<br
     -   Notify Via Webhook When Captcha Appears
     -   Play Music When Captcha Appears (Pc & Laptop only)
 
-## ⚙・config
-```
-{
-  "token": "", your token
-  "channel": "", channel id
-  "grind": "", true or false
-  "exp": "", true or false
-  "coinflip": "", true or false
-  "cfbet": "", the coinflip bet you want to start
-  "cfrate": "", the coinflip rate you want to multiply
-  "slot": "", true or false
-  "sbet": "", the slot bet you want to start
-  "srate": "", the slot rate you want to multiply
-  "command": "", true or false
-  "prefix": "", the prefix to use self command
-  "allow": "", the user id you allow to use self command
-  "webhook": "", true or false
-  "link": "", the webhook link you want to be notified captcha
-  "ping": "", the id user you want to be notified captcha
-}
-```
-
-## 📡・Usage
+## ⚙️・Usage
 ### Pc & Laptop 💻
 Download and install [Python](https://www.python.org/downloads)
 
