@@ -246,13 +246,13 @@ def grind():
 	if not client.stopped and client.grind and client.run:
 		sleep(random.randint(1, 2))
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{prefix}h")
-		print("{} {}[SENT] {prefix}h{}".format(timelog(), color.yellow, color.reset))
+		bot.sendMessage(str(client.channel), "{}h".format(prefix))
+		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
 	if not client.stopped and client.grind and client.run:
 		sleep(random.randint(1, 2))
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{prefix}b")
-		print("{} {}[SENT] {prefix}b{}".format(timelog(), color.yellow, color.reset))
+		bot.sendMessage(str(client.channel), "{}b".format(prefix))
+		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
 		client.grind_amount += 1
 
 #Exp
@@ -277,8 +277,8 @@ def cf():
 	if not client.stopped and client.coinflip and client.run:
 		side = random.choice(client.side)
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{prefix}cf {} {}".format(client.current_cfbet, side))
-		print("{} {}[SENT] {prefix}cf {} {}{}".format(timelog(), color.yellow, client.current_cfbet, side, color.reset))
+		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_cfbet, side))
+		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
 		sleep(random.randint(1, 2))
 
 #Slot
@@ -287,8 +287,8 @@ def s():
 		client.current_sbet = client.sbet
 	if not client.stopped and client.slot and client.run:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{prefix}s {}".format(client.current_sbet))
-		print("{} {}[SENT] {prefix}s {}{}".format(timelog(), color.yellow,client.current_sbet, color.reset))
+		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
+		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
 		sleep(random.randint(1, 2))
 
 #Run
@@ -321,7 +321,7 @@ def exit():
 		webhook(f"**<a:1096324489022808094:1098237958324236388> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 		webhook(f"**<a:quay:1086553810220089374> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
-	print("{} {}[INFO] I found a captcha 💀".format(timelog(), color.red, color.reset))
+	print("{} {}[INFO] WARNING ⚠".format(timelog(), color.red, color.reset))
 	print()
 	print("{}          📊 STAT 📊{}".format(color.orange, color.reset))
 	print("{}  --------------------------{}".format(color.orange, color.reset))
