@@ -20,6 +20,7 @@ class client:
 		data = json.load(file)
 		token = data["token"]
 		channel = data["channel"]
+		prefix = data["prefix"]
 		grind = data["grind"]
 		exp = data["exp"]
 		coinflip = data["coinflip"]
@@ -29,8 +30,7 @@ class client:
 		sbet = int(data["sbet"])
 		srate = int(data["srate"])
 		command = data["command"]
-		prefix = data["prefix"]
-		allow = data["allow"]
+		owner = data["owner"]
 		webhook = data["webhook"]
 		link = data["link"]
 		ping = data["ping"]
@@ -49,6 +49,8 @@ class client:
 		slot_status = '❌'
 		command_status = '❌'
 		webhook_status = '❌'
+
+prefix = client.prefix
 
 #Color
 class color:
@@ -123,7 +125,7 @@ def check(resp):
 	if resp.event.message:
 		m = resp.parsed.auto()
 		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
-			if '⚠' in m['content'] or 'https://owobot.com/captcha' in m['content'] or 'don\'t have enough cowoncy!' in m['content']:
+			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content'] or 'don\'t have enough cowoncy!' in m['content']:
 				client.stopped = True
 
 #Coinflip Check
@@ -182,12 +184,11 @@ def scheck(resp):
 @bot.gateway.command
 def command(resp):
 	if client.command:
-		prefix = client.prefix
 		if resp.event.message:
 			m = resp.parsed.auto()
-			if m['author']['id'] == bot.gateway.session.user['id'] or m['author']['id'] == client.allow:
+			if m['author']['id'] == bot.gateway.session.user['id'] or m['author']['id'] == client.owner:
 				#Help
-				if m['content'].startswith(f"{prefix}help"):
+				if m['content'].startswith(f"help"):
 					bot.sendMessage(str(m['channel_id']), """
 I have **__5__ Commands**:
 
@@ -199,12 +200,12 @@ I have **__5__ Commands**:
 """)
 					print("{} {}[SELF] Help List 📃{}".format(timelog(), color.gray, color.reset))
 				#Send
-				if m['content'].startswith(f"{prefix}send"):
-					message = m['content'].replace(f'{prefix}send ', '')
+				if m['content'].startswith(f"say"):
+					message = m['content'].replace(f'say ', '')
 					bot.sendMessage(str(m['channel_id']), message)
-					print("{} {}[SELF] Send {}{}".format(timelog(), color.gray, message, color.reset))
+					print("{} {}[SELF] Say {}{}".format(timelog(), color.gray, message, color.reset))
 				#Setting
-				if m['content'].startswith(f"{prefix}setting"):
+				if m['content'].startswith(f"setting"):
 					bot.sendMessage(str(m['channel_id']),
 					"""
 > __**Grind**__・{}
@@ -216,7 +217,7 @@ I have **__5__ Commands**:
 """.format(client.grind_status, client.exp_status, client.coinflip_status, client.slot_status, client.command_status, client.webhook_status))
 					print("{} {}[SELF] Setting ⚙️{}".format(timelog(), color.gray, color.reset))
 				#Stat
-				if m['content'].startswith(f"{prefix}stat"):
+				if m['content'].startswith(f"stat"):
 					bot.sendMessage(str(m['channel_id']),
 					"""
 I ran for {} with:
@@ -226,12 +227,12 @@ I ran for {} with:
 """.format(timerun(), client.grind_amount, client.exp_amount, client.benefit_amount))
 					print("{} {}[SELF] Stat 📊{}".format(timelog(), color.gray, color.reset))
 				#Start
-				if m['content'].startswith(f"{prefix}start"):
+				if m['content'].startswith(f"start"):
 					client.run = True
 					bot.sendMessage(str(m['channel_id']), "> **Starting... 🔔**")
 					print("{} {}[SELF] Start Selfbot 🔔{}".format(timelog(), color.gray, color.reset))
 				#Stop
-				if m['content'].startswith(f"{prefix}stop"):
+				if m['content'].startswith(f"stop"):
 					client.run = False
 					bot.sendMessage(str(m['channel_id']), "> **Stopping... 🚨**")
 					print("{} {}[SELF] Stop Selfbot 🚨{}".format(timelog(), color.gray, color.reset))
@@ -241,17 +242,17 @@ def grind():
 	if not client.stopped and client.grind and client.run:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "owo")
-		print("{} {}[SEND] owo{}".format(timelog(), color.yellow, color.reset))
+		print("{} {}[SENT] owo{}".format(timelog(), color.yellow, color.reset))
 	if not client.stopped and client.grind and client.run:
 		sleep(random.randint(1, 2))
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "owoh")
-		print("{} {}[SEND] owoh{}".format(timelog(), color.yellow, color.reset))
+		bot.sendMessage(str(client.channel), "{prefix}h")
+		print("{} {}[SENT] {prefix}h{}".format(timelog(), color.yellow, color.reset))
 	if not client.stopped and client.grind and client.run:
 		sleep(random.randint(1, 2))
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "owob")
-		print("{} {}[SEND] owob{}".format(timelog(), color.yellow, color.reset))
+		bot.sendMessage(str(client.channel), "{prefix}b")
+		print("{} {}[SENT] {prefix}b{}".format(timelog(), color.yellow, color.reset))
 		client.grind_amount += 1
 
 #Exp
@@ -263,7 +264,7 @@ def exp():
 				json_data = response.json()
 				data = json_data["content"]
 				bot.sendMessage(client.channel, data)
-				print("{} {}[SEND] Quote{}".format(timelog(), color.yellow, color.reset))
+				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.exp_amount += 1
 				sleep(random.randint(1, 2))
 		except:
@@ -276,8 +277,8 @@ def cf():
 	if not client.stopped and client.coinflip and client.run:
 		side = random.choice(client.side)
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "owo cf {} {}".format(client.current_cfbet, side))
-		print("{} {}[SEND] owo cf {} {}{}".format(timelog(), color.yellow, client.current_cfbet, side, color.reset))
+		bot.sendMessage(str(client.channel), "{prefix}cf {} {}".format(client.current_cfbet, side))
+		print("{} {}[SENT] {prefix}cf {} {}{}".format(timelog(), color.yellow, client.current_cfbet, side, color.reset))
 		sleep(random.randint(1, 2))
 
 #Slot
@@ -286,22 +287,19 @@ def s():
 		client.current_sbet = client.sbet
 	if not client.stopped and client.slot and client.run:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "owo s {}".format(client.current_sbet))
-		print("{} {}[SEND] owo s {}{}".format(timelog(), color.yellow,client.current_sbet, color.reset))
+		bot.sendMessage(str(client.channel), "{prefix}s {}".format(client.current_sbet))
+		print("{} {}[SENT] {prefix}s {}{}".format(timelog(), color.yellow,client.current_sbet, color.reset))
 		sleep(random.randint(1, 2))
 
 #Run
 def run():
-	farm = 0
 	text = 0
-	coinflip = 0
-	slot = 0
 	while True:
 		if client.stopped:
 			bot.gateway.close()
 		if not client.stopped and client.run:
 			grind()
-			if time.time() - text > random.randint(50, 200):
+			if time.time() - text > random.randint(50, 100):
 				exp()
 				text = time.time()
 			sleep(random.randint(3, 5))

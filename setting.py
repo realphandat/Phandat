@@ -21,17 +21,17 @@ print("{}█▄▀ █▀█  █  █▀█{}".format(color.blue, color.r
 print("""
 {}[1] Token
 [2] Channel
-[3] Grind
-[4] Exp
-[5] Coinflip
-[6] Coinflip Bet
-[7] Coinflip Rate
-[8] Slot
-[9] Slot bet
-[10] Slot Rate
-[11] Command
-[12] Prefix
-[13] Allow
+[3] Prefix
+[4] Grind
+[5] Exp
+[6] Coinflip
+[7] Coinflip Bet
+[8] Coinflip Rate
+[9] Slot
+[10] Slot bet
+[11] Slot Rate
+[12] Command
+[13] Owner
 [14] Webhook
 [15] Link
 [16] Ping{}""".format(color.orange, color.reset))
@@ -49,27 +49,27 @@ def main():
 	elif choice == "2":
 		channel(data, False)
 	elif choice == "3":
-		grind(data, False)
-	elif choice == "4":
-		exp(data, False)
-	elif choice == "5":
-		coinflip(data, False)
-	elif choice == "6":
-		cfbet(data, False)
-	elif choice == "7":
-		cfrate(data, False)
-	elif choice == "8":
-		slot(data, False)
-	elif choice == "9":
-		sbet(data, False)
-	elif choice == "10":
-		srate(data, False)
-	elif choice == "11":
-		command(data, False)
-	elif choice == "12":
 		prefix(data, False)
+	elif choice == "4":
+		grind(data, False)
+	elif choice == "5":
+		exp(data, False)
+	elif choice == "6":
+		coinflip(data, False)
+	elif choice == "7":
+		cfbet(data, False)
+	elif choice == "8":
+		cfrate(data, False)
+	elif choice == "9":
+		slot(data, False)
+	elif choice == "10":
+		sbet(data, False)
+	elif choice == "11":
+		srate(data, False)
+	elif choice == "12":
+		command(data, False)
 	elif choice == "13":
-		allow(data, False)
+		owner(data, False)
 	elif choice == "14":
 		webhook(data, False)
 	elif choice == "15":
@@ -92,6 +92,16 @@ def token(data, all):
 #Channel
 def channel(data, all):
 	data['channel'] = input("{}Enter Channel ID: {}".format(color.gray, color.reset))
+	file = open("config.json", "w")
+	dump(data, file, indent = 4)
+	file.close()
+	print("{}[INFO] Saved!{}".format(color.green, color.reset))
+	if not all:
+		main()
+
+#Prefix
+def prefix(data, all):
+	data['prefix'] = input("{}Enter OwO's Prefix: {}".format(color.gray, color.reset))
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()
@@ -194,20 +204,9 @@ def command(data, all):
 	if not all:
 		main()
 
-
-#Prefix
-def prefix(data, all):
-	data['prefix'] = input("{}Enter Prefix: {}".format(color.gray, color.reset))
-	file = open("config.json", "w")
-	dump(data, file, indent = 4)
-	file.close()
-	print("{}[INFO] Saved!{}".format(color.green, color.reset))
-	if not all:
-		main()
-
 #Allow
-def allow(data, all):
-	data['allow'] = input("{}Enter Allow ID: {}".format(color.gray, color.reset))
+def owner(data, all):
+	data['allow'] = input("{}Enter Owner ID: {}".format(color.gray, color.reset))
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()

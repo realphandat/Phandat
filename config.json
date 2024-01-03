@@ -1,6 +1,7 @@
 {
   "token": "none",
   "channel": "none",
+  "prefix": "owo",
   "grind": true,
   "exp": true,
   "coinflip": true,
@@ -10,8 +11,7 @@
   "sbet": "30",
   "srate": "2",
   "command": false,
-  "prefix": ".",
-  "allow": "none",
+  "owner": "none",
   "webhook": false,
   "link": "none",
   "ping": "none"
