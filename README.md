@@ -9,7 +9,6 @@
 💳 [Donating doesn't cost money](https://link1s.com/RealPhandat) 💳 <br>
 [⭐・Star History](#star-history)<br>
 [🔮・Features](#features)<br>
-[⚙・Config](#config)<br>
 [📡・Usage](#usage)<br>
 [🎯・Demo](#demo)<br>
 
