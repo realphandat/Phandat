@@ -5,8 +5,8 @@
 <a href="https://github.com/realphandat/OwO"><img src="https://img.shields.io/github/last-commit/realphandat/OwO" /></a><br>
 </p>
 
-🐣 [Free donation once per day (Link1s](https://link1s.com/RealPhandat)<br>
-🐔 [Free Donation twice per day (Web1s](http://web1s.link/realPhandat)<br>
+🐣 [Free donation once per day (Link1s)](https://link1s.com/RealPhandat)<br>
+🐔 [Free Donation twice per day (Web1s)](http://web1s.link/realPhandat)<br>
 
 [⭐・Star History](#star-history)<br>
 [🔮・Features](#features)<br>
