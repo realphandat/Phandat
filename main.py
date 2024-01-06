@@ -299,7 +299,7 @@ def run():
 			bot.gateway.close()
 		if not client.stopped and client.run:
 			grind()
-			if time.time() - text > random.randint(50, 100):
+			if time.time() - text > random.randint(30, 60):
 				exp()
 				text = time.time()
 			sleep(random.randint(3, 5))
@@ -321,7 +321,7 @@ def exit():
 		webhook(f"**<a:1096324489022808094:1098237958324236388> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 		webhook(f"**<a:quay:1086553810220089374> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
-	print("{} {}[INFO] WARNING ⚠".format(timelog(), color.red, color.reset))
+	print("{} {}[INFO] I found a captcha 💀".format(timelog(), color.red, color.reset))
 	print()
 	print("{}          📊 STAT 📊{}".format(color.orange, color.reset))
 	print("{}  --------------------------{}".format(color.orange, color.reset))
