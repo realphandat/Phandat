@@ -21,6 +21,9 @@ class color:
 
 #Intro
 system('cls' if name == 'nt' else 'clear')
+file = "music.mp3"
+print('playing sound using native player')
+os.system("mpg123 " + file)
 print("{}█▀▄ ▄▀█ ▀█▀ ▄▀█{}".format(color.blue, color.reset))
 print("{}█▄▀ █▀█  █  █▀█{}".format(color.blue, color.reset))
 print("""
