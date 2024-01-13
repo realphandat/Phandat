@@ -1,5 +1,10 @@
 from json import load, dump
+import os
 from os import  system, name
+
+file = "music.mp3"
+print('playing sound using native player')
+os.system("mpg123 " + file)
 
 #Color
 class color:
