@@ -1,6 +1,8 @@
+from playsound import playsound
 from json import load, dump
 from os import  system, name
 
+playsound('music.mp3')
 #Color
 class color:
 	mark = "\033[104m"
