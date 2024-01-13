@@ -98,8 +98,8 @@ def on_ready(resp):
 	if resp.event.ready_supplemental:
 		user = bot.gateway.session.user
 		print()
-		print("""{}  █▀█ █ █ ▄▀█ █▄ █ █▀▄ ▄▀█ ▀█▀{}""".format(color.blue, color.reset))
-		print("""{}  █▀▀ █▀█ █▀█ █ ▀█ █▄▀ █▀█  █{}""".format(color.blue, color.reset))
+		print("""{}         █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
+		print("""{}         █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
 		print()
 		print("{}     🎉 LOGIN SUCCESSFUL 🎉{}".format(color.green, color.reset))
 		print("{}  ---------------------------{}".format(color.green, color.reset))
@@ -259,11 +259,11 @@ def grind():
 def exp():
 	if not client.stopped and client.exp and client.run:
 		try:	
-			response = get("http://api.quotable.io/random")
+			response = get("https://zenquotes.io/api/random")
 			if response.status_code == 200:
 				json_data = response.json()
-				data = json_data["content"]
-				bot.sendMessage(client.channel, data)
+				data = json_data[0]
+				bot.sendMessage(client.channel, data['q'])
 				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.exp_amount += 1
 				sleep(random.randint(1, 2))
