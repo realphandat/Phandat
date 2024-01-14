@@ -36,11 +36,10 @@
 -   Captcha Protection
     -   Stop When Captcha Appears
     -   Notify Via Webhook When Captcha Appears
-    -   Show Nofitication When Captcha Appears
-    -   Play Music When Captcha Appears
+    -   Play Music When Captcha Appears (Window Only)
 
 ## ⚙️・Usage
-### Pc & Laptop 💻
+### Window 💻
 Download and install [Python](https://www.python.org/downloads)
 
 Go to folder command and type:
@@ -66,9 +65,6 @@ pkg update
 ```
 ```
 pkg upgrade
-```
-```
-pkg install termux-api
 ```
 ```
 pkg install git
