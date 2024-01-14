@@ -264,7 +264,7 @@ def exp():
 				json_data = response.json()
 				data = json_data[0]
 				bot.sendMessage(client.channel, data['q'])
-				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
+				print("{} {}[SENT] {}{}".format(timelog(), color.yellow, color.reset, data['q']))
 				client.exp_amount += 1
 				sleep(random.randint(1, 2))
 		except:
@@ -321,7 +321,10 @@ def exit():
 		webhook(f"**<a:1096324489022808094:1098237958324236388> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 		webhook(f"**<a:quay:1086553810220089374> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
-	print("{} {}[INFO] I found a captcha 💀".format(timelog(), color.red, color.reset))
+	print("{} {}[INFO] I Found Some Problem 💀".format(timelog(), color.red, color.reset))
+	print()
+	print("{} {}█ █ █ ▄▀█ █▀█ █▄ █ █ █▄ █ █▀▀".format(timelog(), color.red, color.reset))
+	print("{} {}▀▄▀▄▀ █▀█ █▀▄ █ ▀█ █ █ ▀█ █▄█".format(timelog(), color.red, color.reset))
 	print()
 	print("{}          📊 STAT 📊{}".format(color.orange, color.reset))
 	print("{}  --------------------------{}".format(color.orange, color.reset))
