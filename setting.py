@@ -19,7 +19,6 @@ class color:
 system('cls' if name == 'nt' else 'clear')
 print("{}█▀▄ ▄▀█ ▀█▀ ▄▀█{}".format(color.blue, color.reset))
 print("{}█▄▀ █▀█  █  █▀█{}".format(color.blue, color.reset))
-os.system(f"termux-notification -c 'New result added!' --action 'termux-open-url; termux-media-player stop'")
 print("""
 {}[1] Token
 [2] Channel
