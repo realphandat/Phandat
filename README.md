@@ -36,7 +36,8 @@
 -   Captcha Protection
     -   Stop When Captcha Appears
     -   Notify Via Webhook When Captcha Appears
-    -   Play Music When Captcha Appears (Pc & Laptop only)
+    -   Show Nofitication When Captcha Appears
+    -   Play Music When Captcha Appears
 
 ## ⚙️・Usage
 ### Pc & Laptop 💻
@@ -65,6 +66,9 @@ pkg update
 ```
 ```
 pkg upgrade
+```
+```
+pkg install termux-api
 ```
 ```
 pkg install git
