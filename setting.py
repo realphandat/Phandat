@@ -19,6 +19,7 @@ class color:
 system('cls' if name == 'nt' else 'clear')
 print("{}█▀▄ ▄▀█ ▀█▀ ▄▀█{}".format(color.blue, color.reset))
 print("{}█▄▀ █▀█  █  █▀█{}".format(color.blue, color.reset))
+os.system("termux-media-player play music.mp3")
 print("""
 {}[1] Token
 [2] Channel
