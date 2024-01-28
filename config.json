@@ -2,6 +2,7 @@
   "token": "none",
   "channel": "none",
   "prefix": "owo",
+  "owo": true,
   "grind": true,
   "exp": true,
   "coinflip": true,
