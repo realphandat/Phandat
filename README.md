@@ -1,4 +1,4 @@
-<h1 align="center">I'm switching to another language</h1>
+<h1 align="center">OwO Selfbot</h1>
 <p align="center">
 
 <a href="https://github.com/realphandat/OwO"><img src="https://hits.sh/github.com/realphandat/OwO.svg?view=today-total&label=Repo%20Today/Total%20Views&color=770ca1&labelColor=007ec6"/></a>
