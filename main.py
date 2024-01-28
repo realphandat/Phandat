@@ -242,6 +242,7 @@ def owo():
 		bot.sendMessage(str(client.channel), "{}".format(owo))
 		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, owo, color.reset))
 		client.owo_amount += 1
+		sleep(random.randint(1, 2))
 
 #Grind
 def grind():
@@ -255,7 +256,7 @@ def grind():
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
 		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
 		client.grind_amount += 1
-		sleep(random.randint(13, 15))
+		sleep(random.randint(13, 18))
 
 #Quote
 def quote():
@@ -268,6 +269,7 @@ def quote():
 				bot.sendMessage(client.channel, data['q'])
 				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.quote_amount += 1
+				sleep(random.randint(1, 2))
 		except:
 			pass
 
@@ -280,6 +282,7 @@ def cf():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_cfbet, side))
 		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
+		sleep(random.randint(1, 2))
 
 #Slot
 def s():
@@ -289,6 +292,7 @@ def s():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
+		sleep(random.randint(1, 2))
 
 #Run
 def run():
