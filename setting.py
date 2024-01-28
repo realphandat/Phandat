@@ -1,5 +1,4 @@
 from json import load, dump
-import os
 from os import  system, name
 
 #Color
@@ -8,7 +7,6 @@ class color:
 	gray = "\033[90m"
 	bold = "\033[1m"
 	blue = "\033[94m"
-	orange = "\033[33m"
 	green = "\033[92m"
 	yellow = "\033[93m"
 	red = "\033[91m"
@@ -23,19 +21,20 @@ print("""
 {}[1] Token
 [2] Channel
 [3] Prefix
-[4] Grind
-[5] Exp
-[6] Coinflip
-[7] Coinflip Bet
-[8] Coinflip Rate
-[9] Slot
-[10] Slot bet
-[11] Slot Rate
-[12] Command
-[13] Owner
-[14] Webhook
-[15] Link
-[16] Ping{}""".format(color.orange, color.reset))
+[4] OwO
+[5] Grind
+[6] Exp
+[7] Coinflip
+[8] Coinflip Bet
+[9] Coinflip Rate
+[10] Slot
+[11] Slot bet
+[12] Slot Rate
+[13] Command
+[14] Owner
+[15] Webhook
+[16] Link
+[17] Ping{}""".format(color.bold, color.reset))
 
 #Settings
 def main():
@@ -52,30 +51,32 @@ def main():
 	elif choice == "3":
 		prefix(data, False)
 	elif choice == "4":
-		grind(data, False)
+		owo(data, False)
 	elif choice == "5":
-		exp(data, False)
+		grind(data, False)
 	elif choice == "6":
-		coinflip(data, False)
+		quote(data, False)
 	elif choice == "7":
-		cfbet(data, False)
+		coinflip(data, False)
 	elif choice == "8":
-		cfrate(data, False)
+		cfbet(data, False)
 	elif choice == "9":
-		slot(data, False)
+		cfrate(data, False)
 	elif choice == "10":
-		sbet(data, False)
+		slot(data, False)
 	elif choice == "11":
-		srate(data, False)
+		sbet(data, False)
 	elif choice == "12":
-		command(data, False)
+		srate(data, False)
 	elif choice == "13":
-		owner(data, False)
+		command(data, False)
 	elif choice == "14":
-		webhook(data, False)
+		owner(data, False)
 	elif choice == "15":
-		link(data, False)
+		webhook(data, False)
 	elif choice == "16":
+		link(data, False)
+	elif choice == "17":
 		ping(data, False)
 	else:
 		print("{}[INFO] Invalid!{}".format(color.red, color.reset))
@@ -110,6 +111,17 @@ def prefix(data, all):
 	if not all:
 		main()
 
+#OwO
+def owo(data, all):
+	data['owo'] = input("{}Toggle OwO (YES/NO): {}".format(color.gray, color.reset))
+	data['owo'] = data['owo'].lower() == "yes"
+	file = open("config.json", "w")
+	dump(data, file, indent = 4)
+	file.close()
+	print("{}[INFO] Saved!{}".format(color.green, color.reset))
+	if not all:
+		main()
+
 #Grind
 def grind(data, all):
 	data['grind'] = input("{}Toggle Grinding (YES/NO): {}".format(color.gray, color.reset))
@@ -121,10 +133,10 @@ def grind(data, all):
 	if not all:
 		main()
 
-#Exp
-def exp(data, all):
-	data['exp'] = input("{}Toggle Exp (YES/NO): {}".format(color.gray, color.reset))
-	data['exp'] = data['exp'].lower() == "yes"
+#Quote
+def quote(data, all):
+	data['quote'] = input("{}Toggle Quote (YES/NO): {}".format(color.gray, color.reset))
+	data['quote'] = data['quote'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()

@@ -21,8 +21,9 @@ class client:
 		token = data["token"]
 		channel = data["channel"]
 		prefix = data["prefix"]
+		owo = data["owo"]
 		grind = data["grind"]
-		exp = data["exp"]
+		quote = data["quote"]
 		coinflip = data["coinflip"]
 		cfbet = int(data["cfbet"])
 		cfrate = int(data["cfrate"])
@@ -34,17 +35,20 @@ class client:
 		webhook = data["webhook"]
 		link = data["link"]
 		ping = data["ping"]
+		uwu = ["owo","uwu"]
 		side = ["h","t"]
 		stopped = False
 		run = True
+		owo_amount = 0
 		grind_amount = 0
-		exp_amount = 0
+		quote_amount = 0
 		benefit_amount = 0
 		current_cfbet = cfbet
 		current_sbet = sbet
 		OwOID = "408785106942164992"
+		owo_status = '❌'
 		grind_status = '❌'
-		exp_status = '❌'
+		quote_status = '❌'
 		coinflip_status = '❌'
 		slot_status = '❌'
 		command_status = '❌'
@@ -58,7 +62,6 @@ class color:
 	gray = "\033[90m"
 	bold = "\033[1m"
 	blue = "\033[94m"
-	orange = "\033[33m"
 	green = "\033[92m"
 	yellow = "\033[93m"
 	red = "\033[91m"
@@ -66,10 +69,12 @@ class color:
 	reset = "\033[0m"
 
 #Status
+if client.owo:
+	client.owo_status = '✅'
 if client.grind:
 	client.grind_status = '✅'
-if client.exp:
-	client.exp_status = '✅'
+if client.quote:
+	client.quote_status = '✅'
 if client.coinflip:
 	client.coinflip_status = '✅'
 if client.slot:
@@ -98,19 +103,9 @@ def on_ready(resp):
 	if resp.event.ready_supplemental:
 		user = bot.gateway.session.user
 		print()
-		print("""{}         █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
-		print("""{}         █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
-		print()
-		print("{}     🎉 LOGIN SUCCESSFUL 🎉{}".format(color.green, color.reset))
-		print("{}  ---------------------------{}".format(color.green, color.reset))
-		print("    {}User: {}{}{}{}".format(color.orange, color.reset, color.bold, user['username'], color.reset))
-		print("    {}Grind:    {} {}".format(color.orange, client.grind_status, color.reset))
-		print("    {}Exp:      {} {}".format(color.orange, client.exp_status, color.reset))
-		print("    {}Coinflip: {} {}".format(color.orange, client.coinflip_status, color.reset))
-		print("    {}Slot:     {} {}".format(color.orange, client.slot_status, color.reset))
-		print("    {}Command:  {} {}".format(color.orange, client.command_status, color.reset))
-		print("    {}Webhook:  {} {}".format(color.orange, client.webhook_status, color.reset))
-		print("{}  ---------------------------{}".format(color.green, color.reset))
+		print("""{}    █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
+		print("""{}    █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
+		print("{}Logged in as {}{}{}{}".format(color.red, color.reset, color.bold, user['username'], color.reset))
 		print()
 		run()
 		
@@ -198,7 +193,7 @@ I have **__5__ Commands**:
 > **`start`**
 > **`stop`**
 """)
-					print("{} {}[SELF] Help List 📃{}".format(timelog(), color.gray, color.reset))
+					print("{} {}[SELF] Help List{}".format(timelog(), color.gray, color.reset))
 				#Send
 				if m['content'].startswith(f"say"):
 					message = m['content'].replace(f'say ', '')
@@ -208,43 +203,49 @@ I have **__5__ Commands**:
 				if m['content'].startswith(f"setting"):
 					bot.sendMessage(str(m['channel_id']),
 					"""
+> __**OwO**__・{}
 > __**Grind**__・{}
-> __**Exp**__・{}
+> __**Quote**__・{}
 > __**Coinflip**__・{}
 > __**Slot**__・{}
 > __**Command**__・{}
 > __**Webhook**__・{}
-""".format(client.grind_status, client.exp_status, client.coinflip_status, client.slot_status, client.command_status, client.webhook_status))
-					print("{} {}[SELF] Setting ⚙️{}".format(timelog(), color.gray, color.reset))
+""".format(client.owo_status, client.grind_status, client.quote_status, client.coinflip_status, client.slot_status, client.command_status, client.webhook_status))
+					print("{} {}[SELF] Setting{}".format(timelog(), color.gray, color.reset))
 				#Stat
 				if m['content'].startswith(f"stat"):
 					bot.sendMessage(str(m['channel_id']),
 					"""
 I ran for {} with:
+> Spamming __**{}**__ OwO 🐮
 > Grinding __**{}**__ times 🎯
 > Sending __**{}**__ quotes ✏️
 > Gambling __**{}**__ cowoncys 💵
-""".format(timerun(), client.grind_amount, client.exp_amount, client.benefit_amount))
-					print("{} {}[SELF] Stat 📊{}".format(timelog(), color.gray, color.reset))
+""".format(timerun(), client.grind_amount, client.quote_amount, client.benefit_amount))
+					print("{} {}[SELF] Stat{}".format(timelog(), color.gray, color.reset))
 				#Start
 				if m['content'].startswith(f"start"):
 					client.run = True
 					bot.sendMessage(str(m['channel_id']), "> **Starting... 🔔**")
-					print("{} {}[SELF] Start Selfbot 🔔{}".format(timelog(), color.gray, color.reset))
+					print("{} {}[SELF] Start Selfbot{}".format(timelog(), color.gray, color.reset))
 				#Stop
 				if m['content'].startswith(f"stop"):
 					client.run = False
 					bot.sendMessage(str(m['channel_id']), "> **Stopping... 🚨**")
-					print("{} {}[SELF] Stop Selfbot 🚨{}".format(timelog(), color.gray, color.reset))
+					print("{} {}[SELF] Stop Selfbot{}".format(timelog(), color.gray, color.reset))
+
+#OwO
+def owo():
+	if not client.stopped and client.owo and client.run:
+		owo = random.choice(client.uwu)
+		bot.typingAction(client.channel)
+		bot.sendMessage(str(client.channel), "{}".format(owo))
+		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, owo, color.reset))
+		client.owo_amount += 1
 
 #Grind
 def grind():
 	if not client.stopped and client.grind and client.run:
-		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "owo")
-		print("{} {}[SENT] owo{}".format(timelog(), color.yellow, color.reset))
-	if not client.stopped and client.grind and client.run:
-		sleep(random.randint(1, 2))
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}h".format(prefix))
 		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
@@ -254,19 +255,19 @@ def grind():
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
 		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
 		client.grind_amount += 1
+		sleep(random.randint(13, 15))
 
-#Exp
-def exp():
-	if not client.stopped and client.exp and client.run:
+#Quote
+def quote():
+	if not client.stopped and client.quote and client.run:
 		try:	
 			response = get("https://zenquotes.io/api/random")
 			if response.status_code == 200:
 				json_data = response.json()
 				data = json_data[0]
 				bot.sendMessage(client.channel, data['q'])
-				print("{} {}[SENT] {}{}".format(timelog(), color.yellow, color.reset, data['q']))
-				client.exp_amount += 1
-				sleep(random.randint(1, 2))
+				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
+				client.quote_amount += 1
 		except:
 			pass
 
@@ -279,7 +280,6 @@ def cf():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_cfbet, side))
 		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
-		sleep(random.randint(1, 2))
 
 #Slot
 def s():
@@ -289,7 +289,6 @@ def s():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
-		sleep(random.randint(1, 2))
 
 #Run
 def run():
@@ -298,14 +297,13 @@ def run():
 		if client.stopped:
 			bot.gateway.close()
 		if not client.stopped and client.run:
+			owo()
 			grind()
 			if time.time() - text > random.randint(30, 60):
-				exp()
+				quote()
 				text = time.time()
-			sleep(random.randint(3, 5))
 			cf()
 			s()
-			sleep(random.randint(10, 15))
 bot.gateway.run()
 
 #Exit
@@ -317,18 +315,16 @@ def exit():
 	except:
 		pass
 	if client.webhook:
-		webhook(f"**<a:pepeintelligent:964835071595008000> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
-		webhook(f"**<a:1096324489022808094:1098237958324236388> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
-		webhook(f"**<a:quay:1086553810220089374> chà có sự cố ở <#{client.channel}> <@{client.ping}>**")
+		webhook(f"**<a:pepeintelligent:964835071595008000> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
+		webhook(f"**<a:1096324489022808094:1098237958324236388> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
+		webhook(f"**<a:quay:1086553810220089374> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
-	print("{} {}[INFO] I Found Some Problem ⚠".format(timelog(), color.red, color.reset))
+	print("{} {}[INFO] I Found Some Problem".format(timelog(), color.red, color.reset))
 	print()
-	print("{}          📊 STAT 📊{}".format(color.orange, color.reset))
-	print("{}  --------------------------{}".format(color.orange, color.reset))
-	print("    {}Grind:{}  {}{} Times 🎯{}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
-	print("    {}Exp:{}    {}{} Quotes ✏️{}".format(color.green, color.reset, color.bold, client.exp_amount, color.reset))
-	print("    {}Gamble:{} {}{} Cowoncys 💵{}".format(color.green, color.reset, color.bold, client.benefit_amount, color.reset))
-	print("{}  --------------------------{}".format(color.orange, color.reset))
+	print("    {}Spam:{}   {}{} OwO {}".format(color.green, color.reset, color.bold, client.owo_amount, color.reset))
+	print("    {}Grind:{}  {}{} Times {}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
+	print("    {}Quote:{}  {}{} Quotes {}".format(color.green, color.reset, color.bold, client.quote_amount, color.reset))
+	print("    {}Gamble:{} {}{} Cowoncys {}".format(color.green, color.reset, color.bold, client.benefit_amount, color.reset))
 	exit = input("{}Enter 'OK' to Reset: {}".format(color.blue, color.reset))
 	if exit == 'OK':
 		system('python "main.py"')
