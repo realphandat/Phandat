@@ -102,12 +102,12 @@ bot = discum.Client(token=client.token, log=False, build_num=0, x_fingerprint="N
 def on_ready(resp):
 	if resp.event.ready_supplemental:
 		user = bot.gateway.session.user
-		print()
+		input("Press Enter to continue...")
 		print("""{}    █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
 		print("""{}    █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
 		print("{}Logged in as {}{}{}{}".format(color.red, color.reset, color.bold, user['username'], color.reset))
 		print()
-		run()
+		start()
 		
 #Webhook
 def webhook(message):
@@ -242,7 +242,6 @@ def owo():
 		bot.sendMessage(str(client.channel), "{}".format(owo))
 		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, owo, color.reset))
 		client.owo_amount += 1
-		sleep(random.randint(1, 2))
 
 #Grind
 def grind():
@@ -256,7 +255,6 @@ def grind():
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
 		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
 		client.grind_amount += 1
-		sleep(random.randint(13, 18))
 
 #Quote
 def quote():
@@ -269,7 +267,6 @@ def quote():
 				bot.sendMessage(client.channel, data['q'])
 				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.quote_amount += 1
-				sleep(random.randint(1, 2))
 		except:
 			pass
 
@@ -282,7 +279,6 @@ def cf():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_cfbet, side))
 		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
-		sleep(random.randint(1, 2))
 
 #Slot
 def s():
@@ -292,22 +288,42 @@ def s():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
-		sleep(random.randint(1, 2))
 
 #Run
-def run():
-	text = 0
+def start():
+	change = 0
+	time1 = 0
+	time2 = 0
+	time3 = 0
+	time4 = 0
+	time5 = 0
 	while True:
 		if client.stopped:
 			bot.gateway.close()
 		if not client.stopped and client.run:
-			owo()
-			grind()
-			if time.time() - text > random.randint(30, 60):
+			if time.time() - change > 60:
+				run1 = random.randint(10, 15)
+				run2 = random.randint(15, 20)
+				run3 = random.randint(30, 60)
+				run4 = random.randint(15, 25)
+				run5 = random.randint(15, 25)
+			if time.time() - time1 > run1:
+				owo()
+				time1 = time.time()
+			if time.time() - time2 > run2:
+				grind()
+				time2 = time.time()
+			if time.time() - time3 > run3:
 				quote()
-				text = time.time()
-			cf()
-			s()
+				time3 = time.time()
+			if time.time() - time4 > run4:
+				cf()
+				time4 = time.time()
+			if time.time() - time5 > run5:
+				s()
+				time5 = time.time()
+			sleep(10)
+
 bot.gateway.run()
 
 #Exit
