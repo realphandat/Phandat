@@ -10,7 +10,7 @@
 
 [⭐・Star History](#star-history)<br>
 [🔮・Features](#features)<br>
-[📡・Usage](#usage)<br>
+[📡・Usage](#Usage)<br>
 [🎯・Demo](#demo)<br>
 
 ## ⭐・Star History
