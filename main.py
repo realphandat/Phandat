@@ -322,7 +322,6 @@ def start():
 			if time.time() - time5 > run5:
 				s()
 				time5 = time.time()
-			sleep(10)
 
 bot.gateway.run()
 
