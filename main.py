@@ -35,7 +35,7 @@ class client:
 		webhook = data["webhook"]
 		link = data["link"]
 		ping = data["ping"]
-		uwu = ["owo","uwu"]
+		spam = ["owo","uwu"]
 		side = ["h","t"]
 		stopped = False
 		run = True
@@ -103,6 +103,7 @@ def on_ready(resp):
 	if resp.event.ready_supplemental:
 		user = bot.gateway.session.user
 		input("Press Enter to continue...")
+		print()
 		print("""{}    █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
 		print("""{}    █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
 		print("{}Logged in as {}{}{}{}".format(color.red, color.reset, color.bold, user['username'], color.reset))
@@ -234,23 +235,21 @@ I ran for {} with:
 					bot.sendMessage(str(m['channel_id']), "> **Stopping... 🚨**")
 					print("{} {}[SELF] Stop Selfbot{}".format(timelog(), color.gray, color.reset))
 
-#OwO
-def owo():
-	if not client.stopped and client.owo and client.run:
-		owo = random.choice(client.uwu)
-		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}".format(owo))
-		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, owo, color.reset))
-		client.owo_amount += 1
-
 #Grind
 def grind():
+	if not client.stopped and client.owo and client.run:
+		spam = random.choice(client.spam)
+		bot.typingAction(client.channel)
+		bot.sendMessage(str(client.channel), "{}".format(spam))
+		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, spam, color.reset))
+		client.owo_amount += 1
+		sleep(random.randint(1, 2))
 	if not client.stopped and client.grind and client.run:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}h".format(prefix))
 		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
-	if not client.stopped and client.grind and client.run:
 		sleep(random.randint(1, 2))
+	if not client.stopped and client.grind and client.run:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
 		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
@@ -264,6 +263,7 @@ def quote():
 			if response.status_code == 200:
 				json_data = response.json()
 				data = json_data[0]
+				bot.typingAction(client.channel)
 				bot.sendMessage(client.channel, data['q'])
 				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.quote_amount += 1
@@ -291,37 +291,34 @@ def s():
 
 #Run
 def start():
-	change = 0
-	time1 = 0
-	time2 = 0
-	time3 = 0
-	time4 = 0
-	time5 = 0
+	change_spam_time = 0
+	grind_time = 0
+	quote_time = 0
+	coinflip_time = 0
+	slot_time = 0
 	while True:
 		if client.stopped:
 			bot.gateway.close()
 		if not client.stopped and client.run:
-			if time.time() - change > 60:
-				run1 = random.randint(10, 15)
-				run2 = random.randint(15, 20)
-				run3 = random.randint(30, 60)
-				run4 = random.randint(15, 25)
-				run5 = random.randint(15, 25)
-			if time.time() - time1 > run1:
-				owo()
-				time1 = time.time()
-			if time.time() - time2 > run2:
+			if time.time() - change_spam_time > 120:
+				grind_spam = random.randint(15, 20)
+				quote_spam = random.randint(30, 60)
+				coinflip_spam = random.randint(15, 25)
+				slot_spam = random.randint(15, 25)
+				change_spam_time = time.time()
+			if time.time() - grind_time > grind_spam:
 				grind()
-				time2 = time.time()
-			if time.time() - time3 > run3:
+				grind_time = time.time()
+			if time.time() - quote_time > quote_spam:
 				quote()
-				time3 = time.time()
-			if time.time() - time4 > run4:
+				quote_time = time.time()
+			if time.time() - coinflip_time > coinflip_spam:
 				cf()
-				time4 = time.time()
-			if time.time() - time5 > run5:
+				coinflip_time = time.time()
+			if time.time() - slot_time > slot_spam:
 				s()
-				time5 = time.time()
+				slot_time = time.time()
+			sleep(1)
 
 bot.gateway.run()
 
