@@ -292,10 +292,6 @@ def slot():
 
 #Start
 def start():
-	farm = 0
-	text = 0
-	coinflip = 0
-	slot = 0
 	while True:
 		if client.stopped:
 			bot.gateway.close()
@@ -303,8 +299,8 @@ def start():
 			grind()
 			quote()
 			sleep(random.randint(3, 5))
-			cf()
-			s()
+			coinflip()
+			slot()
 			sleep(random.randint(10, 15))
 bot.gateway.run()
 
