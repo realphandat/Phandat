@@ -235,6 +235,7 @@ I ran for {} with:
 					bot.sendMessage(str(m['channel_id']), "> **Stopping... 🚨**")
 					print("{} {}[SELF] Stop Selfbot{}".format(timelog(), color.gray, color.reset))
 
+
 #Grind
 def grind():
 	if not client.stopped and client.owo and client.run:
@@ -271,7 +272,7 @@ def quote():
 			pass
 
 #Coinflip
-def cf():
+def coinflip():
 	if client.current_cfbet  > 250000:
 		client.current_cfbet = client.cfbet
 	if not client.stopped and client.coinflip and client.run:
@@ -281,7 +282,7 @@ def cf():
 		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
 
 #Slot
-def s():
+def slot():
 	if client.current_sbet  > 250000:
 		client.current_sbet = client.sbet
 	if not client.stopped and client.slot and client.run:
@@ -289,37 +290,22 @@ def s():
 		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
 
-#Run
+#Start
 def start():
-	change_spam_time = 0
-	grind_time = 0
-	quote_time = 0
-	coinflip_time = 0
-	slot_time = 0
+	farm = 0
+	text = 0
+	coinflip = 0
+	slot = 0
 	while True:
 		if client.stopped:
 			bot.gateway.close()
 		if not client.stopped and client.run:
-			if time.time() - change_spam_time > 120:
-				grind_spam = random.randint(15, 20)
-				quote_spam = random.randint(30, 60)
-				coinflip_spam = random.randint(15, 25)
-				slot_spam = random.randint(15, 25)
-				change_spam_time = time.time()
-			if time.time() - grind_time > grind_spam:
-				grind()
-				grind_time = time.time()
-			if time.time() - quote_time > quote_spam:
-				quote()
-				quote_time = time.time()
-			if time.time() - coinflip_time > coinflip_spam:
-				cf()
-				coinflip_time = time.time()
-			if time.time() - slot_time > slot_spam:
-				s()
-				slot_time = time.time()
-			sleep(1)
-
+			grind()
+			quote()
+			sleep(random.randint(3, 5))
+			cf()
+			s()
+			sleep(random.randint(10, 15))
 bot.gateway.run()
 
 #Exit
@@ -344,3 +330,35 @@ def exit():
 	exit = input("{}Enter 'OK' to Reset: {}".format(color.blue, color.reset))
 	if exit == 'OK':
 		system('python "main.py"')
+
+#Beta
+def beta():
+	grind_time = 0
+	quote_time = 0
+	coinflip_time = 0
+	slot_time = 0
+	grind_spam = 0
+	quote_spam = 0
+	coinflip_spam = 0
+	slot_spam = 0
+	while True:
+		if client.stopped:
+			bot.gateway.close()
+		if not client.stopped and client.run:
+			if time.time() - grind_time > grind_spam:
+				grind_time = time.time()
+				grind_spam = random.randint(15, 20)
+				grind()
+			if time.time() - quote_time > quote_spam:
+				quote_time = time.time()
+				quote_spam = random.randint(30, 60)
+				quote()
+			if time.time() - coinflip_time > coinflip_spam:
+				coinflip_time = time.time()
+				coinflip_spam = random.randint(15, 25)
+				coinflip()
+			if time.time() - slot_time > slot_spam:
+				slot_time = time.time()
+				slot_spam = random.randint(15, 25)
+				slot()
+			sleep(1)
