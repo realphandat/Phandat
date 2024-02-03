@@ -27,6 +27,9 @@
     -   Auto Slot
     -   Custom Bet
     -   Multiply When Lose
+-   System
+    -   Sleep Mode
+    -   Change Spam Channel
 -   Captcha Protection
     -   Stop When Captcha Appears
     -   Play Music When Captcha Appears (Window Only)
