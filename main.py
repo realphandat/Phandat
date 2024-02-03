@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import discum
 from requests import get
-from discord_webhook import DiscordWebhook
 from os import system
 import time
 start_time = time.time()
@@ -34,7 +33,6 @@ class client:
 		spam = ["owo","uwu"]
 		side = ["h","t"]
 		stopped = False
-		owo_amount = 0
 		grind_amount = 0
 		quote_amount = 0
 		benefit_amount = 0
@@ -209,17 +207,30 @@ def die():
 		print("{} {}[SELF] I'm Taking A Break For {} seconds{}".format(timelog(), color.gray, die, color.reset))
 		sleep(die)
 
+#Change
+def change() -> str:
+		guild_id = bot.getChannel(client.channel).json()['guild_id']
+		other_channel = []
+		channels = bot.gateway.session.guild(guild_id).channels
+		for i in channels:
+			if channels[i]['type'] == "guild_text":
+				other_channel.append(i)
+		other_channel = random.choice(other_channel)
+		return other_channel, channels[other_channel]['name']
+
 #Start
 def start():
 	grind_time = 0
 	quote_time = 0
 	coinflip_time = 0
 	slot_time = 0
+	change_time = time.time()
 	sleep_time = time.time()
 	grind_spam = 0
 	quote_spam = 0
 	coinflip_spam = 0
 	slot_spam = 0
+	change_spam = random.randint(300, 600)
 	sleep_spam = random.randint(600, 1200)
 	while True:
 		if client.stopped:
@@ -241,12 +252,20 @@ def start():
 				slot_time = time.time()
 				slot_spam = random.randint(15, 25)
 				slot()
+			if time.time() - change_time > change_spam:
+				change_time = time.time()
+				change_spam = random.randint(300, 600)
+				channel = change()
+				client.channel = channel[0]
+				print("{} {}[SELF] I Changed The Channel To {}{}".format(timelog(), color.gray, channel[1], color.reset))
 			if time.time() - sleep_time > sleep_spam:
 				die()
 				sleep_time = time.time()
 				sleep_spam = random.randint(600, 1200)
 				print("{} {}[SELF] Done! I'll Work For {} seconds{}".format(timelog(), color.gray, sleep_spam, color.reset))
 			sleep(1)
+
+			
 
 bot.gateway.run()
 
@@ -261,10 +280,9 @@ def exit():
 	bot.switchAccount(client.token[:-4] + 'FvBw')
 	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
-	print("    {}Spam:{}   {}{} OwO {}".format(color.green, color.reset, color.bold, client.owo_amount, color.reset))
 	print("    {}Grind:{}  {}{} Times {}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
 	print("    {}Quote:{}  {}{} Quotes {}".format(color.green, color.reset, color.bold, client.quote_amount, color.reset))
 	print("    {}Gamble:{} {}{} Cowoncys {}".format(color.green, color.reset, color.bold, client.benefit_amount, color.reset))
 	exit = input("{}Enter 'OK' to Reset: {}".format(color.blue, color.reset))
-	if exit == 'OK':
+	if exit.lower() == 'ok':
 		system('python "main.py"')

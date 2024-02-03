@@ -30,7 +30,8 @@ print("""
 [10] Slot
 [11] Slot bet
 [12] Slot Rate
-[13] Sleep{}""".format(color.bold, color.reset))
+[13] Change
+[14] Sleep{}""".format(color.bold, color.reset))
 
 #Settings
 def main():
@@ -65,6 +66,8 @@ def main():
 	elif choice == "12":
 		srate(data, False)
 	elif choice == "13":
+		change(data, False)
+	elif choice == "14":
 		sleep(data, False)
 	else:
 		print("{}[INFO] Invalid!{}".format(color.red, color.reset))
@@ -187,6 +190,17 @@ def sbet(data, all):
 #Slot Rate
 def srate(data, all):
 	data['srate'] = input("{}Enter Slot Rate: {}".format(color.gray, color.reset))
+	file = open("config.json", "w")
+	dump(data, file, indent = 4)
+	file.close()
+	print("{}[INFO] Saved!{}".format(color.green, color.reset))
+	if not all:
+		main()
+
+#Change
+def change(data, all):
+	data['change'] = input("{}Toggle Change Channel (YES/NO): {}".format(color.gray, color.reset))
+	data['change'] = data['sleep'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()
