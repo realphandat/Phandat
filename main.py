@@ -30,9 +30,6 @@ class client:
 		slot = data["slot"]
 		sbet = int(data["sbet"])
 		srate = int(data["srate"])
-		webhook = data["webhook"]
-		link = data["link"]
-		ping = data["ping"]
 		sleep = data["sleep"]
 		spam = ["owo","uwu"]
 		side = ["h","t"]
@@ -84,11 +81,6 @@ def on_ready(resp):
 		print("{}Logged in as {}{}{}{}".format(color.red, color.reset, color.bold, user['username'], color.reset))
 		print()
 		start()
-		
-#Webhook
-def webhook(message):
-	webhook = DiscordWebhook(url = client.link, content=message)
-	webhook = webhook.execute()
 
 #Captcha Bypass
 @bot.gateway.command
@@ -266,10 +258,6 @@ def exit():
 		startfile('music.mp3')
 	except:
 		pass
-	if client.webhook:
-		webhook(f"**<a:pepeintelligent:964835071595008000> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
-		webhook(f"**<a:1096324489022808094:1098237958324236388> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
-		webhook(f"**<a:quay:1086553810220089374> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
 	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
