@@ -215,7 +215,7 @@ def change():
 def die():
 	if not client.stopped and client.sleep:
 		die = random.randint(300, 600)
-		print("{} {}[SELF] I'm Taking A Break For {} seconds{}".format(timelog(), color.gray, die, color.reset))
+		print("{} {}[SELF] I'm Taking A Break For{} {}{} seconds{}".format(timelog(), color.gray, color.reset, color.bold, die, color.reset))
 		sleep(die)
 
 #Start
