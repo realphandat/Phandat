@@ -150,7 +150,6 @@ def grind():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}".format(spam))
 		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, spam, color.reset))
-		client.owo_amount += 1
 		sleep(random.randint(1, 2))
 	if not client.stopped and client.grind:
 		bot.typingAction(client.channel)
