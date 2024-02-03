@@ -11,9 +11,5 @@
   "slot": true,
   "sbet": "30",
   "srate": "2",
-  "command": false,
-  "owner": "none",
-  "webhook": false,
-  "link": "none",
-  "ping": "none"
+  "sleep": true,
 }
