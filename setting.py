@@ -30,11 +30,7 @@ print("""
 [10] Slot
 [11] Slot bet
 [12] Slot Rate
-[13] Command
-[14] Owner
-[15] Webhook
-[16] Link
-[17] Ping{}""".format(color.bold, color.reset))
+[13] Sleep{}""".format(color.bold, color.reset))
 
 #Settings
 def main():
@@ -69,15 +65,7 @@ def main():
 	elif choice == "12":
 		srate(data, False)
 	elif choice == "13":
-		command(data, False)
-	elif choice == "14":
-		owner(data, False)
-	elif choice == "15":
-		webhook(data, False)
-	elif choice == "16":
-		link(data, False)
-	elif choice == "17":
-		ping(data, False)
+		sleep(data, False)
 	else:
 		print("{}[INFO] Invalid!{}".format(color.red, color.reset))
 
@@ -206,52 +194,10 @@ def srate(data, all):
 	if not all:
 		main()
 
-#Command
-def command(data, all):
-	data['command'] = input("{}Toggle Command (YES/NO): {}".format(color.gray, color.reset))
-	data['command'] = data['command'].lower() == "yes"
-	file = open("config.json", "w")
-	dump(data, file, indent = 4)
-	file.close()
-	print("{}[INFO] Saved!{}".format(color.green, color.reset))
-	if not all:
-		main()
-
-#Allow
-def owner(data, all):
-	data['allow'] = input("{}Enter Owner ID: {}".format(color.gray, color.reset))
-	file = open("config.json", "w")
-	dump(data, file, indent = 4)
-	file.close()
-	print("{}[INFO] Saved!{}".format(color.green, color.reset))
-	if not all:
-		main()
-
-#Webhook
-def webhook(data, all):
-	data['webhook'] = input("{}Toggle Webhook (YES/NO): {}".format(color.gray, color.reset))
-	data['webhook'] = data['webhook'].lower() == "yes"
-	file = open("config.json", "w")
-	dump(data, file, indent = 4)
-	file.close()
-	print("{}[INFO] Saved!{}".format(color.green, color.reset))
-	if not all:
-		main()
-
-
-#Link
-def link(data, all):
-	data['link'] = input("{}Enter Webhook Link: {}".format(color.gray, color.reset))
-	file = open("config.json", "w")
-	dump(data, file, indent = 4)
-	file.close()
-	print("{}[INFO] Saved!{}".format(color.green, color.reset))
-	if not all:
-		main()
-
-#Ping
-def ping(data, all):
-	data['ping'] = input("{}Enter Ping ID: {}".format(color.gray, color.reset))
+#Sleep
+def sleep(data, all):
+	data['sleep'] = input("{}Toggle Sleep (YES/NO): {}".format(color.gray, color.reset))
+	data['sleep'] = data['sleep'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()

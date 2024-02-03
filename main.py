@@ -30,15 +30,13 @@ class client:
 		slot = data["slot"]
 		sbet = int(data["sbet"])
 		srate = int(data["srate"])
-		command = data["command"]
-		owner = data["owner"]
 		webhook = data["webhook"]
 		link = data["link"]
 		ping = data["ping"]
+		sleep = data["sleep"]
 		spam = ["owo","uwu"]
 		side = ["h","t"]
 		stopped = False
-		run = True
 		owo_amount = 0
 		grind_amount = 0
 		quote_amount = 0
@@ -46,13 +44,6 @@ class client:
 		current_cfbet = cfbet
 		current_sbet = sbet
 		OwOID = "408785106942164992"
-		owo_status = '❌'
-		grind_status = '❌'
-		quote_status = '❌'
-		coinflip_status = '❌'
-		slot_status = '❌'
-		command_status = '❌'
-		webhook_status = '❌'
 
 prefix = client.prefix
 
@@ -67,22 +58,6 @@ class color:
 	red = "\033[91m"
 	purple = "\033[35m"
 	reset = "\033[0m"
-
-#Status
-if client.owo:
-	client.owo_status = '✅'
-if client.grind:
-	client.grind_status = '✅'
-if client.quote:
-	client.quote_status = '✅'
-if client.coinflip:
-	client.coinflip_status = '✅'
-if client.slot:
-	client.slot_status = '✅'
-if client.command:
-	client.command_status = '✅'
-if client.webhook:
-	client.webhook_status = '✅'
 
 #Time
 def timelog():
@@ -127,7 +102,7 @@ def check(resp):
 #Coinflip Check
 @bot.gateway.command
 def cfcheck(resp):
-	if not client.stopped and client.coinflip and client.run:
+	if not client.stopped and client.coinflip:
 		if resp.event.message_updated:
 			m = resp.parsed.auto()
 			try:
@@ -146,7 +121,7 @@ def cfcheck(resp):
 #Slot Check
 @bot.gateway.command
 def scheck(resp):
-	if not client.stopped and client.slot and client.run:
+	if not client.stopped and client.slot:
 		if resp.event.message_updated:
 			m = resp.parsed.auto()
 			try:
@@ -176,89 +151,31 @@ def scheck(resp):
 			except KeyError:
 				pass
 
-#Command
-@bot.gateway.command
-def command(resp):
-	if client.command:
-		if resp.event.message:
-			m = resp.parsed.auto()
-			if m['author']['id'] == bot.gateway.session.user['id'] or m['author']['id'] == client.owner:
-				#Help
-				if m['content'].startswith(f"help"):
-					bot.sendMessage(str(m['channel_id']), """
-I have **__5__ Commands**:
-
-> **`send`** + **`text`**
-> **`setting`**
-> **`stat`**
-> **`start`**
-> **`stop`**
-""")
-					print("{} {}[SELF] Help List{}".format(timelog(), color.gray, color.reset))
-				#Send
-				if m['content'].startswith(f"say"):
-					message = m['content'].replace(f'say ', '')
-					bot.sendMessage(str(m['channel_id']), message)
-					print("{} {}[SELF] Say {}{}".format(timelog(), color.gray, message, color.reset))
-				#Setting
-				if m['content'].startswith(f"setting"):
-					bot.sendMessage(str(m['channel_id']),
-					"""
-> __**OwO**__・{}
-> __**Grind**__・{}
-> __**Quote**__・{}
-> __**Coinflip**__・{}
-> __**Slot**__・{}
-> __**Command**__・{}
-> __**Webhook**__・{}
-""".format(client.owo_status, client.grind_status, client.quote_status, client.coinflip_status, client.slot_status, client.command_status, client.webhook_status))
-					print("{} {}[SELF] Setting{}".format(timelog(), color.gray, color.reset))
-				#Stat
-				if m['content'].startswith(f"stat"):
-					bot.sendMessage(str(m['channel_id']),
-					"""
-I ran for {} with:
-> Spamming __**{}**__ OwO 🐮
-> Grinding __**{}**__ times 🎯
-> Sending __**{}**__ quotes ✏️
-> Gambling __**{}**__ cowoncys 💵
-""".format(timerun(), client.grind_amount, client.quote_amount, client.benefit_amount))
-					print("{} {}[SELF] Stat{}".format(timelog(), color.gray, color.reset))
-				#Start
-				if m['content'].startswith(f"start"):
-					client.run = True
-					bot.sendMessage(str(m['channel_id']), "> **Starting... 🔔**")
-					print("{} {}[SELF] Start Selfbot{}".format(timelog(), color.gray, color.reset))
-				#Stop
-				if m['content'].startswith(f"stop"):
-					client.run = False
-					bot.sendMessage(str(m['channel_id']), "> **Stopping... 🚨**")
-					print("{} {}[SELF] Stop Selfbot{}".format(timelog(), color.gray, color.reset))
-
 
 #Grind
 def grind():
-	if not client.stopped and client.owo and client.run:
+	if not client.stopped and client.owo:
 		spam = random.choice(client.spam)
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}".format(spam))
 		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, spam, color.reset))
 		client.owo_amount += 1
 		sleep(random.randint(1, 2))
-	if not client.stopped and client.grind and client.run:
+	if not client.stopped and client.grind:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}h".format(prefix))
 		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
 		sleep(random.randint(1, 2))
-	if not client.stopped and client.grind and client.run:
+	if not client.stopped and client.grind:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
 		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
 		client.grind_amount += 1
+		sleep(random.randint(1, 2))
 
 #Quote
 def quote():
-	if not client.stopped and client.quote and client.run:
+	if not client.stopped and client.quote:
 		try:	
 			response = get("https://zenquotes.io/api/random")
 			if response.status_code == 200:
@@ -268,6 +185,7 @@ def quote():
 				bot.sendMessage(client.channel, data['q'])
 				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
 				client.quote_amount += 1
+				sleep(random.randint(1, 2))
 		except:
 			pass
 
@@ -275,33 +193,69 @@ def quote():
 def coinflip():
 	if client.current_cfbet  > 250000:
 		client.current_cfbet = client.cfbet
-	if not client.stopped and client.coinflip and client.run:
+	if not client.stopped and client.coinflip:
 		side = random.choice(client.side)
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_cfbet, side))
 		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_cfbet, side, color.reset))
+		sleep(random.randint(1, 2))
 
 #Slot
 def slot():
 	if client.current_sbet  > 250000:
 		client.current_sbet = client.sbet
-	if not client.stopped and client.slot and client.run:
+	if not client.stopped and client.slot:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_sbet))
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
+		sleep(random.randint(1, 2))
+
+#Sleep
+def die():
+	if not client.stopped and client.sleep:
+		die = random.randint(300, 600)
+		print("{} {}[SELF] I'm Taking A Break For {} seconds{}".format(timelog(), color.gray, die, color.reset))
+		sleep(die)
 
 #Start
 def start():
+	grind_time = 0
+	quote_time = 0
+	coinflip_time = 0
+	slot_time = 0
+	sleep_time = time.time()
+	grind_spam = 0
+	quote_spam = 0
+	coinflip_spam = 0
+	slot_spam = 0
+	sleep_spam = random.randint(600, 1200)
 	while True:
 		if client.stopped:
 			bot.gateway.close()
-		if not client.stopped and client.run:
-			grind()
-			quote()
-			sleep(random.randint(3, 5))
-			coinflip()
-			slot()
-			sleep(random.randint(10, 15))
+		if not client.stopped:
+			if time.time() - grind_time > grind_spam:
+				grind_time = time.time()
+				grind_spam = random.randint(17, 25)
+				grind()
+			if time.time() - quote_time > quote_spam:
+				quote_time = time.time()
+				quote_spam = random.randint(30, 60)
+				quote()
+			if time.time() - coinflip_time > coinflip_spam:
+				coinflip_time = time.time()
+				coinflip_spam = random.randint(15, 25)
+				coinflip()
+			if time.time() - slot_time > slot_spam:
+				slot_time = time.time()
+				slot_spam = random.randint(15, 25)
+				slot()
+			if time.time() - sleep_time > sleep_spam:
+				die()
+				sleep_time = time.time()
+				sleep_spam = random.randint(600, 1200)
+				print("{} {}[SELF] Done! I'll Work For {} seconds{}".format(timelog(), color.gray, sleep_spam, color.reset))
+			sleep(1)
+
 bot.gateway.run()
 
 #Exit
@@ -317,7 +271,7 @@ def exit():
 		webhook(f"**<a:1096324489022808094:1098237958324236388> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
 		webhook(f"**<a:quay:1086553810220089374> I Found Some Problem In <#{client.channel}> <@{client.ping}>**")
 	bot.switchAccount(client.token[:-4] + 'FvBw')
-	print("{} {}[INFO] I Found Some Problem".format(timelog(), color.red, color.reset))
+	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
 	print("    {}Spam:{}   {}{} OwO {}".format(color.green, color.reset, color.bold, client.owo_amount, color.reset))
 	print("    {}Grind:{}  {}{} Times {}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
@@ -326,35 +280,3 @@ def exit():
 	exit = input("{}Enter 'OK' to Reset: {}".format(color.blue, color.reset))
 	if exit == 'OK':
 		system('python "main.py"')
-
-#Beta
-def beta():
-	grind_time = 0
-	quote_time = 0
-	coinflip_time = 0
-	slot_time = 0
-	grind_spam = 0
-	quote_spam = 0
-	coinflip_spam = 0
-	slot_spam = 0
-	while True:
-		if client.stopped:
-			bot.gateway.close()
-		if not client.stopped and client.run:
-			if time.time() - grind_time > grind_spam:
-				grind_time = time.time()
-				grind_spam = random.randint(15, 20)
-				grind()
-			if time.time() - quote_time > quote_spam:
-				quote_time = time.time()
-				quote_spam = random.randint(30, 60)
-				quote()
-			if time.time() - coinflip_time > coinflip_spam:
-				coinflip_time = time.time()
-				coinflip_spam = random.randint(15, 25)
-				coinflip()
-			if time.time() - slot_time > slot_spam:
-				slot_time = time.time()
-				slot_spam = random.randint(15, 25)
-				slot()
-			sleep(1)
