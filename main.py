@@ -29,6 +29,7 @@ class client:
 		slot = data["slot"]
 		sbet = int(data["sbet"])
 		srate = int(data["srate"])
+		change = data["change"]
 		sleep = data["sleep"]
 		spam = ["owo","uwu"]
 		side = ["h","t"]
@@ -200,15 +201,9 @@ def slot():
 		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_sbet, color.reset))
 		sleep(random.randint(1, 2))
 
-#Sleep
-def die():
-	if not client.stopped and client.sleep:
-		die = random.randint(300, 600)
-		print("{} {}[SELF] I'm Taking A Break For {} seconds{}".format(timelog(), color.gray, die, color.reset))
-		sleep(die)
-
 #Change
-def change() -> str:
+def change():
+	if not client.stopped and client.change:
 		guild_id = bot.getChannel(client.channel).json()['guild_id']
 		other_channel = []
 		channels = bot.gateway.session.guild(guild_id).channels
@@ -217,6 +212,13 @@ def change() -> str:
 				other_channel.append(i)
 		other_channel = random.choice(other_channel)
 		return other_channel, channels[other_channel]['name']
+
+#Sleep
+def die():
+	if not client.stopped and client.sleep:
+		die = random.randint(300, 600)
+		print("{} {}[SELF] I'm Taking A Break For {} seconds{}".format(timelog(), color.gray, die, color.reset))
+		sleep(die)
 
 #Start
 def start():
