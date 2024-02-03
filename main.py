@@ -142,7 +142,6 @@ def scheck(resp):
 			except KeyError:
 				pass
 
-
 #Grind
 def grind():
 	if not client.stopped and client.owo:
@@ -258,16 +257,13 @@ def start():
 				change_spam = random.randint(300, 600)
 				channel = change()
 				client.channel = channel[0]
-				print("{} {}[SELF] I Changed The Channel To {}{}".format(timelog(), color.gray, channel[1], color.reset))
+				print("{} {}[SELF] I Changed The Channel To{} {}{}{}".format(timelog(), color.gray, color.reset, color.bold, channel[1], color.reset))
 			if time.time() - sleep_time > sleep_spam:
 				die()
 				sleep_time = time.time()
 				sleep_spam = random.randint(600, 1200)
-				print("{} {}[SELF] Done! I'll Work For {} seconds{}".format(timelog(), color.gray, sleep_spam, color.reset))
+				print("{} {}[SELF] Done! I'll Work For{} {}{} seconds{}".format(timelog(), color.gray, color.reset, color.bold, sleep_spam, color.reset))
 			sleep(1)
-
-			
-
 bot.gateway.run()
 
 #Exit
