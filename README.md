@@ -27,15 +27,8 @@
     -   Auto Slot
     -   Custom Bet
     -   Multiply When Lose
--   Self Command
-    -   Send Text
-    -   Show Setting
-    -   Show Stat
-    -   Start Selfbot
-    -   Stop Selfbot
 -   Captcha Protection
     -   Stop When Captcha Appears
-    -   Notify Via Webhook When Captcha Appears
     -   Play Music When Captcha Appears (Window Only)
 
 ## ⚙️・Usage
