@@ -30,8 +30,9 @@ print("""
 [10] Slot
 [11] Slot bet
 [12] Slot Rate
-[13] Change
-[14] Sleep{}""".format(color.bold, color.reset))
+[13] Gem
+[14] Change
+[15] Sleep{}""".format(color.bold, color.reset))
 
 #Settings
 def main():
@@ -66,8 +67,10 @@ def main():
 	elif choice == "12":
 		srate(data, False)
 	elif choice == "13":
-		change(data, False)
+		gem(data, False)
 	elif choice == "14":
+		change(data, False)
+	elif choice == "15":
 		sleep(data, False)
 	else:
 		print("{}[INFO] Invalid!{}".format(color.red, color.reset))
@@ -115,7 +118,7 @@ def owo(data, all):
 
 #Grind
 def grind(data, all):
-	data['grind'] = input("{}Toggle Grinding (YES/NO): {}".format(color.gray, color.reset))
+	data['grind'] = input("{}Toggle Grind (YES/NO): {}".format(color.gray, color.reset))
 	data['grind'] = data['grind'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
@@ -197,10 +200,22 @@ def srate(data, all):
 	if not all:
 		main()
 
+#Gem
+def gem(data, all):
+	data['gem'] = input("{}Toggle Using Gem (YES/NO): {}".format(color.gray, color.reset))
+	data['gem'] = data['gem'].lower() == "yes"
+	file = open("config.json", "w")
+	dump(data, file, indent = 4)
+	file.close()
+	print("{}[INFO] Saved!{}".format(color.green, color.reset))
+	if not all:
+		main()
+
+
 #Change
 def change(data, all):
 	data['change'] = input("{}Toggle Change Channel (YES/NO): {}".format(color.gray, color.reset))
-	data['change'] = data['sleep'].lower() == "yes"
+	data['change'] = data['change'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()
@@ -210,7 +225,7 @@ def change(data, all):
 
 #Sleep
 def sleep(data, all):
-	data['sleep'] = input("{}Toggle Sleep (YES/NO): {}".format(color.gray, color.reset))
+	data['sleep'] = input("{}Toggle Sleep Mode (YES/NO): {}".format(color.gray, color.reset))
 	data['sleep'] = data['sleep'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
