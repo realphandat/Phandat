@@ -11,6 +11,7 @@
   "slot": true,
   "sbet": "30",
   "srate": "2",
-  "change": true,
+  "gem": true,
+  "change": false,
   "sleep": true
 }
