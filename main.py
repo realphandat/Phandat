@@ -230,7 +230,7 @@ def start():
 	quote_spam = 0
 	coinflip_spam = 0
 	slot_spam = 0
-	change_spam = random.randint(300, 600)
+	change_spam = random.randint(600, 1200)
 	sleep_spam = random.randint(600, 1200)
 	while True:
 		if client.stopped:
@@ -246,19 +246,19 @@ def start():
 				quote()
 			if time.time() - coinflip_time > coinflip_spam:
 				coinflip_time = time.time()
-				coinflip_spam = random.randint(15, 25)
+				coinflip_spam = random.randint(20, 30)
 				coinflip()
 			if time.time() - slot_time > slot_spam:
 				slot_time = time.time()
-				slot_spam = random.randint(15, 25)
+				slot_spam = random.randint(20, 30)
 				slot()
-			if time.time() - change_time > change_spam:
+			if time.time() - change_time > change_spam and client.change:
 				change_time = time.time()
 				change_spam = random.randint(300, 600)
 				channel = change()
 				client.channel = channel[0]
 				print("{} {}[SELF] I Changed The Channel To{} {}{}{}".format(timelog(), color.gray, color.reset, color.bold, channel[1], color.reset))
-			if time.time() - sleep_time > sleep_spam:
+			if time.time() - sleep_time > sleep_spam and client.sleep:
 				die()
 				sleep_time = time.time()
 				sleep_spam = random.randint(600, 1200)
