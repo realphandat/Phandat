@@ -28,8 +28,8 @@
     -   Custom Bet
     -   Multiply When Lose
 -   System
-    -   Sleep Mode
     -   Change Spam Channel
+    -   Sleep Mode
 -   Captcha Protection
     -   Stop When Captcha Appears
     -   Play Music When Captcha Appears (Window Only)
