@@ -264,7 +264,7 @@ def gem():
 		for i in range(len(msg)):
 			if msg[i]['author']['id'] == client.OwOID and 'Inventory' in msg[i]['content']:
 				inv = findall(r'`(.*?)`', msg[i]['content'])
-		sleep(random.randint(1, 2))
+		sleep(random.randint(3, 5))
 		if not inv:
 			sleep(random.randint(1, 2))
 			return
