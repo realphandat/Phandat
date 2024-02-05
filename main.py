@@ -94,17 +94,17 @@ def on_ready(resp):
 		start()
 
 #Get Messages
-def getMessages(num: int = 1, channel: str = client.channel):
+def getMessages(num: int = 1, channel: str = client.channel) -> object:
 	messageObject = None
 	retries = 0
 	while not messageObject:
 		if not retries > 10:
 			messageObject = bot.getMessages(channel, num=num)
 			messageObject = messageObject.json()
-		if not type(messageObject) is list:
-			messageObject = None
-		else:
-			break
+			if not type(messageObject) is list:
+				messageObject = None
+			else:
+				break
 			retries += 1
 			continue
 		if type(messageObject) is list:
@@ -206,6 +206,8 @@ def grind():
 		bot.sendMessage(str(client.channel), "{}h".format(prefix))
 		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
 		sleep(random.randint(1, 2))
+	if client.run and client.gem and client.gem_check:
+		print("{} {}[SELF] I'm Checking Gem Status{}".format(timelog(), color.gray, color.reset))
 	if client.run and client.grind:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}b".format(prefix))
@@ -256,67 +258,72 @@ def gem():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), "{}inv".format(prefix))
 		print("{} {}[SENT] {}inv{}".format(timelog(), color.yellow, prefix, color.reset))
-		msgs = bot.getMessages(str(client.channel), num=10)
-		msgs = msgs.json()
+		msg = bot.getMessages(str(client.channel), num=10)
+		msg = msg.json()
 		inv = ""
-		for i in range(len(msgs)):
-			if msgs[i]['author']['id'] == client.OwOID and 'Inventory' in msgs[i]['content']:
-				inv = findall(r'`(.*?)`', msgs[i]['content'])
-		sleep(random.randint(2, 4))
-		#Common
-		if "051" in inv and "065" in inv and "072" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 51 65 72".format(prefix))
-			print("{} {}[SENT] {}use 51 65 72{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Common Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Uncommon
-		elif "052" in inv and "066" in inv and "073" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 52 66 73".format(prefix))
-			print("{} {}[SENT] {}use 52 66 73{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Uncommon Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Rare
-		elif "053" in inv and "067" in inv and "074" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 53 67 74".format(prefix))
-			print("{} {}[SENT] {}use 53 67 74{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Rare Gem{} {}For 50 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Epic
-		elif "054" in inv and "068" in inv and "075" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 54 68 75".format(prefix))
-			print("{} {}[SENT] {}use 54 68 75{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Epic Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Mythical
-		elif "055" in inv and "069" in inv and "076" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 55 69 76".format(prefix))
-			print("{} {}[SENT] {}use 55 69 76{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Mythical Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Legendary
-		elif "056" in inv and "070" in inv and "077" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 56 70 77".format(prefix))
-			print("{} {}[SENT] {}use 56 70 77{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Legendary Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Fabled
-		elif "057" in inv and "071" in inv and "078" in inv:
-			bot.typingAction(client.channel)
-			bot.sendMessage(str(client.channel), "{}use 57 71 78".format(prefix))
-			print("{} {}[SENT] {}use 57 71 78{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Fabled Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
-			client.gem_amount += 1
-		#Don't Have Enough Gem
+		for i in range(len(msg)):
+			if msg[i]['author']['id'] == client.OwOID and 'Inventory' in msg[i]['content']:
+				inv = findall(r'`(.*?)`', msg[i]['content'])
+		sleep(random.randint(1, 2))
+		if not inv:
+			sleep(random.randint(1, 2))
+			return
 		else:
-			print("{} {}[SELF]{} {}Stop Using!{} {}I Don\'t Have Enough Gems{}".format(timelog(), color.gray, color.reset, color.red, color.reset, color.gray, color.reset))
-			client.gem_check = False
-	
+			#Common
+			if "051" and "065" and "072" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 51 65 72".format(prefix))
+				print("{} {}[SENT] {}use 51 65 72{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Common Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Uncommon
+			elif "052" and "066" and "073" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 52 66 73".format(prefix))
+				print("{} {}[SENT] {}use 52 66 73{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Uncommon Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Rare
+			elif "053" and "067" and "074" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 53 67 74".format(prefix))
+				print("{} {}[SENT] {}use 53 67 74{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Rare Gem{} {}For 50 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Epic
+			elif "054" and "068" and "075" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 54 68 75".format(prefix))
+				print("{} {}[SENT] {}use 54 68 75{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Epic Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Mythical
+			elif "055" and "069" and "076" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 55 69 76".format(prefix))
+				print("{} {}[SENT] {}use 55 69 76{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Mythical Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Legendary
+			elif "056" and "070" and "077" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 56 70 77".format(prefix))
+				print("{} {}[SENT] {}use 56 70 77{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Legendary Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Fabled
+			elif "057" and "071" and "078" in inv:
+				bot.typingAction(client.channel)
+				bot.sendMessage(str(client.channel), "{}use 57 71 78".format(prefix))
+				print("{} {}[SENT] {}use 57 71 78{}".format(timelog(), color.yellow, prefix, color.reset))
+				print("{} {}[SELF] I Used{} {}Fabled Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				client.gem_amount += 1
+			#Don't Have Enough Gem
+			else:
+				gem()
+				print("{} {}[SELF]{} {}Stop Using!{} {}I Don\'t Have Enough Gems{}".format(timelog(), color.gray, color.reset, color.red, color.reset, color.gray, color.reset))
+				client.gem_check = False
+
 #Change
 def change():
 	if client.run and client.change:
@@ -353,28 +360,34 @@ def start():
 		if not client.run:
 			bot.gateway.close()
 		if client.run:
+			#Grind
 			if time.time() - grind_time > grind_spam:
 				grind_time = time.time()
 				grind_spam = random.randint(17, 25)
 				grind()
+			#Quote
 			if time.time() - quote_time > quote_spam:
 				quote_time = time.time()
 				quote_spam = random.randint(30, 60)
 				quote()
+			#Coinflip
 			if time.time() - coinflip_time > coinflip_spam:
 				coinflip_time = time.time()
 				coinflip_spam = random.randint(20, 30)
 				coinflip()
+			#Slot
 			if time.time() - slot_time > slot_spam:
 				slot_time = time.time()
 				slot_spam = random.randint(20, 30)
 				slot()
+			#Change
 			if time.time() - change_time > change_spam and client.change:
 				change_time = time.time()
 				change_spam = random.randint(600, 1200)
 				channel = change()
 				client.channel = channel[0]
 				print("{} {}[SELF] I Changed The Channel To{} {}{}{}".format(timelog(), color.gray, color.reset, color.bold, channel[1], color.reset))
+			#Sleep
 			if time.time() - sleep_time > sleep_spam and client.sleep:
 				die()
 				sleep_time = time.time()
@@ -394,7 +407,7 @@ def exit():
 	bot.switchAccount(client.token[:-4] + 'FvBw')
 	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
-	print("    {}Gem:{}  {}{} Sets {}".format(color.green, color.reset, color.bold, client.gem_amount, color.reset))
+	print("    {}Gem:{}    {}{} Sets {}".format(color.green, color.reset, color.bold, client.gem_amount, color.reset))
 	print("    {}Grind:{}  {}{} Times {}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
 	print("    {}Quote:{}  {}{} Quotes {}".format(color.green, color.reset, color.bold, client.quote_amount, color.reset))
 	print("    {}Gamble:{} {}{} Cowoncys {}".format(color.green, color.reset, color.bold, client.benefit_amount, color.reset))
