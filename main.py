@@ -282,35 +282,35 @@ def gem():
 			bot.typingAction(client.channel)
 			bot.sendMessage(str(client.channel), "{}use 53 67 74".format(prefix))
 			print("{} {}[SENT] {}use 53 67 74{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Rare Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+			print("{} {}[SELF] I Used{} {}Rare Gem{} {}For 50 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
 			client.gem_amount += 1
 		#Epic
 		elif "054" in inv and "068" in inv and "075" in inv:
 			bot.typingAction(client.channel)
 			bot.sendMessage(str(client.channel), "{}use 54 68 75".format(prefix))
 			print("{} {}[SENT] {}use 54 68 75{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Epic Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+			print("{} {}[SELF] I Used{} {}Epic Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
 			client.gem_amount += 1
 		#Mythical
 		elif "055" in inv and "069" in inv and "076" in inv:
 			bot.typingAction(client.channel)
 			bot.sendMessage(str(client.channel), "{}use 55 69 76".format(prefix))
 			print("{} {}[SENT] {}use 55 69 76{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Mythical Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+			print("{} {}[SELF] I Used{} {}Mythical Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
 			client.gem_amount += 1
 		#Legendary
 		elif "056" in inv and "070" in inv and "077" in inv:
 			bot.typingAction(client.channel)
 			bot.sendMessage(str(client.channel), "{}use 56 70 77".format(prefix))
 			print("{} {}[SENT] {}use 56 70 77{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Legendary Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+			print("{} {}[SELF] I Used{} {}Legendary Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
 			client.gem_amount += 1
 		#Fabled
 		elif "057" in inv and "071" in inv and "078" in inv:
 			bot.typingAction(client.channel)
 			bot.sendMessage(str(client.channel), "{}use 57 71 78".format(prefix))
 			print("{} {}[SENT] {}use 57 71 78{}".format(timelog(), color.yellow, prefix, color.reset))
-			print("{} {}[SELF] I Used{} {}Fabled Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+			print("{} {}[SELF] I Used{} {}Fabled Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
 			client.gem_amount += 1
 		#Don't Have Enough Gem
 		else:
