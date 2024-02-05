@@ -28,7 +28,8 @@
     -   Custom Bet
     -   Multiply When Lose
 -   System
-    -   Change Spam Channel
+    -   Gem Mode
+    -   Change Channel Mode
     -   Sleep Mode
 -   Captcha Protection
     -   Stop When Captcha Appears
