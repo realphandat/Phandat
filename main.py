@@ -320,7 +320,6 @@ def gem():
 				client.gem_amount += 1
 			#Don't Have Enough Gem
 			else:
-				gem()
 				print("{} {}[SELF]{} {}Stop Using!{} {}I Don\'t Have Enough Gems{}".format(timelog(), color.gray, color.reset, color.red, color.reset, color.gray, color.reset))
 				client.gem_check = False
 
