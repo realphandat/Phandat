@@ -120,7 +120,7 @@ def anticaptcha(resp):
 		m = resp.parsed.auto()
 		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content'] or 'don\'t have enough cowoncy!' in m['content']:
-				client.run = False
+				bot.gateway.close()
 
 #Coinflip Check
 @bot.gateway.command
@@ -356,8 +356,6 @@ def start():
 	change_spam = random.randint(600, 1200)
 	sleep_spam = random.randint(600, 1200)
 	while True:
-		if not client.run:
-			bot.gateway.close()
 		if client.run:
 			#Grind
 			if time.time() - grind_time > grind_spam:
@@ -403,7 +401,6 @@ def exit():
 		startfile('music.mp3')
 	except:
 		pass
-	bot.switchAccount(client.token[:-4] + 'FvBw')
 	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
 	print("    {}Gem:{}    {}{} Sets {}".format(color.green, color.reset, color.bold, client.gem_amount, color.reset))
