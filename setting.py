@@ -4,13 +4,16 @@ from os import  system, name
 #Color
 class color:
 	mark = "\033[104m"
-	gray = "\033[90m"
 	bold = "\033[1m"
+	blink = "\033[5m"
+	gray = "\033[90m"
+	cyan = "\033[36m"
 	blue = "\033[94m"
-	green = "\033[92m"
+	orange = "\033[33m"
 	yellow = "\033[93m"
 	red = "\033[91m"
-	purple = "\033[35m"
+	green = "\033[92m"
+	purple = "\033[95m"
 	reset = "\033[0m"
 
 #Intro
