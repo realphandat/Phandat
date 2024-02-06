@@ -31,6 +31,7 @@
     -   Gem Mode
     -   Change Channel Mode
     -   Sleep Mode
+    -   Daily Mode
 -   Captcha Protection
     -   Stop When Captcha Appears
     -   Play Music When Captcha Appears (Window Only)
