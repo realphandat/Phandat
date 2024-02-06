@@ -276,7 +276,7 @@ def gem():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), f"{prefix}inv")
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}inv{color.reset}")
-		msg = bot.getMessages(str(client.channel), num=10)
+		msg = bot.getMessages(str(client.channel), num=5)
 		msg = msg.json()
 		inv = ""
 		for i in range(len(msg)):
