@@ -35,7 +35,8 @@ print("""
 [12] Slot Rate
 [13] Gem
 [14] Change
-[15] Sleep{}""".format(color.bold, color.reset))
+[15] Sleep
+[16] Daily{}""".format(color.bold, color.reset))
 
 #Settings
 def main():
@@ -75,6 +76,8 @@ def main():
 		change(data, False)
 	elif choice == "15":
 		sleep(data, False)
+	elif choice == "16":
+		daily(data, False)
 	else:
 		print("{}[INFO] Invalid!{}".format(color.red, color.reset))
 
@@ -230,6 +233,17 @@ def change(data, all):
 def sleep(data, all):
 	data['sleep'] = input("{}Toggle Sleep Mode (YES/NO): {}".format(color.gray, color.reset))
 	data['sleep'] = data['sleep'].lower() == "yes"
+	file = open("config.json", "w")
+	dump(data, file, indent = 4)
+	file.close()
+	print("{}[INFO] Saved!{}".format(color.green, color.reset))
+	if not all:
+		main()
+
+#Daily
+def daily(data, all):
+	data['daily'] = input("{}Toggle Daily Mode (YES/NO): {}".format(color.gray, color.reset))
+	data['daily'] = data['daily'].lower() == "yes"
 	file = open("config.json", "w")
 	dump(data, file, indent = 4)
 	file.close()

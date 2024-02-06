@@ -268,12 +268,12 @@ def gem():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), f"{prefix}inv")
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}inv{color.reset}")
-		msg = bot.getMessages(str(client.channel), num=10)
-		msg = msg.json()
+		gem_messages = bot.getMessages(str(client.channel), num=10)
+		gem_messages = gem_messages.json()
 		inv = ""
-		for i in range(len(msg)):
-			if msg[i]['author']['id'] == client.OwOID and 'Inventory' in msg[i]['content']:
-				inv = findall(r'`(.*?)`', msg[i]['content'])
+		for i in range(len(gem_messages)):
+			if gem_messages[i]['author']['id'] == client.OwOID and 'Inventory' in gem_messages[i]['content']:
+				inv = findall(r'`(.*?)`', gem_messages[i]['content'])
 		sleep(random.randint(3, 5))
 		if not inv:
 			sleep(random.randint(1, 2))
@@ -390,8 +390,8 @@ def daily():
 				daily_string = findall('[0-9]+', daily_string)
 				client.daily_wait_time = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
 				print(f"{timelog()}{color.orange} [INFO] Next Daily: {str(timedelta(seconds=int(client.daily_wait_time)))} Seconds")
-			if "Your next daily" in daily_string:
-				print(f"{timelog()}{color.green} [INFO]{color.reset} Claimed Daily")
+			elif "Your next daily" in daily_string:
+				print(f"{timelog()}{color.green} [INFO] Claimed Daily{color.reset}")
 
 #Start
 def start():
