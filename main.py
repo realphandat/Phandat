@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from collections.abc import Collection
 import discum
 from requests import get
 from os import system
@@ -50,17 +51,20 @@ class client:
 		guild_name = ""
 
 prefix = client.prefix
-        
+
 #Color
 class color:
 	mark = "\033[104m"
-	gray = "\033[90m"
 	bold = "\033[1m"
+	blink = "\033[5m"
+	gray = "\033[90m"
+	cyan = "\033[36m"
 	blue = "\033[94m"
-	green = "\033[92m"
+	orange = "\033[33m"
 	yellow = "\033[93m"
 	red = "\033[91m"
-	purple = "\033[35m"
+	green = "\033[92m"
+	purple = "\033[95m"
 	reset = "\033[0m"
 
 #Time
@@ -87,9 +91,9 @@ def on_ready(resp):
 		client.guild_name = bot.gateway.session.guild(client.guild_id).name
 		input("Press Enter to continue...")
 		print()
-		print("""{}    █▀█ █ █ █ █▀█{}""".format(color.blue, color.reset))
-		print("""{}    █▄█ ▀▄▀▄▀ █▄█{}""".format(color.blue, color.reset))
-		print("{}Logged in as {}{}{}{}".format(color.red, color.reset, color.bold, client.user_name, color.reset))
+		print(f"""{color.blue}    █▀█ █ █ █ █▀█
+    █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
+		print(f"{color.red}Logged in as{color.reset} {color.bold}{client.user_name}{color.reset}")
 		print()
 		start()
 
@@ -113,14 +117,28 @@ def getMessages(num: int = 1, channel: str = client.channel) -> object:
 			retries = 0
 	return messageObject
 
-#Captcha Bypass
+#Check The Problem
 @bot.gateway.command
-def anticaptcha(resp):
+def checking(resp):
 	if resp.event.message:
 		m = resp.parsed.auto()
 		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
-			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content'] or 'don\'t have enough cowoncy!' in m['content']:
+			#Captcha
+			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
+				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}Captcha Appear\033[25m !!!{color.reset}")
 				bot.gateway.close()
+			#Banned
+			elif 'You have been banned' in m['content']:
+				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}YOU HAVE BEEN BANNED\033[25m !!!{color.reset}")
+				bot.gateway.close()
+			#Cowoncy
+			elif 'don\'t have enough cowoncy!' in m['content']:
+				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}You\'ve Run Out Of Cowoncy\033[25m !!!{color.reset}")
+				bot.gateway.close()
+			#Gem
+			if client.run and client.gem and client.gem_check:
+				if "and caught" in m['content']:
+					gem()
 
 #Coinflip Check
 @bot.gateway.command
@@ -132,12 +150,12 @@ def coinflip_check(resp):
 				if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 					#Lost
 					if 'you lost' in m['content']:
-						print("{} {}[INFO] Coinflip Lost {} Cowoncy{}".format(timelog(), color.red, client.current_coinflip_bet, color.reset))
+						print(f"{timelog()} {color.red}[INFO] Coinflip Lost {client.current_coinflip_bet} Cowoncy{color.reset}")
 						client.benefit_amount -= client.current_coinflip_bet
 						client.current_coinflip_bet *= client.coinflip_rate
 					#Won
 					if 'you won' in m['content']:
-						print("{} {}[INFO] Coinflip Won {} Cowoncy{}".format(timelog(), color.green, client.current_coinflip_bet, color.reset))
+						print(f"{timelog()} {color.green}[INFO] Coinflip Won {client.current_coinflip_bet} Cowoncy{color.reset}")
 						client.benefit_amount += client.current_coinflip_bet
 						client.current_coinflip_bet = client.coinflip_bet
 			except KeyError:
@@ -153,30 +171,30 @@ def slot_check(resp):
 				if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 					#Lost
 					if 'won nothing' in m['content']:
-						print("{} {}[INFO] Slot Lost {} Cowoncy{}".format(timelog(), color.red, client.current_slot_bet, color.reset))
+						print(f"{timelog()} {color.red}[INFO] Slot Lost {client.current_slot_bet} Cowoncy{color.reset}")
 						client.benefit_amount -= client.current_slot_bet
 						client.current_slot_bet *= client.slot_rate
 					#Draw
 					if '<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>' in m['content']:
-						print("{} {}[INFO] Slot Draw{}".format(timelog(), color.bold, color.reset))
+						print(f"{timelog()} {color.bold}[INFO] Slot Drew{color.reset}")
 					#Won x2
 					if '<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>' in m['content']:
-						print("{} {}[INFO] Slot Won {} Cowoncy (x2){}".format(timelog(), color.green, client.current_slot_bet, color.reset))
+						print(f"{timelog()} {color.green}[INFO] Slot Won {client.current_slot_bet} Cowoncy (x2){color.reset}")
 						client.benefit_amount += client.current_slot_bet
 						client.current_slot_bet = client.slot_bet
 					#Won x3
 					if '<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>' in m['content']:
-						print("{} {}[INFO] Slot Won {} Cowoncy (x3){}".format(timelog(), color.green, client.current_slot_bet * 2, color.reset))
+						print(f"{timelog()} {color.green}[INFO] Slot Won {client.current_slot_bet * 2} Cowoncy (x3){color.reset}")
 						client.benefit_amount += client.current_slot_bet * 2
 						client.current_slot_bet = client.slot_bet
 					#Won x4
 					if '<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>' in m['content']:
-						print("{} {}[INFO] Slot Won {} Cowoncy (x4){}".format(timelog(), color.green, client.current_slot_bet * 3, color.reset))
+						print(f"{timelog()} {color.green}[INFO] Slot Won {client.current_slot_bet * 3} Cowoncy (x4){color.reset}")
 						client.benefit_amount += client.current_slot_bet * 3
 						client.current_slot_bet = client.slot_bet
 					#Won x10
 					if '<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>' in m['content']:
-						print("{} {}[INFO] Slot Won {} Cowoncy (x10){}".format(timelog(), color.green, client.current_slot_bet * 9, color.reset))
+						print(f"{timelog()} {color.green}[INFO] Slot Won {client.current_slot_bet * 9} Cowoncy (x10){color.reset}")
 						client.benefit_amount += client.current_slot_bet * 9
 						client.current_slot_bet = client.slot_bet
 			except KeyError:
@@ -198,20 +216,20 @@ def grind():
 	if client.run and client.owo:
 		spam = random.choice(client.spam)
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}".format(spam))
-		print("{} {}[SENT] {}{}".format(timelog(), color.yellow, spam, color.reset))
+		bot.sendMessage(str(client.channel), f"{spam}")
+		print(f"{timelog()} {color.yellow}[SENT] {spam}{color.reset}")
 		sleep(random.randint(1, 2))
 	if client.run and client.grind:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}h".format(prefix))
-		print("{} {}[SENT] {}h{}".format(timelog(), color.yellow, prefix, color.reset))
+		bot.sendMessage(str(client.channel), f"{prefix}h")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}h{color.reset}")
 		sleep(random.randint(1, 2))
 	if client.run and client.gem and client.gem_check:
-		print("{} {}[SELF] I'm Checking Gem Status{}".format(timelog(), color.gray, color.reset))
+		print(f"{timelog()} [SELF] Check Gem Status")
 	if client.run and client.grind:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}b".format(prefix))
-		print("{} {}[SENT] {}b{}".format(timelog(), color.yellow, prefix, color.reset))
+		bot.sendMessage(str(client.channel), f"{prefix}b")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}b{color.reset}")
 		client.grind_amount += 1
 		sleep(random.randint(1, 2))
 
@@ -225,7 +243,7 @@ def quote():
 				data = json_data[0]
 				bot.typingAction(client.channel)
 				bot.sendMessage(client.channel, data['q'])
-				print("{} {}[SENT] Quote{}".format(timelog(), color.yellow, color.reset))
+				print(f"{timelog()} {color.yellow}[SENT] Quote{color.reset}")
 				client.quote_amount += 1
 				sleep(random.randint(1, 2))
 		except:
@@ -238,8 +256,8 @@ def coinflip():
 	if client.run and client.coinflip:
 		side = random.choice(client.side)
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}cf {} {}".format(prefix, client.current_coinflip_bet, side))
-		print("{} {}[SENT] {}cf {} {}{}".format(timelog(), color.yellow, prefix, client.current_coinflip_bet, side, color.reset))
+		bot.sendMessage(str(client.channel), f"{prefix}cf {client.current_coinflip_bet} {side}")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}cf {client.current_coinflip_bet} {side}{color.reset}")
 		sleep(random.randint(1, 2))
 
 #Slot
@@ -248,16 +266,16 @@ def slot():
 		client.current_slot_bet = client.slot_bet
 	if client.run and client.slot:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}s {}".format(prefix, client.current_slot_bet))
-		print("{} {}[SENT] {}s {}{}".format(timelog(), color.yellow, prefix, client.current_slot_bet, color.reset))
+		bot.sendMessage(str(client.channel), f"{prefix}s {client.current_slot_bet}")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}s {client.current_slot_bet}{color.reset}")
 		sleep(random.randint(1, 2))
 
 #Gem
 def gem():
 	if client.run and client.gem and client.gem_check:
 		bot.typingAction(client.channel)
-		bot.sendMessage(str(client.channel), "{}inv".format(prefix))
-		print("{} {}[SENT] {}inv{}".format(timelog(), color.yellow, prefix, color.reset))
+		bot.sendMessage(str(client.channel), f"{prefix}inv")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}inv{color.reset}")
 		msg = bot.getMessages(str(client.channel), num=10)
 		msg = msg.json()
 		inv = ""
@@ -269,58 +287,58 @@ def gem():
 			sleep(random.randint(1, 2))
 			return
 		else:
-			#Common
+			#Common 051 065 072
 			if "051" in inv and "065" in inv and "072" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 51 65 72".format(prefix))
-				print("{} {}[SENT] {}use 51 65 72{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Common Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 51 65 72")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 51 65 72{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Common Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
-			#Uncommon
+			#Uncommon 052 066 073
 			elif "052" in inv and "066" in inv and "073" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 52 66 73".format(prefix))
-				print("{} {}[SENT] {}use 52 66 73{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Uncommon Gem{} {}For 25 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 52 66 73")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 52 66 73{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.cyan}Uncommon Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
-			#Rare
+			#Rare 053 067 074
 			elif "053" in inv and "067" in inv and "074" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 53 67 74".format(prefix))
-				print("{} {}[SENT] {}use 53 67 74{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Rare Gem{} {}For 50 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 53 67 74")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 53 67 74{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.orange}Rare Gem{color.reset} {color.gray}For 50 Turns{color.reset}")
 				client.gem_amount += 1
-			#Epic
+			#Epic 054 068 075
 			elif "054" in inv and "068" in inv and "075" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 54 68 75".format(prefix))
-				print("{} {}[SENT] {}use 54 68 75{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Epic Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 54 68 75")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 54 68 75{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.blue}Epic Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
-			#Mythical
+			#Mythical 055 069 076
 			elif "055" in inv and "069" in inv and "076" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 55 69 76".format(prefix))
-				print("{} {}[SENT] {}use 55 69 76{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Mythical Gem{} {}For 75 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 55 69 76")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 55 69 76{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.purple}Mythical Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
-			#Legendary
-			elif "056" in inv and "070" in inv and "077" in inv in inv:
+			#Legendary 056 070 077
+			elif "056" in inv and "070" in inv and "077" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 56 70 77".format(prefix))
-				print("{} {}[SENT] {}use 56 70 77{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Legendary Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 56 70 77")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 56 70 77{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Legendary Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
-			#Fabled
+			#Fabled 057 071 078
 			elif "057" in inv and "071" in inv and "078" in inv:
 				bot.typingAction(client.channel)
-				bot.sendMessage(str(client.channel), "{}use 57 71 78".format(prefix))
-				print("{} {}[SENT] {}use 57 71 78{}".format(timelog(), color.yellow, prefix, color.reset))
-				print("{} {}[SELF] I Used{} {}Fabled Gem{} {}For 100 Turns{}".format(timelog(), color.gray, color.reset, color.blue, color.reset, color.gray, color.reset))
+				bot.sendMessage(str(client.channel), f"{prefix}use 57 71 78")
+				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 57 71 78{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Fabled Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
 			#Don't Have Enough Gem
 			else:
-				print("{} {}[SELF]{} {}Stop Using!{} {}I Don\'t Have Enough Gems{}".format(timelog(), color.gray, color.reset, color.red, color.reset, color.gray, color.reset))
+				print(f"{timelog()} {color.gray}[SELF]{color.reset} {color.blink}{color.red}Stop Using!{color.reset} {color.gray}I Don\'t Have Enough Gems{color.reset}")
 				client.gem_check = False
 
 #Change
@@ -339,6 +357,7 @@ def die():
 	if client.run and client.sleep:
 		die = random.randint(300, 600)
 		print("{} {}[SELF] I'm Taking A Break For{} {}{} Seconds{}".format(timelog(), color.gray, color.reset, color.bold, die, color.reset))
+		print(f"{timelog()} {color.gray}[SELF] I'm Taking A Break For{color.reset} {color.blink}{die} Seconds{color.reset}")
 		sleep(die)
 
 #Start
@@ -383,13 +402,13 @@ def start():
 				change_spam = random.randint(600, 1200)
 				channel = change()
 				client.channel = channel[0]
-				print("{} {}[SELF] I Changed The Channel To{} {}{}{}".format(timelog(), color.gray, color.reset, color.bold, channel[1], color.reset))
+				print(f"{timelog()} {color.gray}[SELF] I Changed Channel To{color.reset} {color.blink}{channel[1]}{color.reset}")
 			#Sleep
 			if time.time() - sleep_time > sleep_spam and client.sleep:
 				die()
 				sleep_time = time.time()
 				sleep_spam = random.randint(600, 1200)
-				print("{} {}[SELF] Done! I'll Work For{} {}{} Seconds{}".format(timelog(), color.gray, color.reset, color.bold, sleep_spam, color.reset))
+				print(f"{timelog()} {color.gray}[SELF] Done! I'll Work For{color.reset} {color.blink}{sleep_spam} Seconds{color.reset}")
 			sleep(1)
 bot.gateway.run()
 
@@ -401,12 +420,11 @@ def exit():
 		startfile('music.mp3')
 	except:
 		pass
-	print("{} {}[SELF] I Found Some Problem".format(timelog(), color.gray, color.reset))
 	print()
-	print("    {}Gem:{}    {}{} Sets {}".format(color.green, color.reset, color.bold, client.gem_amount, color.reset))
-	print("    {}Grind:{}  {}{} Times {}".format(color.green, color.reset, color.bold, client.grind_amount, color.reset))
-	print("    {}Quote:{}  {}{} Quotes {}".format(color.green, color.reset, color.bold, client.quote_amount, color.reset))
-	print("    {}Gamble:{} {}{} Cowoncys {}".format(color.green, color.reset, color.bold, client.benefit_amount, color.reset))
-	exit = input("{}Enter 'OK' to Reset: {}".format(color.blue, color.reset))
+	print(f"    {color.green}Gem:{color.reset}    {color.bold}{client.gem_amount} Sets{color.reset}")
+	print(f"    {color.green}Grind:{color.reset}  {color.bold}{client.grind_amount} Times{color.reset}")
+	print(f"    {color.green}Quote:{color.reset}  {color.bold}{client.quote_amount} Quotes{color.reset}")
+	print(f"    {color.green}Gamble:{color.reset} {color.bold}{client.benefit_amount} Cowoncy{color.reset}")
+	exit = input(f"{color.blue}Enter 'OK' to Reset: {color.reset}")
 	if exit.lower() == 'ok':
 		system('python "main.py"')
