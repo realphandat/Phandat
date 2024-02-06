@@ -336,6 +336,8 @@ def gem():
 			#Don't Have Enough Gem
 			else:
 				if client.gem_recheck:
+					print(f"{timelog()} [SELF] Maybe I Don\'t Have Enough Gems, I\'ll Check Again")
+					client.gem_recheck = False
 					gem()
 				else:
 					print(f"{timelog()} {color.gray}[SELF]{color.reset} {color.blink}{color.red}Stop Using!{color.reset} {color.gray}I Don\'t Have Enough Gems{color.reset}")
