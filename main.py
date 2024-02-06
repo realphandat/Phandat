@@ -369,13 +369,13 @@ def die():
 def daily():
 	if client.run and client.daily:
 		bot.typingAction(client.channel)
+		sleep(random.randint(3, 5))
 		bot.sendMessage(client.channel, f"{prefix}daily")
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}daily{color.reset}")
 		daily_messages = getMessages(num=5)
 		daily_string = ""
 		length = len(daily_messages)
 		i = 0
-		sleep(random.randint(3, 5))
 		while i < length:
 			if daily_messages[i]['author']['id']==client.OwOID and daily_messages[i]['content'] != "" and "Nu" or "daily" in daily_messages[i]['content']:
 				daily_string = daily_messages[i]['content']
