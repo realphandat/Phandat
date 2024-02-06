@@ -1,9 +1,9 @@
 #!/usr/bin/python
-from collections.abc import Collection
 import discum
 from requests import get
 from os import system
 import time
+from datetime import timedelta
 start_time = time.time()
 from time import sleep, strftime, localtime
 import random
@@ -34,11 +34,13 @@ class client:
 		gem = data["gem"]
 		change = data["change"]
 		sleep = data["sleep"]
+		daily = data["daily"]
 		spam = ["owo","uwu"]
 		side = ["h","t"]
 		run = True
 		gem_check = True
 		gem_recheck = True
+		daily_wait_time = 0
 		gem_amount = 0
 		grind_amount = 0
 		quote_amount = 0
@@ -90,7 +92,7 @@ def on_ready(resp):
 		client.user_name = user['username']
 		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
 		client.guild_name = bot.gateway.session.guild(client.guild_id).name
-		input("Press Enter to continue...")
+		input(f"{color.blink}Press Enter to continue...\033[25m")
 		print()
 		print(f"""{color.blue}    █▀█ █ █ █ █▀█
     █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
@@ -126,15 +128,15 @@ def checking(resp):
 		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 			#Captcha
 			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
-				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}Captcha Appear\033[25m !!!{color.reset}")
+				print(f"{timelog()} {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
 				bot.gateway.close()
 			#Banned
 			elif 'You have been banned' in m['content']:
-				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}YOU HAVE BEEN BANNED\033[25m !!!{color.reset}")
+				print(f"{timelog()} {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
 				bot.gateway.close()
 			#Cowoncy
 			elif 'don\'t have enough cowoncy!' in m['content']:
-				print(f"{timelog()} {color.red}[INFO] !!! {color.blink}You\'ve Run Out Of Cowoncy\033[25m !!!{color.reset}")
+				print(f"{timelog()} {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
 				bot.gateway.close()
 			#Gem
 			if client.run and client.gem and client.gem_check:
@@ -215,7 +217,7 @@ def grind():
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}h{color.reset}")
 		sleep(random.randint(1, 2))
 	if client.run and client.gem and client.gem_check:
-		print(f"{timelog()} [SELF] I'm Checking Gem Status")
+		print(f"{timelog()} {color.gray}[INFO] I'm Checking Gem Status{color.reset}")
 	if client.run and client.grind:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), f"{prefix}b")
@@ -282,7 +284,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 51 65 72")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 51 65 72{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Common Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.red}Common Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Uncommon 052 066 073
@@ -290,7 +292,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 52 66 73")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 52 66 73{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.cyan}Uncommon Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.cyan}Uncommon Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Rare 053 067 074
@@ -298,7 +300,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 53 67 74")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 53 67 74{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.orange}Rare Gem{color.reset} {color.gray}For 50 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.orange}Rare Gem{color.reset} {color.gray}For 50 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Epic 054 068 075
@@ -306,7 +308,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 54 68 75")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 54 68 75{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.blue}Epic Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.blue}Epic Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Mythical 055 069 076
@@ -314,7 +316,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 55 69 76")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 55 69 76{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.purple}Mythical Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.purple}Mythical Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Legendary 056 070 077
@@ -322,7 +324,7 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 56 70 77")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 56 70 77{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.yellow}Legendary Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.yellow}Legendary Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
 			#Fabled 057 071 078
@@ -330,17 +332,18 @@ def gem():
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 57 71 78")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 57 71 78{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.cyan}Fabled Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[INFO] I Used{color.reset} {color.cyan}Fabled Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
 				client.gem_recheck = True
-			#Don't Have Enough Gem
 			else:
+				#Check Gem Again
 				if client.gem_recheck:
-					print(f"{timelog()} [SELF] Maybe I Don\'t Have Enough Gems, I\'ll Check Again")
+					print(f"{timelog()} {color.gray}[INFO] I\'ll Check Your Inventory Again{color.reset}")
 					client.gem_recheck = False
 					gem()
+				#Don't Have Enough Gems
 				else:
-					print(f"{timelog()} {color.gray}[SELF]{color.reset} {color.blink}{color.red}Stop Using!{color.reset} {color.gray}I Don\'t Have Enough Gems{color.reset}")
+					print(f"{timelog()} {color.red}[INFO] You Don't Have Enough Gems!{color.reset}")
 					client.gem_check = False
 					client.gem_recheck = False
 
@@ -359,8 +362,36 @@ def change():
 def die():
 	if client.run and client.sleep:
 		die = random.randint(300, 600)
-		print(f"{timelog()} {color.gray}[SELF] I'm Taking A Break For{color.reset} {color.blink}{die} Seconds{color.reset}")
+		print(f"{timelog()} {color.cyan}[INFO] I'm Taking A Break For{color.reset} {color.bold}{die} Seconds{color.reset}")
 		sleep(die)
+
+#Daily
+def daily():
+	if client.run and client.daily:
+		bot.typingAction(client.channel)
+		bot.sendMessage(client.channel, f"{prefix}daily")
+		print(f"{timelog()} {color.yellow}[SENT] {prefix}daily{color.reset}")
+		daily_messages = getMessages(num=5)
+		daily_string = ""
+		length = len(daily_messages)
+		i = 0
+		sleep(random.randint(3, 5))
+		while i < length:
+			if daily_messages[i]['author']['id']==client.OwOID and daily_messages[i]['content'] != "" and "Nu" or "daily" in daily_messages[i]['content']:
+				daily_string = daily_messages[i]['content']
+				i = length
+			else:
+				i += 1
+		if not daily_string:
+			sleep(random.randint(1, 2))
+			daily()
+		else:
+			if "Nu" in daily_string:
+				daily_string = findall('[0-9]+', daily_string)
+				client.daily_wait_time = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
+				print(f"{timelog()}{color.orange} [INFO] Next Daily: {str(timedelta(seconds=int(client.daily_wait_time)))} Seconds")
+			if "Your next daily" in daily_string:
+				print(f"{timelog()}{color.green} [INFO]{color.reset} Claimed Daily")
 
 #Start
 def start():
@@ -370,6 +401,7 @@ def start():
 	slot_time = 0
 	change_time = time.time()
 	sleep_time = time.time()
+	daily_time = 0
 	grind_spam = 0
 	quote_spam = 0
 	coinflip_spam = 0
@@ -379,22 +411,22 @@ def start():
 	while True:
 		if client.run:
 			#Grind
-			if time.time() - grind_time > grind_spam:
+			if time.time() - grind_time > grind_spam and client.grind:
 				grind_time = time.time()
 				grind_spam = random.randint(17, 25)
 				grind()
 			#Quote
-			if time.time() - quote_time > quote_spam:
+			if time.time() - quote_time > quote_spam and client.quote:
 				quote_time = time.time()
 				quote_spam = random.randint(30, 60)
 				quote()
 			#Coinflip
-			if time.time() - coinflip_time > coinflip_spam:
+			if time.time() - coinflip_time > coinflip_spam and client.coinflip:
 				coinflip_time = time.time()
 				coinflip_spam = random.randint(20, 30)
 				coinflip()
 			#Slot
-			if time.time() - slot_time > slot_spam:
+			if time.time() - slot_time > slot_spam and client.slot:
 				slot_time = time.time()
 				slot_spam = random.randint(20, 30)
 				slot()
@@ -404,13 +436,17 @@ def start():
 				change_spam = random.randint(600, 1200)
 				channel = change()
 				client.channel = channel[0]
-				print(f"{timelog()} {color.gray}[SELF] I Changed Channel To{color.reset} {color.blink}{channel[1]}{color.reset}")
+				print(f"{timelog()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{channel[1]}{color.reset}")
 			#Sleep
 			if time.time() - sleep_time > sleep_spam and client.sleep:
 				die()
 				sleep_time = time.time()
 				sleep_spam = random.randint(600, 1200)
-				print(f"{timelog()} {color.gray}[SELF] Done! I'll Work For{color.reset} {color.blink}{sleep_spam} Seconds{color.reset}")
+				print(f"{timelog()} {color.cyan}[INFO] Done! I'll Work For{color.reset} {color.bold}{sleep_spam} Seconds{color.reset}")
+			#Daily
+			if time.time() - daily_time > int(client.daily_wait_time) and client.sleep:
+				daily()
+				daily_time = time.time()
 			sleep(1)
 bot.gateway.run()
 
