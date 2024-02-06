@@ -13,5 +13,6 @@
   "srate": "2",
   "gem": true,
   "change": false,
-  "sleep": true
+  "sleep": true,
+  "daily": true
 }
