@@ -38,6 +38,7 @@ class client:
 		side = ["h","t"]
 		run = True
 		gem_check = True
+		gem_recheck = True
 		gem_amount = 0
 		grind_amount = 0
 		quote_amount = 0
@@ -200,17 +201,6 @@ def slot_check(resp):
 			except KeyError:
 				pass
 
-#Gem Check
-@bot.gateway.command
-def gem_check(resp):
-	if client.run and client.gem and client.gem_check:
-		if resp.event.message:
-			m = resp.parsed.auto()
-			if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
-				if "and caught" in m['content']:
-					gem()
-				
-
 #Grind
 def grind():
 	if client.run and client.owo:
@@ -225,7 +215,7 @@ def grind():
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}h{color.reset}")
 		sleep(random.randint(1, 2))
 	if client.run and client.gem and client.gem_check:
-		print(f"{timelog()} [SELF] Check Gem Status")
+		print(f"{timelog()} [SELF] I'm Checking Gem Status")
 	if client.run and client.grind:
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), f"{prefix}b")
@@ -276,7 +266,7 @@ def gem():
 		bot.typingAction(client.channel)
 		bot.sendMessage(str(client.channel), f"{prefix}inv")
 		print(f"{timelog()} {color.yellow}[SENT] {prefix}inv{color.reset}")
-		msg = bot.getMessages(str(client.channel), num=5)
+		msg = bot.getMessages(str(client.channel), num=10)
 		msg = msg.json()
 		inv = ""
 		for i in range(len(msg)):
@@ -285,7 +275,7 @@ def gem():
 		sleep(random.randint(3, 5))
 		if not inv:
 			sleep(random.randint(1, 2))
-			return
+			gem()
 		else:
 			#Common 051 065 072
 			if "051" in inv and "065" in inv and "072" in inv:
@@ -294,6 +284,7 @@ def gem():
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 51 65 72{color.reset}")
 				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Common Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Uncommon 052 066 073
 			elif "052" in inv and "066" in inv and "073" in inv:
 				bot.typingAction(client.channel)
@@ -301,6 +292,7 @@ def gem():
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 52 66 73{color.reset}")
 				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.cyan}Uncommon Gem{color.reset} {color.gray}For 25 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Rare 053 067 074
 			elif "053" in inv and "067" in inv and "074" in inv:
 				bot.typingAction(client.channel)
@@ -308,6 +300,7 @@ def gem():
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 53 67 74{color.reset}")
 				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.orange}Rare Gem{color.reset} {color.gray}For 50 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Epic 054 068 075
 			elif "054" in inv and "068" in inv and "075" in inv:
 				bot.typingAction(client.channel)
@@ -315,6 +308,7 @@ def gem():
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 54 68 75{color.reset}")
 				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.blue}Epic Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Mythical 055 069 076
 			elif "055" in inv and "069" in inv and "076" in inv:
 				bot.typingAction(client.channel)
@@ -322,24 +316,31 @@ def gem():
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 55 69 76{color.reset}")
 				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.purple}Mythical Gem{color.reset} {color.gray}For 75 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Legendary 056 070 077
 			elif "056" in inv and "070" in inv and "077" in inv:
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 56 70 77")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 56 70 77{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Legendary Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.yellow}Legendary Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Fabled 057 071 078
 			elif "057" in inv and "071" in inv and "078" in inv:
 				bot.typingAction(client.channel)
 				bot.sendMessage(str(client.channel), f"{prefix}use 57 71 78")
 				print(f"{timelog()} {color.yellow}[SENT] {prefix}use 57 71 78{color.reset}")
-				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.red}Fabled Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
+				print(f"{timelog()} {color.gray}[SELF] I Used{color.reset} {color.blink}{color.cyan}Fabled Gem{color.reset} {color.gray}For 100 Turns{color.reset}")
 				client.gem_amount += 1
+				client.gem_recheck = True
 			#Don't Have Enough Gem
 			else:
-				print(f"{timelog()} {color.gray}[SELF]{color.reset} {color.blink}{color.red}Stop Using!{color.reset} {color.gray}I Don\'t Have Enough Gems{color.reset}")
-				client.gem_check = False
+				if client.gem_recheck:
+					gem()
+				else:
+					print(f"{timelog()} {color.gray}[SELF]{color.reset} {color.blink}{color.red}Stop Using!{color.reset} {color.gray}I Don\'t Have Enough Gems{color.reset}")
+					client.gem_check = False
+					client.gem_recheck = False
 
 #Change
 def change():
@@ -356,7 +357,6 @@ def change():
 def die():
 	if client.run and client.sleep:
 		die = random.randint(300, 600)
-		print("{} {}[SELF] I'm Taking A Break For{} {}{} Seconds{}".format(timelog(), color.gray, color.reset, color.bold, die, color.reset))
 		print(f"{timelog()} {color.gray}[SELF] I'm Taking A Break For{color.reset} {color.blink}{die} Seconds{color.reset}")
 		sleep(die)
 
