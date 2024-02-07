@@ -18,7 +18,7 @@
 * [x] Auto claim daily </br>
 * [x] Auto use gem </br>
 * [x] Auto sleep </br>
-* [x] Diverse captcha notification system </br>
+* [x] Diverse webhook notification system </br>
 * [x] Stop and Play music when Captcha appears </br>
 * [ ] Auto solve Image/Link captcha </br>
 
