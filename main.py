@@ -9,8 +9,7 @@ from time import sleep, strftime, localtime
 import random
 import json
 import atexit
-from re import findall, sub
-from inputimeout import inputimeout, TimeoutOccurred
+from re import findall
 try:
 	from os import startfile
 except:
@@ -92,10 +91,7 @@ def on_ready(resp):
 		client.user_name = user['username']
 		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
 		client.guild_name = bot.gateway.session.guild(client.guild_id).name
-		try:
-			inputimeout(f"This prevents double and triple spamming. {color.red}Press Enter{color.reset} once when open program to start!", timeout=10)
-		except TimeoutOccurred:
-			exit()
+		input(f"This prevents multi spam. {color.red}Press Enter{color.reset} once when open program to start!")
 		print()
 		print(f"""{color.blue}    █▀█ █ █ █ █▀█
     █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
