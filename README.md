@@ -21,7 +21,26 @@
 * [x] Stop and Play music when Captcha appears </br>
 * [ ] Auto solve Image/Link captcha </br>
 
+<h2 align="left">Config</h2>
 
+| Name  | Type | Default Value | Description |
+| ------------- | ------------- | ------------- | ------------- |
+| ```Token```  | ```Boolean``` | ```False```  | Tells the program whether or not to interact with incenses. |
+| ```Channel```  | ```Boolean``` | ```False```  | Tells the program whether or not to react after catching something. |
+| ```Prefix```  | ```String``` | ```True```  | Tells the program whether or not to log all catches. |
+| ```OwO```  | ```String``` | ```15.00```  | Tells the program when to log a pokemon as low IV. |
+| ```Grind```  | ```String``` | ```85.00```  | Tells the program when to log a pokemon as high IV. |
+| ```Quote```  | ```String``` | ```undefined```  | Tells the program which webhook to log to. |
+| ```Slot```  | ```Array``` | ```undefined```  | The userID of your main account. |
+| ```Sbet```  | ```String``` | ```undefined```  | The prefix to use for the selfbot. |
+| ```Srate```  | ```Boolean``` | ```False```  | Tells the program whether to catch just in the specified guild, or in all (unblacklisted) guilds. |
+| ```Coinflip```  | ```Boolean``` | ```False```  | Tells the program whether or not to interact with incenses. |
+| ```Cfbet```  | ```Boolean``` | ```False```  | Tells the program whether or not to react after catching something. |
+| ```Cfrate```  | ```String``` | ```True```  | Tells the program whether or not to log all catches. |
+| ```Daily```  | ```String``` | ```15.00```  | Tells the program when to log a pokemon as low IV. |
+| ```Gem```  | ```String``` | ```85.00```  | Tells the program when to log a pokemon as high IV. |
+| ```Sleep```  | ```String``` | ```undefined```  | Tells the program which webhook to log to. |
+| ```Webhook```  | ```Array``` | ```undefined```  | The userID of your main account. |
 ## ⚙️・Usage
 ### Window 💻
 Download and install [Python](https://www.python.org/downloads)
