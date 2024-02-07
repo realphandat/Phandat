@@ -46,8 +46,8 @@ class client:
 		grind_amount = 0
 		quote_amount = 0
 		benefit_amount = 0
-		current_coinflip_bet = coinflip_bet
 		current_slot_bet = slot_bet
+		current_coinflip_bet = coinflip_bet
 		OwOID = "408785106942164992"
 		user_id = ""
 		user_name = ""
@@ -146,9 +146,9 @@ def checking(resp):
 			#Captcha
 			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
 				try:
-					webhook(f"""** 🔢 | Captcha Appear!
-<:blank:427371936482328596> | Solve it within 10 minutes <@{client.user_id}>
-<:blank:427371936482328596> | __https://owobot.com/captcha__**""")
+					webhook(f"""** 🔢 | Captcha Appear!**
+<:blank:427371936482328596> **|** Solve it within 10 minutes <@{client.user_id}>
+<:blank:427371936482328596> **| __https://owobot.com/captcha__**""")
 				except:
 					pass
 				print(f"{logtime()} {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
@@ -156,8 +156,8 @@ def checking(resp):
 			#Banned
 			elif 'You have been banned' in m['content']:
 				try:
-					webhook(f"""** 💀 | You have been banned
-<:blank:427371936482328596> | Check the truth <@{client.user_id}>**""")
+					webhook(f"""** 💀 | You have been banned**
+<:blank:427371936482328596> **|** Check the truth <@{client.user_id}>""")
 				except:
 					pass
 				print(f"{logtime()} {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
@@ -165,8 +165,8 @@ def checking(resp):
 			#Cowoncy
 			elif 'don\'t have enough cowoncy!' in m['content']:
 				try:
-					webhook(f"""** 💸 | You\'ve Run Out Of Cowoncy!
-<:blank:427371936482328596> | Sell your zoo to continue <@{client.user_id}>**""")
+					webhook(f"""** 💸 | You\'ve Run Out Of Cowoncy!**
+<:blank:427371936482328596> **|** Sell your zoo to continue <@{client.user_id}>""")
 				except:
 					pass
 				print(f"{logtime()} {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
@@ -392,7 +392,7 @@ def change():
 	if client.run and client.channel_amount > 1:
 		client.channel = random.choice(client.allchannel)
 		try:
-			webhook(f"**🏠 | I Changed Channel To __{client.channel}__**")
+			webhook(f"**🏠 | I Changed Channel To __<#{client.channel}>__**")
 		except:
 			pass
 		print(f"{logtime()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel}{color.reset}")
