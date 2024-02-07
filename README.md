@@ -41,22 +41,15 @@
 | ```Gem```  | ```Boolean``` | Customize using gems (Worst to Best) |
 | ```Sleep```  | ```Boolean``` | Custom sleep (You should turn on it to get less captchas) |
 | ```Webhook```  | ```Array``` | The Webhook's URL (I will send some important information there) |
-## ⚙️・Usage
-### Window 💻
-Download and install [Python](https://www.python.org/downloads)
 
-Edit `config.json`:
-```
-python setting.py
-```
-Start `run.cmd` or type:
-```
-python main.py
-```
+## Installation
 
-### Android 📱
-
-
-## 🎯・Demo
-![Preview1](https://media.discordapp.net/attachments/1155833237025869876/1180791532165546065/image.png?ex=657eb4cf&is=656c3fcf&hm=b13f263c6947161d214bdf69658604321ade752415641c462346c66e0c0f1013&=&format=webp&quality=lossless)
-![Preview2](https://media.discordapp.net/attachments/1054949701255970836/1182987667412107264/image0.jpg?ex=6586b21e&is=65743d1e&hm=2bdecfb87166992a2bca51be860967f81ed0bed78767f02c6fd081d7b7500dd8&=&format=webp&width=185&height=397)
+- Download and Install [Python](https://www.python.org/downloads)
+- Download and Extract [OwO](https://github.com/realphandat/OwO/archive/refs/heads/main.zip)
+- Edit `config.json`:
+#### Channel Format
+```bash
+"channel": ["channel_id1", "channel_id2", "..."]
+```
+- Open `install.cmd` (Install requirements)
+- Open `run.cmd`
