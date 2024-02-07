@@ -7,9 +7,10 @@ from datetime import timedelta
 start_time = time.time()
 from time import sleep, strftime, localtime
 import random
-import atexit
 import json
+import atexit
 from re import findall, sub
+from inputimeout import inputimeout, TimeoutOccurred
 try:
 	from os import startfile
 except:
@@ -59,7 +60,6 @@ prefix = client.prefix
 class color:
 	mark = "\033[104m"
 	bold = "\033[1m"
-	blink = "\033[5m"
 	gray = "\033[90m"
 	cyan = "\033[36m"
 	blue = "\033[94m"
@@ -83,7 +83,7 @@ bot = discum.Client(token=client.token, log=False, build_num=0, x_fingerprint="N
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 YaBrowser/20.8.3.115 Yowser/2.5 Safari/537.36',
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.7.2) Gecko/20100101 / Firefox/60.7.2'])
 
-#Log In
+#Login
 @bot.gateway.command
 def on_ready(resp):
 	if resp.event.ready_supplemental:
@@ -92,13 +92,16 @@ def on_ready(resp):
 		client.user_name = user['username']
 		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
 		client.guild_name = bot.gateway.session.guild(client.guild_id).name
-		input(f"{color.blink}Press Enter to continue...\033[25m")
+		try:
+			inputimeout(f"This prevents double and triple spamming. {color.red}Press Enter{color.reset} once when open program to start!", timeout=10)
+		except TimeoutOccurred:
+			exit()
 		print()
 		print(f"""{color.blue}    █▀█ █ █ █ █▀█
     █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
 		print(f"{color.red}Logged in as{color.reset} {color.bold}{client.user_name}{color.reset}")
 		print()
-		start()
+		run()
 
 #Get Messages
 def getMessages(num: int = 1, channel: str = client.channel) -> object:
@@ -393,8 +396,8 @@ def daily():
 			elif "Your next daily" in daily_string:
 				print(f"{timelog()}{color.green} [INFO] Claimed Daily{color.reset}")
 
-#Start
-def start():
+#Run
+def run():
 	grind_time = 0
 	quote_time = 0
 	coinflip_time = 0
@@ -408,51 +411,50 @@ def start():
 	slot_spam = 0
 	change_spam = random.randint(600, 1200)
 	sleep_spam = random.randint(600, 1200)
-	while True:
-		if client.run:
-			#Grind
-			if time.time() - grind_time > grind_spam and client.grind:
-				grind_time = time.time()
-				grind_spam = random.randint(17, 25)
-				grind()
-			#Quote
-			if time.time() - quote_time > quote_spam and client.quote:
-				quote_time = time.time()
-				quote_spam = random.randint(30, 60)
-				quote()
-			#Coinflip
-			if time.time() - coinflip_time > coinflip_spam and client.coinflip:
-				coinflip_time = time.time()
-				coinflip_spam = random.randint(20, 30)
-				coinflip()
-			#Slot
-			if time.time() - slot_time > slot_spam and client.slot:
-				slot_time = time.time()
-				slot_spam = random.randint(20, 30)
-				slot()
-			#Change
-			if time.time() - change_time > change_spam and client.change:
-				change_time = time.time()
-				change_spam = random.randint(600, 1200)
-				channel = change()
-				client.channel = channel[0]
-				print(f"{timelog()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{channel[1]}{color.reset}")
-			#Sleep
-			if time.time() - sleep_time > sleep_spam and client.sleep:
-				die()
-				sleep_time = time.time()
-				sleep_spam = random.randint(600, 1200)
-				print(f"{timelog()} {color.cyan}[INFO] Done! I'll Work For{color.reset} {color.bold}{sleep_spam} Seconds{color.reset}")
-			#Daily
-			if time.time() - daily_time > int(client.daily_wait_time) and client.sleep:
-				daily()
-				daily_time = time.time()
-			sleep(1)
+	while client.run:
+		#Grind
+		if time.time() - grind_time > grind_spam and client.grind:
+			grind_time = time.time()
+			grind_spam = random.randint(17, 25)
+			grind()
+		#Quote
+		if time.time() - quote_time > quote_spam and client.quote:
+			quote_time = time.time()
+			quote_spam = random.randint(30, 60)
+			quote()
+		#Coinflip
+		if time.time() - coinflip_time > coinflip_spam and client.coinflip:
+			coinflip_time = time.time()
+			coinflip_spam = random.randint(20, 30)
+			coinflip()
+		#Slot
+		if time.time() - slot_time > slot_spam and client.slot:
+			slot_time = time.time()
+			slot_spam = random.randint(20, 30)
+			slot()
+		#Change
+		if time.time() - change_time > change_spam and client.change:
+			change_time = time.time()
+			change_spam = random.randint(600, 1200)
+			channel = change()
+			client.channel = channel[0]
+			print(f"{timelog()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{channel[1]}{color.reset}")
+		#Sleep
+		if time.time() - sleep_time > sleep_spam and client.sleep:
+			die()
+			sleep_time = time.time()
+			sleep_spam = random.randint(600, 1200)
+			print(f"{timelog()} {color.cyan}[INFO] Done! I'll Work For{color.reset} {color.bold}{sleep_spam} Seconds{color.reset}")
+		#Daily
+		if time.time() - daily_time > int(client.daily_wait_time) and client.sleep:
+			daily()
+			daily_time = time.time()
+		sleep(1)
+
 bot.gateway.run()
 
-#Exit
 @atexit.register
-def exit():
+def problem():
 	client.run = False
 	try:
 		startfile('music.mp3')
@@ -463,6 +465,6 @@ def exit():
 	print(f"    {color.green}Grind:{color.reset}  {color.bold}{client.grind_amount} Times{color.reset}")
 	print(f"    {color.green}Quote:{color.reset}  {color.bold}{client.quote_amount} Quotes{color.reset}")
 	print(f"    {color.green}Gamble:{color.reset} {color.bold}{client.benefit_amount} Cowoncy{color.reset}")
-	exit = input(f"{color.blue}Enter 'OK' to Reset: {color.reset}")
-	if exit.lower() == 'ok':
+	problem = input(f"{color.blue}Enter 'OK' to Reset: {color.reset}")
+	if problem.lower() == 'ok':
 		system('python "main.py"')
