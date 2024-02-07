@@ -21,26 +21,26 @@
 * [x] Stop and Play music when Captcha appears </br>
 * [ ] Auto solve Image/Link captcha </br>
 
-<h2 align="left">Config</h2>
+<h2 align="left">Configurations</h2>
 
-| Name  | Type | Default Value | Description |
-| ------------- | ------------- | ------------- | ------------- |
-| ```Token```  | ```Boolean``` | ```False```  | Tells the program whether or not to interact with incenses. |
-| ```Channel```  | ```Boolean``` | ```False```  | Tells the program whether or not to react after catching something. |
-| ```Prefix```  | ```String``` | ```True```  | Tells the program whether or not to log all catches. |
-| ```OwO```  | ```String``` | ```15.00```  | Tells the program when to log a pokemon as low IV. |
-| ```Grind```  | ```String``` | ```85.00```  | Tells the program when to log a pokemon as high IV. |
-| ```Quote```  | ```String``` | ```undefined```  | Tells the program which webhook to log to. |
-| ```Slot```  | ```Array``` | ```undefined```  | The userID of your main account. |
-| ```Sbet```  | ```String``` | ```undefined```  | The prefix to use for the selfbot. |
-| ```Srate```  | ```Boolean``` | ```False```  | Tells the program whether to catch just in the specified guild, or in all (unblacklisted) guilds. |
-| ```Coinflip```  | ```Boolean``` | ```False```  | Tells the program whether or not to interact with incenses. |
-| ```Cfbet```  | ```Boolean``` | ```False```  | Tells the program whether or not to react after catching something. |
-| ```Cfrate```  | ```String``` | ```True```  | Tells the program whether or not to log all catches. |
-| ```Daily```  | ```String``` | ```15.00```  | Tells the program when to log a pokemon as low IV. |
-| ```Gem```  | ```String``` | ```85.00```  | Tells the program when to log a pokemon as high IV. |
-| ```Sleep```  | ```String``` | ```undefined```  | Tells the program which webhook to log to. |
-| ```Webhook```  | ```Array``` | ```undefined```  | The userID of your main account. |
+| Name  | Type | Description |
+| ------------- | ------------- | ------------- |
+| ```Token```  | ```Boolean``` | Your account token |
+| ```Channel```  | ```List``` | The spam channel. Spam channel. You can add multiple channels) |
+| ```Prefix```  | ```String``` | The OwO's prefix in spam server |
+| ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
+| ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
+| ```Quote```  | ```Boolean``` | Customize quote sending (Get more exp) |
+| ```Slot```  | ```Boolean``` | Customize slot playing |
+| ```Sbet```  | ```Int``` | Customize slot start value |
+| ```Srate```  | ```Int``` | Customize the multiplier when losing slot |
+| ```Coinflip```  | ```Boolean``` | Customize coinflip playing |
+| ```Cfbet```  | ```Int``` | Customize coinflip start value |
+| ```Cfrate```  | ```Int``` | Customize the multiplier when losing coinflip |
+| ```Daily```  | ```Boolean``` | Customize daily login |
+| ```Gem```  | ```Boolean``` | Customize using gems (Worst to Best) |
+| ```Sleep```  | ```Boolean``` | Custom sleep (You should turn on it to get less captchas) |
+| ```Webhook```  | ```Array``` | The Webhook's URL (I will send some important information there) |
 ## ⚙️・Usage
 ### Window 💻
 Download and install [Python](https://www.python.org/downloads)
