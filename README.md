@@ -32,10 +32,10 @@
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
 | ```Quote```  | ```Boolean``` | Customize quote sending (Get more exp) |
-| ```Slot```  | ```Boolean``` | Customize slot playing (You must have at least 491400 Cowoncy in your account) |
+| ```Slot```  | ```Boolean``` | Customize slot playing |
 | ```Sbet```  | ```Int``` | Customize slot start value |
 | ```Srate```  | ```Int``` | Customize the multiplier when losing slot |
-| ```Coinflip```  | ```Boolean``` | Customize coinflip playing (You must have at least 491400 Cowoncy in your account) |
+| ```Coinflip```  | ```Boolean``` | Customize coinflip playing |
 | ```Cfbet```  | ```Int``` | Customize coinflip start value |
 | ```Cfrate```  | ```Int``` | Customize the multiplier when losing coinflip |
 | ```Daily```  | ```Boolean``` | Customize daily login |
