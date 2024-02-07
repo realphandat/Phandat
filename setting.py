@@ -5,7 +5,6 @@ from os import  system, name
 class color:
 	mark = "\033[104m"
 	bold = "\033[1m"
-	blink = "\033[5m"
 	gray = "\033[90m"
 	cyan = "\033[36m"
 	blue = "\033[94m"
