@@ -26,8 +26,8 @@
 
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
-| ```Token```  | ```Boolean``` | Your account token |
-| ```Channel```  | ```List``` | The spam channel. Spam channel. You can add multiple channels) |
+| ```Token```  | ```String``` | Your account token |
+| ```Channel```  | ```Array``` | The spam channel. Spam channel. You can add multiple channels) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spam server |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
@@ -41,7 +41,7 @@
 | ```Daily```  | ```Boolean``` | Customize daily login |
 | ```Gem```  | ```Boolean``` | Customize using gems (Worst to Best) |
 | ```Sleep```  | ```Boolean``` | Custom sleep (You should turn on it to get less captchas) |
-| ```Webhook```  | ```Array``` | The Webhook's URL (I will send some important information there) |
+| ```Webhook```  | ```String``` | The Webhook's URL (I will send some important information there) |
 
 ## Installation
 
