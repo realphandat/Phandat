@@ -18,6 +18,7 @@
 * [x] Auto claim daily </br>
 * [x] Auto use gem </br>
 * [x] Auto sleep </br>
+* [x]Diverse captcha notification system </br>
 * [x] Stop and Play music when Captcha appears </br>
 * [ ] Auto solve Image/Link captcha </br>
 
@@ -47,9 +48,9 @@
 - Download and Install [Python](https://www.python.org/downloads)
 - Download and Extract [OwO](https://github.com/realphandat/OwO/archive/refs/heads/main.zip)
 - Edit `config.json`:
-#### Channel Format
+#### Multi Channel Format
 ```bash
 "channel": ["channel_id1", "channel_id2", "..."]
 ```
-- Open `install.cmd` (Install requirements)
+- Open `install.cmd`
 - Open `run.cmd`
