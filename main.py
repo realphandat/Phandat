@@ -39,9 +39,9 @@ class client:
 		channel_amount = 0
 		run = True
 		run1time = True
+		daily_wait_time = 0
 		gem_check = True
 		gem_recheck = True
-		daily_wait_time = 0
 		gem_amount = 0
 		grind_amount = 0
 		quote_amount = 0
@@ -295,6 +295,47 @@ def coinflip():
 		print(f"{logtime()} {color.yellow}[SENT] {prefix}cf {client.current_coinflip_bet} {side}{color.reset}")
 		sleep(random.randint(1, 2))
 
+#Change Channel
+def change():
+	if client.run and client.channel_amount > 1:
+		client.channel = random.choice(client.allchannel)
+		try:
+			webhook(f"**🏠 | I Changed Channel To __<#{client.channel}>__**")
+		except:
+			pass
+		print(f"{logtime()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel}{color.reset}")
+
+#Daily
+def daily():
+	if client.run and client.daily:
+		bot.typingAction(client.channel)
+		sleep(random.randint(3, 5))
+		bot.sendMessage(client.channel, f"{prefix}daily")
+		print(f"{logtime()} {color.yellow}[SENT] {prefix}daily{color.reset}")
+		daily_messages = getMessages(num=5)
+		daily_string = ""
+		length = len(daily_messages)
+		i = 0
+		while i < length:
+			if daily_messages[i]['author']['id']==client.OwOID and daily_messages[i]['content'] != "" and "Nu" or "daily" in daily_messages[i]['content']:
+				daily_string = daily_messages[i]['content']
+				i = length
+			else:
+				i += 1
+		if not daily_string:
+			sleep(random.randint(1, 2))
+			daily()
+		else:
+			if "Nu" in daily_string:
+				daily_string = findall('[0-9]+', daily_string)
+				client.daily_wait_time = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
+				print(f"{logtime()} {color.orange}[INFO] You Can Claim Daily After{color.reset} {color.bold}{str(timedelta(seconds=int(client.daily_wait_time)))} Seconds{color.reset}")
+			elif "Your next daily" in daily_string:
+				try:
+					webhook(f"**✅ | I claimed daily!**")
+				except:
+					pass
+				print(f"{logtime()}{color.green} [INFO] I Claimed Daily!{color.reset}")
 
 #Use Gem
 def gem():
@@ -387,16 +428,6 @@ def gem():
 					client.gem_check = False
 					client.gem_recheck = False
 
-#Change Channel
-def change():
-	if client.run and client.channel_amount > 1:
-		client.channel = random.choice(client.allchannel)
-		try:
-			webhook(f"**🏠 | I Changed Channel To __<#{client.channel}>__**")
-		except:
-			pass
-		print(f"{logtime()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel}{color.reset}")
-
 #Sleep
 def die():
 	if client.run and client.sleep:
@@ -407,38 +438,6 @@ def die():
 			pass
 		print(f"{logtime()} {color.cyan}[INFO] I'm Taking A Break For{color.reset} {color.bold}{die} Seconds{color.reset}")
 		sleep(die)
-
-#Daily
-def daily():
-	if client.run and client.daily:
-		bot.typingAction(client.channel)
-		sleep(random.randint(3, 5))
-		bot.sendMessage(client.channel, f"{prefix}daily")
-		print(f"{logtime()} {color.yellow}[SENT] {prefix}daily{color.reset}")
-		daily_messages = getMessages(num=5)
-		daily_string = ""
-		length = len(daily_messages)
-		i = 0
-		while i < length:
-			if daily_messages[i]['author']['id']==client.OwOID and daily_messages[i]['content'] != "" and "Nu" or "daily" in daily_messages[i]['content']:
-				daily_string = daily_messages[i]['content']
-				i = length
-			else:
-				i += 1
-		if not daily_string:
-			sleep(random.randint(1, 2))
-			daily()
-		else:
-			if "Nu" in daily_string:
-				daily_string = findall('[0-9]+', daily_string)
-				client.daily_wait_time = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
-				print(f"{logtime()} {color.orange}[INFO] You Can Claim Daily After{color.reset} {color.bold}{str(timedelta(seconds=int(client.daily_wait_time)))} Seconds{color.reset}")
-			elif "Your next daily" in daily_string:
-				try:
-					webhook(f"**✅ | I claimed daily!**")
-				except:
-					pass
-				print(f"{logtime()}{color.green} [INFO] I Claimed Daily!{color.reset}")
 
 #Run
 def run():
@@ -477,15 +476,15 @@ def run():
 			coinflip_time = time.time()
 			coinflip_spam = random.randint(20, 30)
 			coinflip()
-		#Daily
-		if time.time() - daily_time > int(client.daily_wait_time) and client.sleep:
-			daily()
-			daily_time = time.time()
 		#Change
 		if time.time() - change_time > change_spam and client.channel_amount > 1:
 			change_time = time.time()
 			change_spam = random.randint(600, 1200)
 			change()
+		#Daily
+		if time.time() - daily_time > int(client.daily_wait_time) and client.sleep:
+			daily()
+			daily_time = time.time()
 		#Sleep
 		if time.time() - sleep_time > sleep_spam and client.sleep:
 			die()
