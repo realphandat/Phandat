@@ -4,7 +4,7 @@
 🐮 Donate for free using [Link1s](https://link1s.com/RealPhandat) and [Web1s](http://web1s.link/realPhandat)<br>
 <a href="https://github.com/realphandat/OwO"><img src="https://hits.sh/github.com/realphandat/OwO.svg?view=today-total&label=Repo%20Today/Total%20Views&color=770ca1&labelColor=007ec6"/></a>
 <a href="https://github.com/realphandat/OwO"><img src="https://img.shields.io/github/last-commit/realphandat/OwO" /></a><br>
-[![Support Server](https://img.shields.io/badge/Support_Server-000?style=for-the-badge&logo=&color=informational)](https://discord.gg/tXa2Hw5jHy)
+[![Support Server](https://img.shields.io/badge/Support_Server-000?style=for-the-badge&logo=&color=informational)](https://discord.gg/DKbZu76QSD)
 [![Stargazers](https://img.shields.io/github/stars/realphandat/OwO?style=for-the-badge&logo=&color=blue)](https://github.com/realphandat/OwO/stargazers)
 [![Forks](https://img.shields.io/github/forks/realphandat/OwO?style=for-the-badge&logo=&color=blue)](https://github.com/realphandat/OwO/network/members)
 [![Issues](https://img.shields.io/github/issues/realphandat/OwO?style=for-the-badge&logo=&color=informational)](https://github.com/realphandat/OwO/issues)
@@ -27,7 +27,8 @@
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
-| ```Channel```  | ```Array``` | The spam channel. You can add multi) |
+| ```Nickname```  | ```String``` | Your display name (If you have a nickname in the spamming server, enter this instead of display name) |
+| ```Channel```  | ```Array``` | The spam channel (You can add multi but they must be on the same server) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
