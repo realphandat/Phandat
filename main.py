@@ -18,6 +18,7 @@ class client:
 	with open('config.json', "r") as file:
 		data = json.load(file)
 		token = data["token"]
+		nickname = data["nickname"]
 		allchannel = data["channel"]
 		prefix = data["prefix"]
 		owo = data["owo"]
@@ -35,7 +36,7 @@ class client:
 		webhook = data["webhook"]
 		spam = ["owo","uwu"]
 		side = ["h","t"]
-		channel = random.choice(allchannel)
+		channel = ""
 		channel_amount = 0
 		channel_name = ""
 		run = True
@@ -57,6 +58,9 @@ class client:
 
 #Change Prefix Style
 prefix = client.prefix
+
+#Get The First Channel
+client.channel = random.choice(client.allchannel)
 
 #Get Mumber Of Channel
 for amount in client.allchannel:
@@ -125,16 +129,16 @@ def getMessages(num: int = 1, channel: str = client.channel):
 @bot.gateway.command
 def on_ready(resp):
 	if resp.event.ready_supplemental:
-		user = bot.gateway.session.user
-		client.user_id = user['id']
-		client.user_name = user['username']
-		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
-		client.guild_name = bot.gateway.session.guild(client.guild_id).name
-		channels = bot.gateway.session.guild(client.guild_id).channels
-		for i in channels:
-			if channels[i]['type'] == "guild_text" and channels[i]['id'] == client.channel:
-				client.channel_name = channels[i]['name']
 		if client.run1time == True:
+			user = bot.gateway.session.user
+			client.user_id = user['id']
+			client.user_name = user['username']
+			client.guild_id = bot.getChannel(client.channel).json()['guild_id']
+			client.guild_name = bot.gateway.session.guild(client.guild_id).name
+			channels = bot.gateway.session.guild(client.guild_id).channels
+			for i in channels:
+				if channels[i]['type'] == "guild_text" and channels[i]['id'] == client.channel:
+					client.channel_name = channels[i]['name']
 			print()
 			print(f"""{color.blue}    █▀█ █ █ █ █▀█
     █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
@@ -160,7 +164,7 @@ def checking(resp):
 <:blank:427371936482328596> | Solve captcha within 10 minutes __<@{client.user_id}>__**""")
 				except:
 					pass
-				print(f"{logtime()} {color.redclient.user_name}[INFO] !!! Captcha Appear !!!{color.reset}")
+				print(f"{logtime()} {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
 				bot.gateway.close()
 			#Banned
 			if 'You have been banned' in m['content']:
@@ -181,7 +185,7 @@ def checking(resp):
 				print(f"{logtime()} {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
 				bot.gateway.close()
 			#Gem
-			if client.run and client.gem and client.gem_check:
+			if client.nickname in m['content'] and client.run and client.gem and client.gem_check:
 				if "and caught" in m['content']:
 					gem()
 
@@ -192,7 +196,7 @@ def check_slot(resp):
 		if resp.event.message_updated:
 			m = resp.parsed.auto()
 			try:
-				if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+				if client.nickname in m['content'] and m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 					#Lost
 					if 'won nothing' in m['content']:
 						print(f"{logtime()} {color.red}[INFO] Slot Lost {client.current_slot_bet} Cowoncy{color.reset}")
@@ -231,7 +235,7 @@ def check_coinflip(resp):
 		if resp.event.message_updated:
 			m = resp.parsed.auto()
 			try:
-				if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+				if client.nickname in m['content'] and m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 					#Lost
 					if 'you lost' in m['content']:
 						print(f"{logtime()} {color.red}[INFO] Coinflip Lost {client.current_coinflip_bet} Cowoncy{color.reset}")
@@ -351,15 +355,15 @@ def gem():
 	#Check Gem
 	if client.run and client.gem and client.gem_check:
 		bot.typingAction(client.channel)
+		sleep(random.randint(3, 5))
 		bot.sendMessage(str(client.channel), f"{prefix}inv")
 		print(f"{logtime()} {color.yellow}[SENT] {prefix}inv{color.reset}")
-		gem_messages = bot.getMessages(str(client.channel), num=10)
+		gem_messages = bot.getMessages(str(client.channel), num=5)
 		gem_messages = gem_messages.json()
 		inv = ""
 		for i in range(len(gem_messages)):
 			if gem_messages[i]['author']['id'] == client.OwOID and 'Inventory' in gem_messages[i]['content']:
 				inv = findall(r'`(.*?)`', gem_messages[i]['content'])
-		sleep(random.randint(3, 5))
 		#Check Again
 		if not inv:
 			sleep(random.randint(1, 2))
