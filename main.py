@@ -37,6 +37,7 @@ class client:
 		side = ["h","t"]
 		channel = random.choice(allchannel)
 		channel_amount = 0
+		channel_name = ""
 		run = True
 		run1time = True
 		daily_wait_time = 0
@@ -95,23 +96,6 @@ bot = discum.Client(token=client.token, log=False, build_num=0, x_fingerprint="N
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 YaBrowser/20.8.3.115 Yowser/2.5 Safari/537.36',
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.7.2) Gecko/20100101 / Firefox/60.7.2'])
 
-#Log In
-@bot.gateway.command
-def on_ready(resp):
-	if resp.event.ready_supplemental:
-		user = bot.gateway.session.user
-		client.user_id = user['id']
-		client.user_name = user['username']
-		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
-		client.guild_name = bot.gateway.session.guild(client.guild_id).name
-		if client.run1time == True:
-			print()
-			print(f"""{color.blue}    █▀█ █ █ █ █▀█
-    █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
-			print(f"{color.red}Logged in as{color.reset} {color.bold}{client.user_name}{color.reset}")
-			print()
-			run()
-
 #Send Webhook
 def webhook(message):
 	webhook = DiscordWebhook(url = client.webhook, content=message)
@@ -137,6 +121,32 @@ def getMessages(num: int = 1, channel: str = client.channel):
 			retries = 0
 	return messageObject
 
+#Log In
+@bot.gateway.command
+def on_ready(resp):
+	if resp.event.ready_supplemental:
+		user = bot.gateway.session.user
+		client.user_id = user['id']
+		client.user_name = user['username']
+		client.guild_id = bot.getChannel(client.channel).json()['guild_id']
+		client.guild_name = bot.gateway.session.guild(client.guild_id).name
+		channels = bot.gateway.session.guild(client.guild_id).channels
+		for i in channels:
+			if channels[i]['type'] == "guild_text" and channels[i]['id'] == client.channel:
+				client.channel_name = channels[i]['name']
+		if client.run1time == True:
+			print()
+			print(f"""{color.blue}    █▀█ █ █ █ █▀█
+    █▄█ ▀▄▀▄▀ █▄█{color.reset}""")
+			print(f"{color.red}Logged In As{color.reset} {color.bold}{client.user_name}{color.reset}")
+			print()
+			try:
+				webhook(f"**🏠 | I\'ll Start Working At Channel __<#{client.channel}>__**")
+			except:
+				pass
+			print(f"{logtime()} {color.purple}[INFO] I\'ll Start Working At Channel{color.reset} {color.bold}{client.channel_name}{color.reset}")
+			run()
+
 #Check Problems
 @bot.gateway.command
 def checking(resp):
@@ -146,27 +156,26 @@ def checking(resp):
 			#Captcha
 			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
 				try:
-					webhook(f"""** 🔢 | Captcha Appear!**
-<:blank:427371936482328596> **|** Solve it within 10 minutes <@{client.user_id}>
-<:blank:427371936482328596> **| __https://owobot.com/captcha__**""")
+					webhook(f"""** 🔢 | Are you a real human?
+<:blank:427371936482328596> | Solve captcha within 10 minutes __<@{client.user_id}>__**""")
 				except:
 					pass
-				print(f"{logtime()} {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
+				print(f"{logtime()} {color.redclient.user_name}[INFO] !!! Captcha Appear !!!{color.reset}")
 				bot.gateway.close()
 			#Banned
-			elif 'You have been banned' in m['content']:
+			if 'You have been banned' in m['content']:
 				try:
-					webhook(f"""** 💀 | You have been banned**
-<:blank:427371936482328596> **|** Check the truth <@{client.user_id}>""")
+					webhook(f"""** 💀 | You have been banned!
+<:blank:427371936482328596> | Check the truth __<@{client.user_id}>__**""")
 				except:
 					pass
 				print(f"{logtime()} {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
 				bot.gateway.close()
 			#Cowoncy
-			elif 'don\'t have enough cowoncy!' in m['content']:
+			if 'don\'t have enough cowoncy!' in m['content']:
 				try:
-					webhook(f"""** 💸 | You\'ve Run Out Of Cowoncy!**
-<:blank:427371936482328596> **|** Sell your zoo to continue <@{client.user_id}>""")
+					webhook(f"""** 💸 | You\'ve Run Out Of Cowoncy!
+<:blank:427371936482328596> | Sell your zoo to continue __<@{client.user_id}>__**""")
 				except:
 					pass
 				print(f"{logtime()} {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
@@ -261,7 +270,7 @@ def grind():
 #Send Quote
 def quote():
 	if client.quote and client.run:
-		try:	
+		try:
 			response = get("https://zenquotes.io/api/random")
 			if response.status_code == 200:
 				json_data = response.json()
@@ -299,11 +308,15 @@ def coinflip():
 def change():
 	if client.run and client.channel_amount > 1:
 		client.channel = random.choice(client.allchannel)
+		channels = bot.gateway.session.guild(client.guild_id).channels
+		for i in channels:
+			if channels[i]['type'] == "guild_text" and channels[i]['id'] == client.channel:
+				client.channel_name = channels[i]['name']
 		try:
 			webhook(f"**🏠 | I Changed Channel To __<#{client.channel}>__**")
 		except:
 			pass
-		print(f"{logtime()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel}{color.reset}")
+		print(f"{logtime()} {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel_name}{color.reset}")
 
 #Daily
 def daily():
@@ -331,10 +344,6 @@ def daily():
 				client.daily_wait_time = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
 				print(f"{logtime()} {color.orange}[INFO] You Can Claim Daily After{color.reset} {color.bold}{str(timedelta(seconds=int(client.daily_wait_time)))} Seconds{color.reset}")
 			elif "Your next daily" in daily_string:
-				try:
-					webhook(f"**✅ | I claimed daily!**")
-				except:
-					pass
 				print(f"{logtime()}{color.green} [INFO] I Claimed Daily!{color.reset}")
 
 #Use Gem
@@ -505,11 +514,11 @@ def problem():
 	startfile('music.mp3')
 	print()
 	try:
-		webhook(f"""🧑‍💼 | I Worked For {runtime_discord()} With:
-> Gem __**{client.gem_amount}**__ Sets 💎
-> Grinding __**{client.grind_amount}**__ Times 🎯
-> Sending __**{client.quote_amount}**__ Quotes ✏️
-> Gambling __**{client.benefit_amount}**__ Cowoncy 💵
+		webhook(f"""I Worked For {runtime_discord()} With:
+💎 **|** Gem __**{client.gem_amount}**__ Sets
+🎯 **|** Grinding __**{client.grind_amount}**__ Times
+✏️ **|** Sending __**{client.quote_amount}**__ Quotes
+💵 **|** Gambling __**{client.benefit_amount}**__ Cowoncy
 """)
 	except:
 		pass
