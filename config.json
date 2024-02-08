@@ -1,5 +1,6 @@
 {
- "token": "none",
+ "token": "MTE5MTc0NDQwMzQ2MzczNzQ1Ng.Ggqk_A.SLV5iP1IFWxsmNiUveiMx3d2Ew3nO6NGRxI_DA",
+ "nickname": "Conan",
  "channel": ["1192083340451381258", "1203463872074485772", "1193837970982187059"],
  "prefix": "owo",
  "owo": true,
@@ -14,5 +15,5 @@
  "daily": true,
  "gem": true,
  "sleep": true,
- "webhook": "none"
+ "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsH9LKuXgrUZu6fe_dByeerSw965LMC9_zCiDB949WsPgrV"
 }
