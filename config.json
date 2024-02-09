@@ -5,7 +5,7 @@
  "prefix": "owo",
  "owo": true,
  "grind": true,
- "quote": true,
+ "quote": false,
  "slot": true,
  "sbet": 30,
  "srate": 2,
