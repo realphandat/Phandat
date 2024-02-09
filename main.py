@@ -205,7 +205,7 @@ def checking(resp):
 					for i in range(len(client.legendary_list)):
 						if client.legendary_list[i] in pet:
 							try:
-								webhook(f"""**<a:legendary:417955061801680909> | I\`ve Just Found A Legendary Pet
+								webhook(f"""**<a:legendary:417955061801680909> | I\'ve Just Found A Legendary Pet
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
@@ -215,7 +215,7 @@ def checking(resp):
 					for i in range(len(client.gem_list)):
 						if client.gem_list[i] in pet:
 							try:
-								webhook(f"""**<a:gem:510023576489951232> | I\`ve Just Found A Gem Pet
+								webhook(f"""**<a:gem:510023576489951232> | I\'ve Just Found A Gem Pet
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
@@ -225,31 +225,31 @@ def checking(resp):
 					for i in range(len(client.fabled_list)):
 						if client.fabled_list[i] in pet:
 							try:
-								webhook(f"""**<a:fabled:438857004493307907> | I\`ve Just Found A Fabled Pet
+								webhook(f"""**<a:fabled:438857004493307907> | I\'ve Just Found A Fabled Pet
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.cyan}[INFO] I\`ve Just Found A Fabled Pet{color.reset}")
+							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.cyan}[INFO] I\'ve Just Found A Fabled Pet{color.reset}")
 							break
 					#Distored Pet
 					for i in range(len(client.distored_list)):
 						if client.distored_list[i] in pet:
 							try:
-								webhook(f"""**<a:distorted:728812986147274835> | I\`ve Just Found A Distorted Pet
+								webhook(f"""**<a:distorted:728812986147274835> | I\'ve Just Found A Distorted Pet
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] I\`ve Just Found A Distored Pet{color.reset}")
+							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] I\'ve Just Found A Distored Pet{color.reset}")
 							break
 					#Hidden Pet
 					for i in range(len(client.hidden_list)):
 						if client.hidden_list[i] in pet:
 							try:
-								webhook(f"""**<a:hidden:459203677438083074> | I\`ve Just Found A Hidden Pet
+								webhook(f"""**<a:hidden:459203677438083074> | I\'ve Just Found A Hidden Pet
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\`ve Just Found A Hidden Pet{color.reset}")
+							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ve Just Found A Hidden Pet{color.reset}")
 							break
 
 #Check Status Slot
