@@ -46,12 +46,40 @@
 
 ## Installation
 
+### Window (PC & Laptop)
 - Download and Install [Python](https://www.python.org/downloads)
 - Download and Extract [OwO](https://github.com/realphandat/OwO/archive/refs/heads/main.zip)
-- Edit `config.json`:
-#### Multi Channel Format
+- Open `install.bat`
+- Open `setting.bat`
+- Open `run.bat`
+
+### Termux (Smartphone)
+- Download and Install [Termux](https://f-droid.org/packages/com.termux)
+- Open termux app and type:
 ```bash
-"channel": ["channel_id1", "channel_id2", "..."]
+pkg update
 ```
-- Open `install.cmd`
-- Open `run.cmd`
+```bash
+pkg upgrade
+```
+```bash
+pkg install git
+```
+```bash
+pkg install python
+```
+```bash
+git clone https://github.com/realphandat/OwO.git
+```
+```bash
+cd OwO
+```
+```bash
+python -m pip install -r requirements.txt
+```
+```bash
+python setting.py
+```
+```bash
+python main.py
+```
