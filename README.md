@@ -28,7 +28,7 @@
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
 | ```Nickname```  | ```String``` | Your display name (If you have a nickname in the spamming server, enter this instead of display name) |
-| ```Channel```  | ```Array``` | The spam channel (You can add multi but they must be on the same server) |
+| ```Channel```  | ```Array``` | The spam channel (You can add multi) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
