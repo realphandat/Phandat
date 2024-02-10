@@ -166,7 +166,7 @@ def checking(resp):
 			#Captcha
 			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
 				try:
-					webhook(f"""** 🔢 | Are You A Real Human?
+					webhook(f"""**🔢 | Are You A Real Human?
 <:blank:427371936482328596> | Solve Captcha Within 10 Minutes __<@{client.user_id}>__
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 				except:
@@ -176,7 +176,7 @@ def checking(resp):
 			#Banned
 			if 'You have been banned' in m['content']:
 				try:
-					webhook(f"""** 💀 | You Have Been Banned!
+					webhook(f"""**💀 | You Have Been Banned!
 <:blank:427371936482328596> | Check The Truth __<@{client.user_id}>__
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 				except:
@@ -186,7 +186,7 @@ def checking(resp):
 			#Cowoncy
 			if 'don\'t have enough cowoncy!' in m['content']:
 				try:
-					webhook(f"""** 💸 | You\'ve Run Out Of Cowoncy!
+					webhook(f"""**💸 | You\'ve Run Out Of Cowoncy!
 <:blank:427371936482328596> | Sell Your Zoo To Continue __<@{client.user_id}>__**""")
 				except:
 					pass
