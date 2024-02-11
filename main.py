@@ -151,7 +151,7 @@ def on_ready(resp):
 			print(f"{color.red}Logged in as{color.reset} {color.bold}{client.user_name}{color.reset}")
 			print()
 			try:
-				webhook(f"**🏠 | I\'ll Start Working At Channel __<#{client.channel}>__**")
+				webhook(f"**🏠 | I\'ll Start Working At Channel <#{client.channel}>**")
 			except:
 				pass
 			print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ll Start Working At Channel{color.reset} {color.bold}{client.channel_name}{color.reset}")
@@ -163,35 +163,37 @@ def checking(resp):
 	if resp.event.message:
 		m = resp.parsed.auto()
 		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
-			#Captcha
-			if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
-				try:
-					webhook(f"""**🔢 | Are You A Real Human?
-<:blank:427371936482328596> | Solve Captcha Within 10 Minutes __<@{client.user_id}>__
+                        #Check OwO
+			if client.user_id in m['content'] or client.nickname in m['content']:
+				#Captcha
+				if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
+					try:
+						webhook(f"""**🔢 | Are You A Real Human?
+<:blank:427371936482328596> | Solve Captcha Within 10 Minutes <@{client.user_id}>
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-				except:
-					pass
-				print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
-				bot.gateway.close()
-			#Banned
-			if 'You have been banned' in m['content']:
-				try:
-					webhook(f"""**💀 | You Have Been Banned!
-<:blank:427371936482328596> | Check The Truth __<@{client.user_id}>__
+					except:
+						pass
+					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
+					bot.gateway.close()
+				#Banned
+				if 'You have been banned' in m['content']:
+					try:
+						webhook(f"""**💀 | You Have Been Banned!
+<:blank:427371936482328596> | Check The Truth <@{client.user_id}>
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-				except:
-					pass
-				print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
-				bot.gateway.close()
-			#Cowoncy
-			if 'don\'t have enough cowoncy!' in m['content']:
-				try:
-					webhook(f"""**💸 | You\'ve Run Out Of Cowoncy!
-<:blank:427371936482328596> | Sell Your Zoo To Continue __<@{client.user_id}>__**""")
-				except:
-					pass
-				print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
-				bot.gateway.close()
+					except:
+						pass
+					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
+					bot.gateway.close()
+				#Cowoncy
+				if 'don\'t have enough cowoncy!' in m['content']:
+					try:
+						webhook(f"""**💸 | You\'ve Run Out Of Cowoncy!
+<:blank:427371936482328596> | Sell Your Zoo To Continue <@{client.user_id}>**""")
+					except:
+						pass
+					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
+					bot.gateway.close()
 			#Gem
 			if client.nickname in m['content'] and client.run and client.gem and client.gem_check:
 				if "and caught" in m['content']:
@@ -252,7 +254,7 @@ def checking(resp):
 								pass
 							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ve Just Found A Hidden Pet{color.reset}")
 							break
-
+						
 #Check Status Slot
 @bot.gateway.command
 def check_slot(resp):
@@ -381,7 +383,7 @@ def change():
 			if channels[i]['type'] == "guild_text" and channels[i]['id'] == client.channel:
 				client.channel_name = channels[i]['name']
 		try:
-			webhook(f"**🏠 | I Changed Channel To __<#{client.channel}>__**")
+			webhook(f"**🏠 | I Changed Channel To <#{client.channel}>**")
 		except:
 			pass
 		print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I Changed Channel To{color.reset} {color.bold}{client.channel_name}{color.reset}")
