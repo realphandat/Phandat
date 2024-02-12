@@ -307,10 +307,14 @@ def check_pet(resp):
 			m = resp.parsed.auto()
 			if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
 				if client.nickname in m['content'] and client.run:
-					if "🌱" in m['content']:
-						filter = m['content'].split("**|**")
-						hunt = filter[0]
-						pet = findall(r':(.*?):', hunt)
+					if "🌱" in m['content'] and "gained" in m['content']:
+						if "caught" in m['content']:
+							filter = m['content'].split("|")
+							hunt = filter[1]
+							pet = findall(r':(.*?):', hunt)
+						if "empowered" in m['content']:
+							filter = m['content'].split("|")
+							pet = filter[2]
 						#Legendary Pet
 						for i in range(len(client.legendary_list)):
 							if client.legendary_list[i] in pet:
