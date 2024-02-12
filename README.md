@@ -27,7 +27,7 @@
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
-| ```Nickname```  | ```String``` | Your display name. If you have a nickname in the spamming server, enter this instead of display name. If your name has more than 2 words, just enter 1 of the 2 |
+| ```Nickname```  | ```String``` | Your display name. If you have a nickname in the spamming server, enter this instead of display name. If your name has more than 2 words, just enter 1 of the 2. For example, if your name is `Edogawa Conan`, just enter `Edogawa` or `Conan` |
 | ```Channel```  | ```Array``` | The spam channel (You can add multi) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
