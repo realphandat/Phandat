@@ -11,6 +11,7 @@ import json
 import atexit
 from re import findall
 from discord_webhook import DiscordWebhook
+from discum.utils.button import Buttoner
 try:
 	from os import startfile
 except:
@@ -157,105 +158,77 @@ def on_ready(resp):
 			print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ll Start Working At Channel{color.reset} {color.bold}{client.channel_name}{color.reset}")
 			run()
 
-#Check Problems
+#Check OwO's Problems
 @bot.gateway.command
-def checking(resp):
-	if resp.event.message:
-		m = resp.parsed.auto()
-		if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
-                        #Check OwO
-			if client.user_id in m['content'] or client.nickname in m['content']:
-				#Captcha
-				if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
-					try:
-						webhook(f"""**🔢 | Are You A Real Human?
+def owo_problems(resp):
+	if client.run:
+		if resp.event.message:
+			m = resp.parsed.auto()
+			if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+				if client.user_id in m['content'] or client.nickname in m['content']:
+					#Captcha
+					if '⚠' in m['content'] or 'real human' in m['content'] or 'https://owobot.com/captcha' in m['content']:
+						try:
+							webhook(f"""**🔢 | Are You A Real Human?
 <:blank:427371936482328596> | Solve Captcha Within 10 Minutes <@{client.user_id}>
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-					except:
-						pass
-					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
-					bot.gateway.close()
-				#Banned
-				if 'You have been banned' in m['content']:
-					try:
-						webhook(f"""**💀 | You Have Been Banned!
+						except:
+							pass
+						print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! Captcha Appear !!!{color.reset}")
+						bot.gateway.close()
+					#Banned
+					if 'You have been banned' in m['content']:
+						try:
+							webhook(f"""**💀 | You Have Been Banned!
 <:blank:427371936482328596> | Check The Truth <@{client.user_id}>
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-					except:
-						pass
-					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
-					bot.gateway.close()
-				#Cowoncy
-				if 'don\'t have enough cowoncy!' in m['content']:
-					try:
-						webhook(f"""**💸 | You\'ve Run Out Of Cowoncy!
+						except:
+							pass
+						print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! YOU HAVE BEEN BANNED !!!{color.reset}")
+						bot.gateway.close()
+					#Cowoncy
+					if 'don\'t have enough cowoncy!' in m['content']:
+						try:
+							webhook(f"""**💸 | You\'ve Run Out Of Cowoncy!
 <:blank:427371936482328596> | Sell Your Zoo To Continue <@{client.user_id}>**""")
-					except:
-						pass
-					print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
-					bot.gateway.close()
-			#Gem
-			if client.nickname in m['content'] and client.run and client.gem and client.gem_check:
-				if "and caught" in m['content']:
-					gem()
-			#Pet
-			if client.nickname in m['content'] and client.run:
-				if "🌱" in m['content']:
-					filter = m['content'].split("**|**")
-					hunt = filter[0]
-					pet = findall(r':(.*?):', hunt)
-					#Legendary Pet
-					for i in range(len(client.legendary_list)):
-						if client.legendary_list[i] in pet:
+						except:
+							pass
+						print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] !!! You\'ve Run Out Of Cowoncy !!!{color.reset}")
+						bot.gateway.close()
+
+#Anti Battle
+@bot.gateway.command
+def anti_battle(resp):
+	if client.run:
+		if resp.event.message:
+			m = resp.parsed.auto()
+			try:
+				if client.user_id in m['content'] and m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+					embeds = m["embeds"]
+					if len(embeds) > 0:
+						e = embeds[0]
+						embed_title = e.get("description", "")
+						if "owo ab" in embed_title:
 							try:
-								webhook(f"""**<a:legendary:417955061801680909> | I\'ve Just Found A Legendary Pet
+								webhook(f"""**🥊 | Someone Challenges You!
 <:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
 							except:
 								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.orange}[INFO] I\'ve Just Found A Legendary Pet{color.reset}")
-							break
-					#Gem Pet
-					for i in range(len(client.gem_list)):
-						if client.gem_list[i] in pet:
-							try:
-								webhook(f"""**<a:gem:510023576489951232> | I\'ve Just Found A Gem Pet
-<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-							except:
-								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.green}[INFO] I\'ve Just Found A Gem Pet{color.reset}")
-							break
-					#Fabled Pet
-					for i in range(len(client.fabled_list)):
-						if client.fabled_list[i] in pet:
-							try:
-								webhook(f"""**<a:fabled:438857004493307907> | I\'ve Just Found A Fabled Pet
-<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-							except:
-								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.cyan}[INFO] I\'ve Just Found A Fabled Pet{color.reset}")
-							break
-					#Distored Pet
-					for i in range(len(client.distored_list)):
-						if client.distored_list[i] in pet:
-							try:
-								webhook(f"""**<a:distorted:728812986147274835> | I\'ve Just Found A Distorted Pet
-<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-							except:
-								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] I\'ve Just Found A Distored Pet{color.reset}")
-							break
-					#Hidden Pet
-					for i in range(len(client.hidden_list)):
-						if client.hidden_list[i] in pet:
-							try:
-								webhook(f"""**<a:hidden:459203677438083074> | I\'ve Just Found A Hidden Pet
-<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
-							except:
-								pass
-							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ve Just Found A Hidden Pet{color.reset}")
-							break
-						
-#Check Status Slot
+							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] Someone Challenges You!{color.reset}")
+							sleep(random.randint(1, 2))
+							buts = Buttoner(m["components"])
+							bot.click(
+								m["author"]["id"],
+								channelID = m["channel_id"],
+								guildID = m.get('guild_id'),
+								messageID = m["id"],
+								messageFlags = m["flags"],
+								data = buts.getButton("Accept"))
+							print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.green}[INFO] I Accepted It{color.reset}")
+			except ValueError:
+				pass
+
+#Check Slot Status
 @bot.gateway.command
 def check_slot(resp):
 	if client.run and client.slot:
@@ -294,7 +267,7 @@ def check_slot(resp):
 			except KeyError:
 				pass
 
-#Check Status Coinflip
+#Check Coinflip Status
 @bot.gateway.command
 def check_coinflip(resp):
 	if client.run and client.coinflip:
@@ -314,6 +287,80 @@ def check_coinflip(resp):
 						client.current_coinflip_bet = client.coinflip_bet
 			except KeyError:
 				pass
+
+#Check Gem
+@bot.gateway.command
+def check_gem(resp):
+	if client.run:
+		if resp.event.message:
+			m = resp.parsed.auto()
+			if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+				if client.nickname in m['content'] and client.run and client.gem and client.gem_check:
+					if "and caught" in m['content']:
+						gem()
+
+#Check Hunt Pet
+@bot.gateway.command
+def check_pet(resp):
+	if client.run:
+		if resp.event.message:
+			m = resp.parsed.auto()
+			if m['channel_id'] == client.channel and m['author']['id'] == client.OwOID:
+				if client.nickname in m['content'] and client.run:
+					if "🌱" in m['content']:
+						filter = m['content'].split("**|**")
+						hunt = filter[0]
+						pet = findall(r':(.*?):', hunt)
+						#Legendary Pet
+						for i in range(len(client.legendary_list)):
+							if client.legendary_list[i] in pet:
+								try:
+									webhook(f"""**<a:legendary:417955061801680909> | I\'ve Just Found A Legendary Pet
+<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
+								except:
+									pass
+								print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.orange}[INFO] I\'ve Just Found A Legendary Pet{color.reset}")
+								break
+						#Gem Pet
+						for i in range(len(client.gem_list)):
+							if client.gem_list[i] in pet:
+								try:
+									webhook(f"""**<a:gem:510023576489951232> | I\'ve Just Found A Gem Pet
+<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
+								except:
+									pass
+								print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.green}[INFO] I\'ve Just Found A Gem Pet{color.reset}")
+								break
+						#Fabled Pet
+						for i in range(len(client.fabled_list)):
+							if client.fabled_list[i] in pet:
+								try:
+									webhook(f"""**<a:fabled:438857004493307907> | I\'ve Just Found A Fabled Pet
+<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
+								except:
+									pass
+								print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.cyan}[INFO] I\'ve Just Found A Fabled Pet{color.reset}")
+								break
+						#Distored Pet
+						for i in range(len(client.distored_list)):
+							if client.distored_list[i] in pet:
+								try:
+									webhook(f"""**<a:distorted:728812986147274835> | I\'ve Just Found A Distorted Pet
+<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
+								except:
+									pass
+								print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.red}[INFO] I\'ve Just Found A Distored Pet{color.reset}")
+								break
+						#Hidden Pet
+						for i in range(len(client.hidden_list)):
+							if client.hidden_list[i] in pet:
+								try:
+									webhook(f"""**<a:hidden:459203677438083074> | I\'ve Just Found A Hidden Pet
+<:blank:427371936482328596> | https://discord.com/channels/{client.guild_id}/{m['channel_id']}/{m['id']} **""")
+								except:
+									pass
+								print(f"{logtime()} - {color.blue}{client.user_name}{color.reset} - {color.purple}[INFO] I\'ve Just Found A Hidden Pet{color.reset}")
+								break
 
 #Send Grind
 def grind():
@@ -579,7 +626,7 @@ def run():
 bot.gateway.run()
 
 @atexit.register
-def problem():
+def bye():
 	client.run = False
 	try:
 		startfile('music.mp3')
@@ -591,7 +638,7 @@ def problem():
 💎 **|** Gem: __**{client.gem_amount}**__ Sets
 🎯 **|** Grind: __**{client.grind_amount}**__ Times
 ✏️ **|** Send: __**{client.quote_amount}**__ Quotes
-💵 **|** Gamble: __**{client.benefit_amount}**__ Cowoncy
+📊 **|** Gamble: __**{client.benefit_amount}**__ Cowoncy
 """)
 	except:
 		pass
@@ -600,6 +647,6 @@ def problem():
 	print(f"    {color.green}Grind:{color.reset}  {color.bold}{client.grind_amount} Times{color.reset}")
 	print(f"    {color.green}Quote:{color.reset}  {color.bold}{client.quote_amount} Quotes{color.reset}")
 	print(f"    {color.green}Gamble:{color.reset} {color.bold}{client.benefit_amount} Cowoncy{color.reset}")
-	problem = input(f"{color.blue}Enter 'OK' to Reset: {color.reset}")
-	if problem.lower() == 'ok':
+	enter = input(f"{color.blue}Enter 'OK' to Reset: {color.reset}")
+	if enter.lower() == 'ok':
 		system('python "main.py"')
