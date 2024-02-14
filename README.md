@@ -1,5 +1,5 @@
 <h1 align="center">OwO Selfbot</h1>
-<img src="https://images-ext-2.discordapp.net/external/oEhS9a10eZMT_-nh6JgbgVE_9e7xk_2le8HHmlr1tZU/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/408785106942164992/0cc7344c59b00ce1f4e5475c2e60b676.png?format=webp&quality=lossless&width=592&height=592" lt="poketwo autocatcher logo" align="left" height="85">
+<img src="https://images-ext-2.discordapp.net/external/IqQdeanAqVy6kN1IPvs0CNXgHQU3vz5379bixm4oeG8/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/408785106942164992/6604e05f480223c8413e1bc2c8ce1716.png?format=webp&quality=lossless&width=390&height=390" lt="OwO's Avatar" align="left" height="85">
 
 🐮 Donate for free using [Link1s](https://link1s.com/RealPhandat) and [Web1s](http://web1s.link/realPhandat)<br>
 <a href="https://github.com/realphandat/OwO"><img src="https://hits.sh/github.com/realphandat/OwO.svg?view=today-total&label=Repo%20Today/Total%20Views&color=770ca1&labelColor=007ec6"/></a>
