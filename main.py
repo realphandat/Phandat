@@ -217,8 +217,13 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
 				await self.solve_icaptcha(image, lenghth)
-		except:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Doesn't Have Enough Money!{color.reset}")
+		except ApiException as e:
+			print(e)
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Is Wrong{color.reset} {color.bold}Or{color.reset} {color.red}Out Of Money!{color.reset}")
+			await self.goodbye()
+		except TimeoutException as e:
+			print(e)
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 			await self.goodbye()
 
 	#Sumbit Oauth To OwO's Website
@@ -235,8 +240,9 @@ class MyClient(discord.Client, data):
 			if res2.status in (302, 307):
 				return session
 			else:
-				print(f"{res2.status}")
+				print(res2.status)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+				await self.goodbye()
 
 	#Get Oauth To Sumbit Oauth
 	async def get_oauth(self):
@@ -268,8 +274,9 @@ class MyClient(discord.Client, data):
 					result_session = await self.submit_oauth(res)
 					return result_session
 				else:
-					print(f"{await res.text()}")
+					print(await res.text())
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+					await self.goodbye()
 
 	#Solve OwO's HCaptcha
 	async def solve_hcaptcha(self):
@@ -281,11 +288,9 @@ class MyClient(discord.Client, data):
 		})
 		balance = solver.balance()
 		print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-		if balance >= 0.00299:
-			result = solver.hcaptcha(
-				sitekey='a6a1d5ce-612d-472d-8e37-7601408fbc09',
-				url="https://owobot.com/captcha",
-			)
+		try:
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Solving...{color.reset}")
+			result = solver.hcaptcha(sitekey='a6a1d5ce-612d-472d-8e37-7601408fbc09', url="https://owobot.com/captcha")
 			headers = {
 				"Accept": "application/json, text/plain, */*",
 				"Accept-Encoding": "gzip, deflate, br",
@@ -313,8 +318,13 @@ class MyClient(discord.Client, data):
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
 						await self.solve_hcaptcha()
-		elif balance < 0.00299:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Doesn't Have Enough Money!{color.reset}")
+		except ApiException as e:
+			print(e)
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Is Wrong{color.reset} {color.bold}Or{color.reset} {color.red}Out Of Money!{color.reset}")
+			await self.goodbye()
+		except TimeoutException as e:
+			print(e)
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 			await self.goodbye()
 
 	#Collect All Sent Messages
@@ -342,23 +352,24 @@ class MyClient(discord.Client, data):
 		#Check User's Problems
 		if f"<@{self.user.id}>" in message.content or self.nickname in message.content or self.user.display_name in message.content and self.work and message.author.id == self.OwOID:
 			#Check Captcha
-			if "⚠" in message.content:
+			if "⚠" in message.content and "letter word" in message.content or "https://owobot.com/captcha" in message.content:
 				try:
 					await self.send_webhooks(f"""**🔢 | Are You A Real Human?
 <:blank:427371936482328596> | Solve Captcha Within 10 Minutes <@{self.user.id}>
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
 				except:
 					pass
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Captcha Appear{color.reset} {color.red}!!!{color.reset}")
-				await self.worker(False)
 				if self.solve:
+					await self.worker(False)
 					#Identify Image Captcha
 					if "letter word" in message.content and message.attachments:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
 						captcha_image = b64encode(await message.attachments[0].read()).decode("utf-8")
 						lenghth = message.content[message.content.find("letter word") - 2]
 						await self.solve_icaptcha(captcha_image, lenghth)
 					#Identify HCaptcha
 					if "https://owobot.com/captcha" in message.content:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Hcaptcha Appears{color.reset} {color.red}!!!{color.reset}")
 						await self.solve_hcaptcha()
 				else:
 					await self.goodbye()
