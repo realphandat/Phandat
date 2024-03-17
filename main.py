@@ -488,7 +488,7 @@ class MyClient(discord.Client, data):
 	async def check_owo_status(self):
 		if self.work and self.check_owo_status.current_loop != 0:
 			status = False
-			async for message in self.channel.history(limit=10):
+			async for message in self.channel.history(limit=25):
 				if message.author.id == self.OwOID:
 					status = True
 			if status:
