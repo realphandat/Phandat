@@ -24,6 +24,7 @@ class data:
 		with open("config.json", "r") as file:
 			data = json.load(file)
 			self.token = data["token"]
+			self.solve = data["solve"]
 			self.twocaptcha = data["twocaptcha"]
 			self.all_channel = data["channel"]
 			self.prefix = data["prefix"]
@@ -198,23 +199,27 @@ class MyClient(discord.Client, data):
 		})
 		balance = solver.balance()
 		print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-		result = solver.normal(image, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang='en')
-		await self.OwO.send(result["code"])
-		await asyncio.sleep(random.randint(3, 5))
-		check = None
-		async for message in self.OwO.dm_channel.history(limit=1):
-					if message.author.id == self.OwOID and (await self.get_messages(message, "verified") or await self.get_messages(message, "Worry")):
-						check = message
-		if "verified" in check.content and check.author.id == self.OwOID:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully!{color.reset}")
-			await self.worker(True)
-		elif "(2/3)" in check.content and check.author.id == self.OwOID:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.gray}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
+		try:
+			result = solver.normal(image, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang='en')
+			await self.OwO.send(result["code"])
+			await asyncio.sleep(random.randint(3, 5))
+			check = None
+			async for message in self.OwO.dm_channel.history(limit=1):
+						if message.author.id == self.OwOID and (await self.get_messages(message, "verified") or await self.get_messages(message, "Worry")):
+							check = message
+			if "verified" in check.content and check.author.id == self.OwOID:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully!{color.reset}")
+				await self.worker(True)
+			elif "(2/3)" in check.content and check.author.id == self.OwOID:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.gray}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
+				await self.goodbye()
+			elif "Wrong" in check.content and check.author.id == self.OwOID:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
+				await self.solve_icaptcha(image, lenghth)
+		except:
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Doesn't Have Enough Money!{color.reset}")
 			await self.goodbye()
-		elif "Wrong" in check.content and check.author.id == self.OwOID:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
-			await self.solve_icaptcha(image, lenghth)
 
 	#Sumbit Oauth To OwO's Website
 	async def submit_oauth(self, res):
@@ -304,6 +309,10 @@ class MyClient(discord.Client, data):
 					if res.status == 200:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully!{color.reset}")
 						await self.worker(True)
+					else:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
+						await self.solve_hcaptcha()
 		elif balance < 0.00299:
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Doesn't Have Enough Money!{color.reset}")
 			await self.goodbye()
@@ -342,14 +351,17 @@ class MyClient(discord.Client, data):
 					pass
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Captcha Appear{color.reset} {color.red}!!!{color.reset}")
 				await self.worker(False)
-				#Identify Image Captcha
-				if "letter word" in message.content and message.attachments:
-					captcha_image = b64encode(await message.attachments[0].read()).decode("utf-8")
-					lenghth = message.content[message.content.find("letter word") - 2]
-					await self.solve_icaptcha(captcha_image, lenghth)
-				#Identify HCaptcha
-				if "https://owobot.com/captcha" in message.content:
-					await self.solve_hcaptcha()
+				if self.solve:
+					#Identify Image Captcha
+					if "letter word" in message.content and message.attachments:
+						captcha_image = b64encode(await message.attachments[0].read()).decode("utf-8")
+						lenghth = message.content[message.content.find("letter word") - 2]
+						await self.solve_icaptcha(captcha_image, lenghth)
+					#Identify HCaptcha
+					if "https://owobot.com/captcha" in message.content:
+						await self.solve_hcaptcha()
+				else:
+					await self.goodbye()
 			#Check Ban
 			if "You have been banned" in message.content:
 				try:
