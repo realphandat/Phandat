@@ -32,6 +32,7 @@
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
+| ```Solver```  | ```Boolean``` | Customize Image/Hcaptcha solver |
 | ```TwoCaptcha```  | ```String``` | Your 2Captcha API |
 | ```Channel```  | ```List``` | The spam channel (You can add multi) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
