@@ -1,2 +1,2 @@
-discum
-discord_webhook
+brotli
+2captcha-python
