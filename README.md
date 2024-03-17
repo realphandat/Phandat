@@ -32,7 +32,7 @@
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
-| ```twocaptcha```  | ```String``` | Your 2Captcha API |
+| ```TwoCaptcha```  | ```String``` | Your 2Captcha API |
 | ```Channel```  | ```List``` | The spam channel (You can add multi) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```Fun```  | ```Boolean``` | Customize run/pup/piku command sending |
