@@ -36,7 +36,6 @@
 | ```Channel```  | ```List``` | The spam channel (You can add multi) |
 | ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```Fun```  | ```Boolean``` | Customize run/pup/piku command sending |
-| ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
 | ```Quote```  | ```Boolean``` | Customize quote sending (Get more exp) |
