@@ -24,7 +24,6 @@ class data:
 		with open("config.json", "r") as file:
 			data = json.load(file)
 			self.token = data["token"]
-			self.solve = data["solve"]
 			self.twocaptcha = data["twocaptcha"]
 			self.all_channel = data["channel"]
 			self.prefix = data["prefix"]
@@ -129,10 +128,7 @@ class MyClient(discord.Client, data):
 		await self.worker(False)
 		os.startfile('music.mp3')
 		print()
-		try:
-			await self.send_webhooks(f"{await self.discord_stat()}")
-		except:
-			pass
+		await self.send_webhooks(f"{await self.discord_stat()}")
 		print(f"{await self.cmd_stat()}")
 		choice = input(f"{color.yellow}Enter 'OK' to Reset: {color.reset}")
 		if choice.lower() == 'ok':
@@ -140,9 +136,13 @@ class MyClient(discord.Client, data):
 
 	#Send Webhooks
 	async def send_webhooks(self, message):
-		async with aiohttp.ClientSession() as session:
-			webhook = Webhook.from_url(self.webhook, session=session)
-			await webhook.send(message)
+		try:
+			async with aiohttp.ClientSession() as session:
+				webhook = Webhook.from_url(self.webhook, session=session)
+				await webhook.send(message)
+		except Exception as e:
+			if str(e) == "Invalid Webhook Token":
+				pass
 
 	#Get Messages
 	async def get_messages(self, message, content, includes_self=False):
@@ -180,10 +180,7 @@ class MyClient(discord.Client, data):
 		if self.work1time:
 			self.OwO = self.get_user(self.OwOID)
 			await self.get_nickname()
-			try:
-				await self.send_webhooks(f"**🌻 | I\'ll Start At Channel <#{self.channel_id}> For __{self.work_time}__ Seconds**")
-			except:
-				pass
+			await self.send_webhooks(f"**🌻 | I\'ll Start At Channel <#{self.channel_id}> For __{self.work_time}__ Seconds**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.channel}{color.reset} {color.bold}For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			self.work_time += time.time()
 			await self.worker(True)
@@ -209,22 +206,30 @@ class MyClient(discord.Client, data):
 							check = message
 			if "verified" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully!{color.reset}")
-				await self.worker(True)
+				solver.report(result['captchaId'], True)
+				self.captcha_amount += 1
 			elif "(2/3)" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.gray}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
+				solver.report(result['captchaId'], False)
 				await self.goodbye()
 			elif "Wrong" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try To{color.reset} {color.red}Solve It Again!{color.reset}")
+				solver.report(result['captchaId'], False)
 				await self.solve_icaptcha(image, lenghth)
-		except ApiException as e:
-			print(e)
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Is Wrong{color.reset} {color.bold}Or{color.reset} {color.red}Out Of Money!{color.reset}")
-			await self.goodbye()
-		except TimeoutException as e:
-			print(e)
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
-			await self.goodbye()
+		except Exception as e:
+			#Invalid Key
+			if str(e) == "ERROR_KEY_DOES_NOT_EXIST":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
+				await self.goodbye()
+			#Out Of Money
+			if str(e) == "ERROR_ZERO_BALANCE":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
+				await self.goodbye()
+			#Timeout
+			if str(e) == "timeout 300.0 exceeded":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
+				await self.goodbye()
 
 	#Sumbit Oauth To OwO's Website
 	async def submit_oauth(self, res):
@@ -289,7 +294,6 @@ class MyClient(discord.Client, data):
 		balance = solver.balance()
 		print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
 		try:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Solving...{color.reset}")
 			result = solver.hcaptcha(sitekey='a6a1d5ce-612d-472d-8e37-7601408fbc09', url="https://owobot.com/captcha")
 			headers = {
 				"Accept": "application/json, text/plain, */*",
@@ -313,19 +317,27 @@ class MyClient(discord.Client, data):
 										cookies=cookies) as res:
 					if res.status == 200:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully!{color.reset}")
+						solver.report(result['captchaId'], True)
+						self.captcha_amount += 1
 						await self.worker(True)
 					else:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try to{color.reset} {color.red}Solve It Again!{color.reset}")
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try To{color.reset} {color.red}Solve It Again!{color.reset}")
+						solver.report(result['captchaId'], False)
 						await self.solve_hcaptcha()
-		except ApiException as e:
-			print(e)
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Is Wrong{color.reset} {color.bold}Or{color.reset} {color.red}Out Of Money!{color.reset}")
-			await self.goodbye()
-		except TimeoutException as e:
-			print(e)
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
-			await self.goodbye()
+		except Exception as e:
+			#Invalid Key
+			if str(e) == "ERROR_KEY_DOES_NOT_EXIST":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
+				await self.goodbye()
+			#Out Of Money
+			if str(e) == "ERROR_ZERO_BALANCE":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
+				await self.goodbye()
+			#Timeout
+			if str(e) == "timeout 300.0 exceeded":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
+				await self.goodbye()
 
 	#Collect All Sent Messages
 	async def on_message(self, message):
@@ -334,11 +346,8 @@ class MyClient(discord.Client, data):
 			embeds = message.embeds
 			for embed in embeds:
 				if "owo ab" in embed.description and "owo db" in embed.description:
-					try:
-						await self.send_webhooks(f"""**🥊 | Someone Challenges You!
+					await self.send_webhooks(f"""**🥊 | Someone Challenges You!
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.red}Challenges{color.reset} {color.bold}You!{color.reset}")
 					choice = random.choice([1, 2])
 					await asyncio.sleep(random.randint(3, 5))
@@ -353,45 +362,33 @@ class MyClient(discord.Client, data):
 		if f"<@{self.user.id}>" in message.content or self.nickname in message.content or self.user.display_name in message.content and self.work and message.author.id == self.OwOID:
 			#Check Captcha
 			if "⚠" in message.content and "letter word" in message.content or "https://owobot.com/captcha" in message.content:
-				try:
-					await self.send_webhooks(f"""**🔢 | Are You A Real Human?
+				await self.send_webhooks(f"""**🔢 | Are You A Real Human?
 <:blank:427371936482328596> | Solve Captcha Within 10 Minutes <@{self.user.id}>
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-				except:
-					pass
-				if self.solve:
-					await self.worker(False)
-					#Identify Image Captcha
-					if "letter word" in message.content and message.attachments:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
-						captcha_image = b64encode(await message.attachments[0].read()).decode("utf-8")
-						lenghth = message.content[message.content.find("letter word") - 2]
-						await self.solve_icaptcha(captcha_image, lenghth)
-					#Identify HCaptcha
-					if "https://owobot.com/captcha" in message.content:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Hcaptcha Appears{color.reset} {color.red}!!!{color.reset}")
-						await self.solve_hcaptcha()
-				else:
-					await self.goodbye()
+				await self.worker(False)
+				#Identify Image Captcha
+				if "letter word" in message.content and message.attachments:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
+					captcha_image = b64encode(await message.attachments[0].read()).decode("utf-8")
+					lenghth = message.content[message.content.find("letter word") - 2]
+					await self.solve_icaptcha(captcha_image, lenghth)
+				#Identify HCaptcha
+				if "https://owobot.com/captcha" in message.content:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Hcaptcha Appears{color.reset} {color.red}!!!{color.reset}")
+					await self.solve_hcaptcha()
 			#Check Ban
 			if "You have been banned" in message.content:
-				try:
-					await self.send_webhooks(f"""**💀 | You Have Been Banned!
+				await self.send_webhooks(f"""**💀 | You Have Been Banned!
 <:blank:427371936482328596> | Check The Truth <@{self.user.id}>
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-				except:
-					pass
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You Have Been Banned{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 			#Check Cowoncy
 			if "don\'t have enough cowoncy!" in message.content:
-				try:
-					await self.send_webhooks(f"""**💸 | You\'ve Run Out Of Cowoncy!
+				await self.send_webhooks(f"""**💸 | You\'ve Run Out Of Cowoncy!
 <:blank:427371936482328596> | Sell Your Zoo To Continue <@{self.user_id}>
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-				except:
-					pass
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You\'ve Run Out Of Cowoncy{color.reset} {color.red}!!!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You\'ve Run Out Of Cowoncy{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 		#Check Gem Status
 		if self.gem and self.nickname in message.content and self.gem_check and self.work and message.channel.id == self.channel_id and message.author.id == self.OwOID:
@@ -404,51 +401,36 @@ class MyClient(discord.Client, data):
 			#Legendary Pet
 			for i in range(len(self.legendary_list)):
 				if self.legendary_list[i] in pet:
-					try:
-						await self.send_webhooks(f"""**<a:legendary:417955061801680909> | I\'ve Just Found The Legendary Pet
+					await self.send_webhooks(f"""**<a:legendary:417955061801680909> | I\'ve Just Found The Legendary Pet
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.orange}The Legendary Pet{color.reset}")
 					break
 			#Gem Pet
 			for i in range(len(self.gem_list)):
 				if self.gem_list[i] in pet:
-					try:
-						await self.send_webhooks(f"""**<a:gem:510023576489951232> | I\'ve Just Found The Gem Pet
+					await self.send_webhooks(f"""**<a:gem:510023576489951232> | I\'ve Just Found The Gem Pet
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.green}The Gem Pet{color.reset}")
 					break
 			#Fabled Pet
 			for i in range(len(self.fabled_list)):
 				if self.fabled_list[i] in pet:
-					try:
-						await self.send_webhooks(f"""**<a:fabled:438857004493307907> | I\'ve Just Found The Fabled Pet
+					await self.send_webhooks(f"""**<a:fabled:438857004493307907> | I\'ve Just Found The Fabled Pet
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.cyan}The Fabled Pet{color.reset}")
 					break
 			#Distored Pet
 			for i in range(len(self.distored_list)):
 				if self.distored_list[i] in pet:
-					try:
-						await self.send_webhooks(f"""**<a:distorted:728812986147274835> | I\'ve Just Found The Distorted Pet
+					await self.send_webhooks(f"""**<a:distorted:728812986147274835> | I\'ve Just Found The Distorted Pet
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.red}The Distored Pet{color.reset}")
 					break
 			#Hidden Pet
 			for i in range(len(self.hidden_list)):
 				if self.hidden_list[i] in pet:
-					try:
-						await self.send_webhooks(f"""**<a:hidden:459203677438083074> | I\'ve Just Found The Hidden Pet
+					await self.send_webhooks(f"""**<a:hidden:459203677438083074> | I\'ve Just Found The Hidden Pet
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
-					except:
-						pass
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.purple}The Hidden Pet{color.reset}")
 					break
 
@@ -514,6 +496,7 @@ class MyClient(discord.Client, data):
 			async for message in self.channel.history(limit=25):
 				if message.author.id == self.OwOID:
 					status = True
+					break
 			if status:
 				self.owo_status = True
 			else:
@@ -547,25 +530,26 @@ class MyClient(discord.Client, data):
 				await self.channel.typing()
 				await self.channel.send(f"{self.prefix}piku")
 				print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}piku{color.reset}")
-			fun_message = None
-			await asyncio.sleep(random.randint(3, 5))
-			async for message in self.channel.history(limit=10):
-				if message.author.id == self.OwOID and (await self.get_messages(message, "tired to run") or await self.get_messages(message, "no puppies") or await self.get_messages(message, "out of carrots")):
-					fun_message = message
-					break
-			if fun_message:
-				#Run Limit
-				if "tired to run" in fun_message.content:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Run For Today{color.reset} {color.red}Is Over!{color.reset}")
-					self.runn = False
-				#Pup Limit
-				if "no puppies" in fun_message.content:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Pup For Today{color.reset} {color.red}Is Over!{color.reset}")
-					self.pup = False
-				#Piku Limit
-				if "out of carrots" in fun_message.content:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today{color.reset} {color.red}Is Over!{color.reset}")
-					self.piku = False
+			if self.runn or self.pup or self.piku:
+				fun_message = None
+				await asyncio.sleep(random.randint(3, 5))
+				async for message in self.channel.history(limit=10):
+					if message.author.id == self.OwOID and (await self.get_messages(message, "tired to run") or await self.get_messages(message, "no puppies") or await self.get_messages(message, "out of carrots")):
+						fun_message = message
+						break
+				if fun_message:
+					#Run Limit
+					if "tired to run" in fun_message.content:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Run For Today Is{color.reset} {color.red}Over!{color.reset}")
+						self.runn = False
+					#Pup Limit
+					if "no puppies" in fun_message.content:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Pup For Today Is{color.reset} {color.red}Over!{color.reset}")
+						self.pup = False
+					#Piku Limit
+					if "out of carrots" in fun_message.content:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over!{color.reset}")
+						self.piku = False
 
 	#Start Grinding
 	@tasks.loop(seconds = random.randint(17, 25))
@@ -633,10 +617,7 @@ class MyClient(discord.Client, data):
 		if self.work and self.owo_status and self.channel_amount > 1 and self.change_channel.current_loop != 0:
 			self.channel_id = random.choice(self.all_channel)
 			await self.get_nickname()
-			try:
-				await self.send_webhooks(f"**🏠 | I Changed Channel To <#{self.channel_id}>**")
-			except:
-				pass
+			await self.send_webhooks(f"**🏠 | I Changed Channel To <#{self.channel_id}>**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Changed Channel To{color.reset} {color.purple}{self.channel}{color.reset}")
 
 
@@ -757,17 +738,11 @@ class MyClient(discord.Client, data):
 			sleep_time = int(random.randint(300, 600))
 			for task in self.tasks:
 				task.change_interval(seconds = sleep_time)
-			try:
-				await self.send_webhooks(f"**🛌 | I'm Taking A Break For __{sleep_time} Seconds__**")
-			except:
-				pass
+			await self.send_webhooks(f"**🛌 | I'm Taking A Break For __{sleep_time} Seconds__**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Taking A Break For{color.reset} {color.cyan}{sleep_time} Seconds{color.reset}")
 			await asyncio.sleep(sleep_time)
 			self.work_time = random.randint(600, 1200)
-			try:
-				await self.send_webhooks(f"**🌄 | Done! I'll Work For __{self.work_time} Seconds__**")
-			except:
-				pass
+			await self.send_webhooks(f"**🌄 | Done! I'll Work For __{self.work_time} Seconds__**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			self.work_time += time.time()
 			for index, task in enumerate(self.tasks):
