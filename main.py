@@ -230,6 +230,11 @@ class MyClient(discord.Client, data):
 			if str(e) == "timeout 300.0 exceeded":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 				await self.goodbye()
+			#Other
+			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+				print(e)
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+				await self.goodbye()
 
 	#Sumbit Oauth To OwO's Website
 	async def submit_oauth(self, res):
@@ -317,14 +322,12 @@ class MyClient(discord.Client, data):
 										cookies=cookies) as res:
 					if res.status == 200:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully!{color.reset}")
-						solver.report(result['captchaId'], True)
 						self.captcha_amount += 1
 						await self.worker(True)
 					else:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try To{color.reset} {color.red}Solve It Again!{color.reset}")
-						solver.report(result['captchaId'], False)
-						await self.solve_hcaptcha()
+						print(res.status)
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+						await self.goodbye()
 		except Exception as e:
 			#Invalid Key
 			if str(e) == "ERROR_KEY_DOES_NOT_EXIST":
@@ -337,6 +340,11 @@ class MyClient(discord.Client, data):
 			#Timeout
 			if str(e) == "timeout 300.0 exceeded":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
+				await self.goodbye()
+			#Other
+			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+				print(e)
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 
 	#Collect All Sent Messages
