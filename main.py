@@ -517,6 +517,10 @@ class MyClient(discord.Client, data):
 					self.runn = True
 					self.pup = True
 					self.piku = True
+			if self.daily and self.daily_time - time.time() >= 0:
+				self.runn = True
+				self.pup = True
+				self.piku = True
 			choice = random.choice(["run", "pup", "piku"])
 			if choice == "run" and self.runn:
 				await self.channel.typing()
