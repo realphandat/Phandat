@@ -504,7 +504,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(16, 20))
+	@tasks.loop(seconds = random.randint(17, 25))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
