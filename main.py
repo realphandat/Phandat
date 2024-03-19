@@ -140,18 +140,17 @@ class MyClient(discord.Client, data):
 
 	#Control Tasks
 	async def worker(self, status):
-		try:
-			if status:
-				self.work = True
-				for task in self.tasks:
+		if status:
+			self.work = True
+			for task in self.tasks:
+				try:
 					task.start()
-					await asyncio.sleep(5)
-			else:
-				self.work = False
-				for task in self.tasks:
-					task.cancel()
-		except RuntimeError:
-			pass
+				except RuntimeError:
+					pass
+		else:
+			self.work = False
+			for task in self.tasks:
+				task.cancel()
 
 	#Stop Working
 	async def goodbye(self):
@@ -505,7 +504,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(17, 25))
+	@tasks.loop(seconds = random.randint(16, 20))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
