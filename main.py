@@ -24,23 +24,11 @@ class data:
 		with open("config.json", "r") as file:
 			data = json.load(file)
 			self.token = data["token"]
-			self.twocaptcha = data["twocaptcha"]
 			self.all_channel = data["channel"]
-			self.prefix = data["prefix"]
-			self.fun = data["fun"]
-			self.owo = data["owo"]
-			self.grind = data["grind"]
-			self.quote = data["quote"]
+			self.feature = data["feature"]
 			self.slot = data["slot"]
-			self.slot_bet = int(data["sbet"])
-			self.slot_rate = int(data["srate"])
 			self.coinflip = data["coinflip"]
-			self.coinflip_bet = int(data["cfbet"])
-			self.coinflip_rate = int(data["cfrate"])
-			self.daily = data["daily"]
-			self.gem = data["gem"]
-			self.sleep = data["sleep"]
-			self.webhook = data["webhook"]
+			self.info = data["info"]
 
 #Color
 class color:
@@ -84,18 +72,18 @@ class MyClient(discord.Client, data):
 			self.channel_amount += 1
 		self.work = True
 		self.work1time = True
-		self.runn = True
-		self.pup = True
-		self.piku = True
+		self.fun_run = True
+		self.fun_pup = True
+		self.fun_piku = True
 		self.daily_time = 0
-		self.work_time = random.randint(600, 1200)
 		self.gem_check = True
 		self.gem_recheck = True
+		self.work_time = random.randint(600, 1200)
 		self.captcha_amount = 0
 		self.gem_amount = 0
 		self.benefit_amount = 0
-		self.current_slot_bet = self.slot_bet
-		self.current_coinflip_bet = self.coinflip_bet
+		self.current_slot_bet = self.slot["bet"]
+		self.current_coinflip_bet = self.coinflip["bet"]
 		self.legendary_list = ["gdeer", "gfox", "glion", "gowl", "gsquid"]
 		self.gem_list = ["gcamel", "gfish", "gpanda", "gshrimp", "gspider"]
 		self.fabled_list = ["dboar", "deagle", "dfrog", "dgorilla", "dwolf"]
@@ -123,17 +111,6 @@ class MyClient(discord.Client, data):
     {color.bold}Used Gem{color.reset} {color.green}{self.gem_amount} Times{color.reset}
     {color.bold}Earned{color.reset} {color.green}{self.benefit_amount} Cowoncy{color.reset}"""
 
-	#Stop Working
-	async def goodbye(self):
-		await self.worker(False)
-		os.startfile('music.mp3')
-		print()
-		await self.send_webhooks(f"{await self.discord_stat()}")
-		print(f"{await self.cmd_stat()}")
-		choice = input(f"{color.yellow}Enter 'OK' to Reset: {color.reset}")
-		if choice.lower() == 'ok':
-			os.system('python "main.py"')
-
 	#Send Webhooks
 	async def send_webhooks(self, message):
 		try:
@@ -150,6 +127,17 @@ class MyClient(discord.Client, data):
 			return (content.lower() in message.content.lower() and self.user.display_name in message.content)
 		return content.lower() in message.content.lower()
 
+	#On Ready Then Run
+	async def on_ready(self):
+		if self.work1time:
+			self.OwO = self.get_user(self.OwOID)
+			await self.get_nickname()
+			await self.send_webhooks(f"**🌻 | I\'ll Start At Channel <#{self.channel_id}> For __{self.work_time}__ Seconds**")
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.channel}{color.reset} {color.bold}For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
+			self.work_time += time.time()
+			await self.worker(True)
+			self.work1time = False
+
 	#Control Tasks
 	async def worker(self, status):
 		try:
@@ -165,6 +153,17 @@ class MyClient(discord.Client, data):
 		except RuntimeError:
 			pass
 
+	#Stop Working
+	async def goodbye(self):
+		await self.worker(False)
+		os.startfile('music.mp3')
+		print()
+		await self.send_webhooks(f"{await self.discord_stat()}")
+		print(f"{await self.cmd_stat()}")
+		choice = input(f"{color.yellow}Enter 'OK' to Reset: {color.reset}")
+		if choice.lower() == 'ok':
+			os.system('python "main.py"')
+
 	#Get Nickname From Another Guild
 	async def get_nickname(self):
 		self.channel = self.get_channel(self.channel_id)
@@ -175,22 +174,11 @@ class MyClient(discord.Client, data):
 		elif not member.nick:
 			self.nickname = member.display_name
 
-	#On Ready Then Run
-	async def on_ready(self):
-		if self.work1time:
-			self.OwO = self.get_user(self.OwOID)
-			await self.get_nickname()
-			await self.send_webhooks(f"**🌻 | I\'ll Start At Channel <#{self.channel_id}> For __{self.work_time}__ Seconds**")
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.channel}{color.reset} {color.bold}For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
-			self.work_time += time.time()
-			await self.worker(True)
-			self.work1time = False
-
 	#Solve OwO's Image Captcha
 	async def solve_icaptcha(self, image, lenghth):
 		solver = TwoCaptcha(**{
 			'server': "2captcha.com",
-			'apiKey': self.twocaptcha,
+			'apiKey': self.info["twocaptcha"],
 			'defaultTimeout': 300,
 			'pollingInterval': 5,
 		})
@@ -206,16 +194,16 @@ class MyClient(discord.Client, data):
 							check = message
 			if "verified" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully!{color.reset}")
-				solver.report(result['captchaId'], True)
+				solver.report(result["captchaId"], True)
 				self.captcha_amount += 1
 			elif "(2/3)" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.gray}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
-				solver.report(result['captchaId'], False)
+				solver.report(result["captchaId"], False)
 				await self.goodbye()
 			elif "Wrong" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try To{color.reset} {color.red}Solve It Again!{color.reset}")
-				solver.report(result['captchaId'], False)
+				solver.report(result["captchaId"], False)
 				await self.solve_icaptcha(image, lenghth)
 		except Exception as e:
 			#Invalid Key
@@ -292,7 +280,7 @@ class MyClient(discord.Client, data):
 	async def solve_hcaptcha(self):
 		solver = TwoCaptcha(**{
 			'server': "2captcha.com",
-			'apiKey': self.twocaptcha,
+			'apiKey': self.info["twocaptcha"],
 			'defaultTimeout': 300,
 			'pollingInterval': 5,
 		})
@@ -361,15 +349,15 @@ class MyClient(discord.Client, data):
 					await asyncio.sleep(random.randint(3, 5))
 					if choice == 1:
 						await message.channel.typing()
-						await message.channel.send(f"{self.prefix}ab")
+						await message.channel.send(f"{self.info["prefix"]}ab")
 					if choice == 2:
 						components = message.components
 						firstButton = components[0].children[0]
 						await firstButton.click()
 		#Check User's Problems
-		if f"<@{self.user.id}>" in message.content or self.nickname in message.content or self.user.display_name in message.content and self.work and message.author.id == self.OwOID:
+		if (f"<@{self.user.id}>" in message.content or self.nickname in message.content or self.user.display_name in message.content) and self.work and message.author.id == self.OwOID:
 			#Check Captcha
-			if "⚠" in message.content and "letter word" in message.content or "https://owobot.com/captcha" in message.content:
+			if "⚠" in message.content and ("letter word" in message.content or "https://owobot.com/captcha" in message.content):
 				await self.send_webhooks(f"""**🔢 | Are You A Real Human?
 <:blank:427371936482328596> | Solve Captcha Within 10 Minutes <@{self.user.id}>
 <:blank:427371936482328596> | https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id} **""")
@@ -399,7 +387,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You\'ve Run Out Of Cowoncy{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 		#Check Gem Status
-		if self.gem and self.nickname in message.content and self.gem_check and self.work and message.channel.id == self.channel_id and message.author.id == self.OwOID:
+		if self.feature["gem"] and self.nickname in message.content and self.gem_check and self.work and message.channel.id == self.channel_id and message.author.id == self.OwOID:
 			if "and caught" in message.content:
 				await self.use_gem()
 		#Check Hunt Pet
@@ -446,12 +434,12 @@ class MyClient(discord.Client, data):
 	async def on_message_edit(self, before, after):
 		if self.work and self.nickname in after.content and self.channel_id == after.channel.id and self.OwOID == after.author.id:
 			#Slot
-			if self.slot:
+			if self.slot["mode"]:
 				#Lost
 				if 'won nothing' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.red}Lost {self.current_slot_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_slot_bet
-					self.current_slot_bet *= self.slot_rate
+					self.current_slot_bet *= self.slot["rate"]
 				#Draw
 				if '<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.gray}Draw {self.current_slot_bet} Cowoncy{color.reset}")
@@ -459,34 +447,34 @@ class MyClient(discord.Client, data):
 				if '<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet} Cowoncy (x2){color.reset}")
 					self.benefit_amount += self.current_slot_bet
-					self.current_slot_bet = self.slot_bet
+					self.current_slot_bet = self.slot["bet"]
 				#Won x3
 				if '<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 2} Cowoncy (x3){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 2
-					self.current_slot_bet = self.slot_bet
+					self.current_slot_bet = self.slot["bet"]
 				#Won x4
 				if '<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 3} Cowoncy (x4){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 3
-					self.current_slot_bet = self.slot_bet
+					self.current_slot_bet = self.slot["bet"]
 				#Won x10
 				if '<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 9} Cowoncy (x10){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 9
-					self.current_slot_bet = self.slot_bet
+					self.current_slot_bet = self.slot["bet"]
 			#Coinflip
-			if self.coinflip:
+			if self.coinflip["mode"]:
 				#Lost
 				if 'you lost' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.red}Lost {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_coinflip_bet
-					self.current_coinflip_bet *= self.coinflip_rate
+					self.current_coinflip_bet *= self.coinflip["rate"]
 				#Won
 				if 'you won' in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount += self.current_coinflip_bet
-					self.current_coinflip_bet = self.coinflip_bet
+					self.current_coinflip_bet = self.coinflip["bet"]
 
 	#Get Refesh Time
 	async def get_refresh_time(self):
@@ -519,30 +507,30 @@ class MyClient(discord.Client, data):
 	#Use Fun Commands
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def entertainment(self):
-		if self.work and self.owo_status and self.fun:
-			if not self.daily and self.daily_time - time.time() <= 0:
+		if self.work and self.owo_status and self.feature["fun"]:
+			if not self.feature["daily"] and self.daily_time - time.time() <= 0:
 				if (await self.get_refresh_time()):
-					self.runn = True
-					self.pup = True
-					self.piku = True
-			if self.daily and self.daily_time - time.time() >= 0:
-				self.runn = True
-				self.pup = True
-				self.piku = True
+					self.fun_run = True
+					self.fun_pup = True
+					self.fun_piku = True
+			if self.feature["daily"] and self.daily_time - time.time() >= 0:
+				self.fun_run = True
+				self.fun_pup = True
+				self.fun_piku = True
 			choice = random.choice(["run", "pup", "piku"])
-			if choice == "run" and self.runn:
+			if choice == "run" and self.fun_run:
 				await self.channel.typing()
-				await self.channel.send(f"{self.prefix}run")
-				print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}run{color.reset}")
-			if choice == "pup" and self.pup:
+				await self.channel.send(f"{self.info["prefix"]}run")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}run{color.reset}")
+			if choice == "pup" and self.fun_pup:
 				await self.channel.typing()
-				await self.channel.send(f"{self.prefix}pup")
-				print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}pup{color.reset}")
-			if choice == "piku" and self.piku:
+				await self.channel.send(f"{self.info["prefix"]}pup")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}pup{color.reset}")
+			if choice == "piku" and self.fun_piku:
 				await self.channel.typing()
-				await self.channel.send(f"{self.prefix}piku")
-				print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}piku{color.reset}")
-			if self.runn or self.pup or self.piku:
+				await self.channel.send(f"{self.info["prefix"]}piku")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}piku{color.reset}")
+			if self.fun_run or self.fun_pup or self.fun_piku:
 				fun_message = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for message in self.channel.history(limit=10):
@@ -553,43 +541,43 @@ class MyClient(discord.Client, data):
 					#Run Limit
 					if "tired to run" in fun_message.content:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Run For Today Is{color.reset} {color.red}Over!{color.reset}")
-						self.runn = False
+						self.fun_run = False
 					#Pup Limit
 					if "no puppies" in fun_message.content:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Pup For Today Is{color.reset} {color.red}Over!{color.reset}")
-						self.pup = False
+						self.fun_pup = False
 					#Piku Limit
 					if "out of carrots" in fun_message.content:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over!{color.reset}")
-						self.piku = False
+						self.fun_piku = False
 
 	#Start Grinding
 	@tasks.loop(seconds = random.randint(17, 25))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
-				if self.work and self.owo:
+				if self.work and self.feature["owo"]:
 					say = random.choice(["owo", "uwu"])
 					await self.channel.typing()
 					await self.channel.send(say)
 					print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
 					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.grind:
+				if self.work and self.feature["grind"]:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}h")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}h{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}h")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}h{color.reset}")
 					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.grind:
+				if self.work and self.feature["grind"]:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}b")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}b{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}b")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}b{color.reset}")
 		except:
 			pass
 
 	#Start Sending Quote
 	@tasks.loop(seconds = random.randint(30, 60))
 	async def start_quote(self):
-		if self.work and self.owo_status and self.quote:
+		if self.work and self.owo_status and self.feature["quote"]:
 			try:
 				response = get("https://zenquotes.io/api/random")
 				if response.status_code == 200:
@@ -606,22 +594,22 @@ class MyClient(discord.Client, data):
 	@tasks.loop(seconds = random.randint(30, 60))
 	async def start_slot(self):
 		if self.current_slot_bet  >= 250000:
-			self.current_slot_bet = self.slot_bet
-		if self.work and self.owo_status and self.slot:
+			self.current_slot_bet = self.slot["bet"]
+		if self.work and self.owo_status and self.slot["mode"]:
 			await self.channel.typing()
-			await self.channel.send(f"{self.prefix}s {self.current_slot_bet}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}s {self.current_slot_bet}{color.reset}")
+			await self.channel.send(f"{self.info["prefix"]}s {self.current_slot_bet}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}s {self.current_slot_bet}{color.reset}")
 
 	#Start Playing Coinflip
 	@tasks.loop(seconds = random.randint(30, 60))
 	async def start_coinflip(self):
 		if self.current_coinflip_bet  >= 250000:
-			self.current_coinflip_bet = self.coinflip_bet
-		if self.work and self.coinflip:
+			self.current_coinflip_bet = self.coinflip["bet"]
+		if self.work and self.coinflip["mode"]:
 			side = random.choice(["h", "t"])
 			await self.channel.typing()
-			await self.channel.send(f"{self.prefix}cf {self.current_coinflip_bet} {side}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}cf {self.current_coinflip_bet} {side}{color.reset}")
+			await self.channel.send(f"{self.info["prefix"]}cf {self.current_coinflip_bet} {side}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}cf {self.current_coinflip_bet} {side}{color.reset}")
 
 	#Change Channel
 	@tasks.loop(seconds = random.randint(300, 600))
@@ -636,10 +624,10 @@ class MyClient(discord.Client, data):
 	#Claim Daily
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self, ignore_request = False):
-		if self.work and self.owo_status and self.daily or ignore_request and self.daily_time - time.time() <= 0:
+		if self.work and self.owo_status and (self.feature["daily"] or ignore_request) and self.daily_time - time.time() <= 0:
 			await self.channel.typing()
-			await self.channel.send(f"{self.prefix}daily")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}daily{color.reset}")
+			await self.channel.send(f"{self.info["prefix"]}daily")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}daily{color.reset}")
 			daily_message = None
 			#Get Messages
 			await asyncio.sleep(random.randint(3, 5))
@@ -660,10 +648,10 @@ class MyClient(discord.Client, data):
 
 	#Use Gem
 	async def use_gem(self):
-		if self.work and self.owo_status and self.gem and self.gem_check:
+		if self.work and self.owo_status and self.feature["gem"] and self.gem_check:
 			await self.channel.typing()
-			await self.channel.send(f"{self.prefix}inv")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}inv{color.reset}")
+			await self.channel.send(f"{self.info["prefix"]}inv")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}inv{color.reset}")
 			gem_message = None
 			#Get Gem Messages
 			await asyncio.sleep(random.randint(3, 5))
@@ -677,56 +665,56 @@ class MyClient(discord.Client, data):
 				#Common 051 065 072
 				if "051" in gem_message and "065" in gem_message and "072" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 51 65 72")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 51 65 72{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 51 65 72")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 51 65 72{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.red}Common Gem{color.reset} {color.bold}For 25 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Uncommon 052 066 073
 				elif "052" in gem_message and "066" in gem_message and "073" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 52 66 73")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 52 66 73{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 52 66 73")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 52 66 73{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.cyan}Uncommon Gem{color.reset} {color.bold}For 25 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Rare 053 067 074
 				elif "053" in gem_message and "067" in gem_message and "074" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 53 67 74")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 53 67 74{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 53 67 74")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 53 67 74{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.orange}Rare Gem{color.reset} {color.bold}For 50 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Epic 054 068 075
 				elif "054" in gem_message and "068" in gem_message and "075" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 54 68 75")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 54 68 75{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 54 68 75")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 54 68 75{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.blue}Epic Gem{color.reset} {color.bold}For 75 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Mythical 055 069 076
 				elif "055" in gem_message and "069" in gem_message and "076" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 55 69 76")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 55 69 76{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 55 69 76")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 55 69 76{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.purple}Mythical Gem{color.reset} {color.bold}For 75 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Legendary 056 070 077
 				elif "056" in gem_message and "070" in gem_message and "077" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 56 70 77")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 56 70 77{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 56 70 77")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 56 70 77{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.yellow}Legendary Gem{color.reset} {color.bold}For 100 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
 				#Fabled 057 071 078
 				elif "057" in gem_message and "071" in gem_message and "078" in gem_message:
 					await self.channel.typing()
-					await self.channel.send(f"{self.prefix}use 57 71 78")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.prefix}use 57 71 78{color.reset}")
+					await self.channel.send(f"{self.info["prefix"]}use 57 71 78")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}use 57 71 78{color.reset}")
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Used{color.reset} {color.cyan}Fabled Gem{color.reset} {color.bold}For 100 Turns{color.reset}")
 					self.gem_amount += 1
 					self.gem_recheck = True
@@ -745,7 +733,7 @@ class MyClient(discord.Client, data):
 	#Go To Bed
 	@tasks.loop(minutes = 1)
 	async def bedtime(self):
-		if self.work and self.owo_status and self.sleep and self.work_time - time.time() <= 0:
+		if self.work and self.owo_status and self.feature["sleep"] and self.work_time - time.time() <= 0:
 			interval_before = [task.seconds for task in self.tasks]
 			sleep_time = int(random.randint(300, 600))
 			for task in self.tasks:

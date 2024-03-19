@@ -1,27 +1,35 @@
 {
-    "token": "MTE5MTcwMzk4MTYzNzI5MDA4Ng.GsR8.OQ5YuBOghjg04CYkLS6N5mAm5Edsq6eichxlHE7RZA",
-    "twocaptcha": "2102ytrthf8ad83ad5fe04e434a0dce91c7",
-    "channel": [
-        949297064209166337,
-        949297697481965598,
-        949689279943176202,
-        992651277404221480,
-        1169898021446750359,
-        1169898072877314069
-    ],
-    "prefix": "owo",
-    "fun": true,
+  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.Gxkghf8.OQ5YuBO04CYkLS6N5mAm5Edsq6eichxlHE7RZA",
+  "channel": [
+    949297064209166337,
+    949297697481965598,
+    949689279943176202,
+    992651277404221480,
+    1169898021446750359,
+    1169898072877314069
+  ],
+  "feature": {
     "owo": true,
     "grind": true,
     "quote": false,
-    "slot": false,
-    "sbet": 15,
-    "srate": 2,
-    "coinflip": false,
-    "cfbet": 15,
-    "cfrate": 2,
+    "fun": true,
     "daily": false,
     "gem": false,
-    "sleep": false,
-    "webhook": "https://discord.com/api/webhooks/120462864hf576366120/mPdbvtSlW54bMnbmvbn0HfOe3bsHvLKuXgrUzu6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
+    "sleep": true
+  },
+  "slot": {
+    "mode": false,
+    "bet": 15,
+    "rate": 2
+  },
+  "coinflip": {
+    "mode": false,
+    "bet": 15,
+    "rate": 2
+  },
+  "info": {
+    "prefix": "o",
+    "twocaptcha": "21028b88ad83ad5fe0345f4e4a0dce91c7",
+    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrUzfe_DByeerSw96bnm5LMC9_zCiDB949WsPgrV"
+  }
 }
