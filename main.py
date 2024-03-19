@@ -52,14 +52,14 @@ class MyClient(discord.Client, data):
 		data.__init__(self)
 		self.tasks = [
 			self.check_owo_status,
-			self.entertainment,
 			self.start_grind,
 			self.start_quote,
-			self.start_slot,
-			self.start_coinflip,
+			self.entertainment,
 			self.change_channel,
 			self.claim_daily,
-			self.bedtime
+			self.bedtime,
+			self.start_slot,
+			self.start_coinflip,
 			]
 		self.OwO = ""
 		self.OwOID = 408785106942164992
@@ -115,7 +115,7 @@ class MyClient(discord.Client, data):
 	async def send_webhooks(self, message):
 		try:
 			async with aiohttp.ClientSession() as session:
-				webhook = Webhook.from_url(self.webhook, session=session)
+				webhook = Webhook.from_url(self.info["webhook"], session=session)
 				await webhook.send(message)
 		except Exception as e:
 			if str(e) == "Invalid Webhook Token":
@@ -504,6 +504,45 @@ class MyClient(discord.Client, data):
 				self.owo_status = True
 				await self.worker(True)
 
+	#Start Grinding
+	@tasks.loop(seconds = random.randint(17, 25))
+	async def start_grind(self):
+		try:
+			if self.owo_status:
+				if self.work and self.feature["owo"]:
+					say = random.choice(["owo", "uwu"])
+					await self.channel.typing()
+					await self.channel.send(say)
+					print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
+					await asyncio.sleep(random.randint(1, 2))
+				if self.work and self.feature["grind"]:
+					await self.channel.typing()
+					await self.channel.send(f"{self.info["prefix"]}h")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}h{color.reset}")
+					await asyncio.sleep(random.randint(1, 2))
+				if self.work and self.feature["grind"]:
+					await self.channel.typing()
+					await self.channel.send(f"{self.info["prefix"]}b")
+					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}b{color.reset}")
+		except:
+			pass
+
+	#Start Sending Quote
+	@tasks.loop(seconds = random.randint(30, 60))
+	async def start_quote(self):
+		if self.work and self.owo_status and self.feature["quote"]:
+			try:
+				response = get("https://zenquotes.io/api/random")
+				if response.status_code == 200:
+					json_data = response.json()
+					data = json_data[0]
+					quote = data["q"]
+					await self.channel.typing()
+					await self.channel.send(quote)
+					print(f"{await self.intro()}{color.yellow}[SEND] {quote[0:30]}...{color.reset}")
+			except:
+				pass
+
 	#Use Fun Commands
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def entertainment(self):
@@ -551,66 +590,6 @@ class MyClient(discord.Client, data):
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over!{color.reset}")
 						self.fun_piku = False
 
-	#Start Grinding
-	@tasks.loop(seconds = random.randint(17, 25))
-	async def start_grind(self):
-		try:
-			if self.owo_status:
-				if self.work and self.feature["owo"]:
-					say = random.choice(["owo", "uwu"])
-					await self.channel.typing()
-					await self.channel.send(say)
-					print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
-					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.feature["grind"]:
-					await self.channel.typing()
-					await self.channel.send(f"{self.info["prefix"]}h")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}h{color.reset}")
-					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.feature["grind"]:
-					await self.channel.typing()
-					await self.channel.send(f"{self.info["prefix"]}b")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}b{color.reset}")
-		except:
-			pass
-
-	#Start Sending Quote
-	@tasks.loop(seconds = random.randint(30, 60))
-	async def start_quote(self):
-		if self.work and self.owo_status and self.feature["quote"]:
-			try:
-				response = get("https://zenquotes.io/api/random")
-				if response.status_code == 200:
-					json_data = response.json()
-					data = json_data[0]
-					quote = data["q"]
-					await self.channel.typing()
-					await self.channel.send(quote)
-					print(f"{await self.intro()}{color.yellow}[SEND] {quote[0:30]}...{color.reset}")
-			except:
-				pass
-
-	#Start Playing Slot
-	@tasks.loop(seconds = random.randint(30, 60))
-	async def start_slot(self):
-		if self.current_slot_bet  >= 250000:
-			self.current_slot_bet = self.slot["bet"]
-		if self.work and self.owo_status and self.slot["mode"]:
-			await self.channel.typing()
-			await self.channel.send(f"{self.info["prefix"]}s {self.current_slot_bet}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}s {self.current_slot_bet}{color.reset}")
-
-	#Start Playing Coinflip
-	@tasks.loop(seconds = random.randint(30, 60))
-	async def start_coinflip(self):
-		if self.current_coinflip_bet  >= 250000:
-			self.current_coinflip_bet = self.coinflip["bet"]
-		if self.work and self.coinflip["mode"]:
-			side = random.choice(["h", "t"])
-			await self.channel.typing()
-			await self.channel.send(f"{self.info["prefix"]}cf {self.current_coinflip_bet} {side}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}cf {self.current_coinflip_bet} {side}{color.reset}")
-
 	#Change Channel
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
@@ -619,7 +598,6 @@ class MyClient(discord.Client, data):
 			await self.get_nickname()
 			await self.send_webhooks(f"**🏠 | I Changed Channel To <#{self.channel_id}>**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Changed Channel To{color.reset} {color.purple}{self.channel}{color.reset}")
-
 
 	#Claim Daily
 	@tasks.loop(minutes = 1)
@@ -747,6 +725,27 @@ class MyClient(discord.Client, data):
 			self.work_time += time.time()
 			for index, task in enumerate(self.tasks):
 				task.change_interval(seconds=interval_before[index])
+
+	#Start Playing Slot
+	@tasks.loop(seconds = random.randint(30, 60))
+	async def start_slot(self):
+		if self.current_slot_bet  >= 250000:
+			self.current_slot_bet = self.slot["bet"]
+		if self.work and self.owo_status and self.slot["mode"]:
+			await self.channel.typing()
+			await self.channel.send(f"{self.info["prefix"]}s {self.current_slot_bet}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}s {self.current_slot_bet}{color.reset}")
+
+	#Start Playing Coinflip
+	@tasks.loop(seconds = random.randint(30, 60))
+	async def start_coinflip(self):
+		if self.current_coinflip_bet  >= 250000:
+			self.current_coinflip_bet = self.coinflip["bet"]
+		if self.work and self.coinflip["mode"]:
+			side = random.choice(["h", "t"])
+			await self.channel.typing()
+			await self.channel.send(f"{self.info["prefix"]}cf {self.current_coinflip_bet} {side}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info["prefix"]}cf {self.current_coinflip_bet} {side}{color.reset}")
 
 #Run Selfbot
 Client = MyClient()
