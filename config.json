@@ -1,5 +1,5 @@
 {
-  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.Gxkghf8.OQ5YuBO04CYkLS6N5mAm5Edsq6eichxlHE7RZA",
+  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.GxkghfOQ5YuBO04CYkLS6N5mAm5Edsq6eichxlHE7RZA",
   "channel": [
     949297064209166337,
     949297697481965598,
@@ -29,7 +29,7 @@
   },
   "info": {
     "prefix": "o",
-    "twocaptcha": "21028b88ad83ad5fe0345f4e4a0dce91c7",
-    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrUzfe_DByeerSw96bnm5LMC9_zCiDB949WsPgrV"
+    "twocaptcha": "21028b88ad83ad5fe0345f4a0dce91c7",
+    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrfe_DByeerSw96bnm5LMC9_zCiDB949WsPgrV"
   }
 }
