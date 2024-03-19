@@ -32,21 +32,20 @@
 | Name  | Type | Description |
 | ------------- | ------------- | ------------- |
 | ```Token```  | ```String``` | Your account token |
-| ```Solver```  | ```Boolean``` | Customize Image/Hcaptcha solver |
-| ```TwoCaptcha```  | ```String``` | Your 2Captcha API |
 | ```Channel```  | ```List``` | The spam channel (You can add multi) |
-| ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
 | ```Fun```  | ```Boolean``` | Customize run/pup/piku command sending |
 | ```OwO```  | ```Boolean``` | Customize owo/uwu command sending |
 | ```Grind```  | ```Boolean``` | Customize hunt/battle command sending |
 | ```Quote```  | ```Boolean``` | Customize quote sending (Get more exp) |
+| ```Daily```  | ```Boolean``` | Customize daily login |
+| ```Gem```  | ```Boolean``` | Customize using gems (Worst to Best) |
+| ```Sleep```  | ```Boolean``` | Custom sleep (Should enable to get less captchas) |
 | ```Slot```  | ```Boolean``` | Customize slot playing |
 | ```Sbet```  | ```Int``` | Customize slot start value |
 | ```Srate```  | ```Int``` | Customize the multiplier when losing slot |
 | ```Coinflip```  | ```Boolean``` | Customize coinflip playing |
 | ```Cfbet```  | ```Int``` | Customize coinflip start value |
 | ```Cfrate```  | ```Int``` | Customize the multiplier when losing coinflip |
-| ```Daily```  | ```Boolean``` | Customize daily login |
-| ```Gem```  | ```Boolean``` | Customize using gems (Worst to Best) |
-| ```Sleep```  | ```Boolean``` | Custom sleep (Should enable to get less captchas) |
+| ```Prefix```  | ```String``` | The OwO's prefix in spamming server |
+| ```TwoCaptcha```  | ```String``` | Your 2Captcha API |
 | ```Webhook```  | ```String``` | The Webhook's URL (Send important notifications) |
