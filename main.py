@@ -480,11 +480,14 @@ class MyClient(discord.Client, data):
 
 	#Get Refesh Time
 	async def get_refresh_time(self):
-		await self.claim_daily(True)
-		if self.daily_time - time.time() >= 0:
+		if self.feature["daily"] and self.daily_time - time.time() <= 0:
 			return True
-		else:
-			await self.get_refresh_time()
+		if not self.feature["daily"] and self.daily_time - time.time() <= 0:
+			await self.claim_daily(True)
+			if self.daily_time - time.time() >= 0:
+				return True
+			else:
+				await self.get_refresh_time()
 
 	#Get OwO's Status
 	@tasks.loop(minutes = 1)
@@ -549,12 +552,7 @@ class MyClient(discord.Client, data):
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def entertainment(self):
 		if self.work and self.owo_status and self.feature["fun"]:
-			if not self.feature["daily"] and self.daily_time - time.time() <= 0:
-				if (await self.get_refresh_time()):
-					self.fun_run = True
-					self.fun_pup = True
-					self.fun_piku = True
-			if self.feature["daily"] and self.daily_time - time.time() >= 0:
+			if (await self.get_refresh_time()):
 				self.fun_run = True
 				self.fun_pup = True
 				self.fun_piku = True
