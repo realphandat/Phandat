@@ -14,6 +14,7 @@ from datetime import timedelta
 import time
 start_time = time.time()
 from twocaptcha import TwoCaptcha
+from twocaptcha.api import ApiException
 from aiohttp import ClientSession, CookieJar
 from time import strftime, localtime
 from base64 import b64encode
@@ -155,13 +156,15 @@ class MyClient(discord.Client, data):
 	#Stop Working
 	async def goodbye(self):
 		await self.worker(False)
-		os.startfile('music.mp3')
+		os.startfile("music.mp3")
 		print()
 		await self.send_webhooks(f"{await self.discord_stat()}")
 		print(f"{await self.cmd_stat()}")
-		choice = input(f"{color.yellow}Enter 'OK' to Reset: {color.reset}")
-		if choice.lower() == 'ok':
-			os.system('python "main.py"')
+		choice = input(f"{color.yellow}Do You Wanna Continue? (Y/n) {color.reset}")
+		if choice.lower() == "yes" or choice.lower() == "y":
+			os.system("python 'main.py'")
+		elif choice.lower() == "no" or choice.lower() == "n":
+			exit()
 
 	#Get Nickname From Another Guild
 	async def get_nickname(self):
@@ -176,15 +179,15 @@ class MyClient(discord.Client, data):
 	#Solve OwO's Image Captcha
 	async def solve_icaptcha(self, image, lenghth):
 		solver = TwoCaptcha(**{
-			'server': "2captcha.com",
-			'apiKey': self.info["twocaptcha"],
-			'defaultTimeout': 300,
-			'pollingInterval': 5,
+			"server": "2captcha.com",
+			"apiKey": self.info["twocaptcha"],
+			"defaultTimeout": 300,
+			"pollingInterval": 5,
 		})
-		balance = solver.balance()
-		print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
 		try:
-			result = solver.normal(image, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang='en')
+			balance = solver.balance()
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+			result = solver.normal(image, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
 			await self.OwO.send(result["code"])
 			await asyncio.sleep(random.randint(3, 5))
 			check = None
@@ -250,21 +253,21 @@ class MyClient(discord.Client, data):
 				"authorize": True
 			}
 			headers = {
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0',
-				'Accept': '*/*',
-				'Accept-Language': 'en-US,en;q=0.5',
-				'Accept-Encoding': 'gzip, deflate, br',
-				'Content-Type': 'application/json',
-				'Authorization': self.token,
-				'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwOS4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzExMS4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTExLjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTg3NTk5LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==',
-				'X-Debug-Options': 'bugReporterEnabled',
-				'Origin': 'https://discord.com',
-				'Connection': 'keep-alive',
-				'Referer': "https://discord.com//oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992",
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin',
-				'TE': 'trailers',
+				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+				"Accept": "*/*",
+				"Accept-Language": "en-US,en;q=0.5",
+				"Accept-Encoding": "gzip, deflate, br",
+				"Content-Type": "application/json",
+				"Authorization": self.token,
+				"X-Super-Properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwOS4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzExMS4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTExLjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTg3NTk5LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==",
+				"X-Debug-Options": "bugReporterEnabled",
+				"Origin": "https://discord.com",
+				"Connection": "keep-alive",
+				"Referer": "https://discord.com//oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992",
+				"Sec-Fetch-Dest": "empty",
+				"Sec-Fetch-Mode": "cors",
+				"Sec-Fetch-Site": "same-origin",
+				"TE": "trailers",
 			}
 			async with session.post(oauth, headers=headers, json=payload) as res:
 				if res.status == 200:
@@ -278,15 +281,15 @@ class MyClient(discord.Client, data):
 	#Solve OwO's HCaptcha
 	async def solve_hcaptcha(self):
 		solver = TwoCaptcha(**{
-			'server': "2captcha.com",
-			'apiKey': self.info["twocaptcha"],
-			'defaultTimeout': 300,
-			'pollingInterval': 5,
+			"server": "2captcha.com",
+			"apiKey": self.info["twocaptcha"],
+			"defaultTimeout": 300,
+			"pollingInterval": 5,
 		})
-		balance = solver.balance()
-		print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
 		try:
-			result = solver.hcaptcha(sitekey='a6a1d5ce-612d-472d-8e37-7601408fbc09', url="https://owobot.com/captcha")
+			balance = solver.balance()
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+			result = solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
 			headers = {
 				"Accept": "application/json, text/plain, */*",
 				"Accept-Encoding": "gzip, deflate, br",
@@ -294,9 +297,9 @@ class MyClient(discord.Client, data):
 				"Content-Type": "application/json;charset=UTF-8",
 				"Origin": "https://owobot.com",
 				"Referer": "https://owobot.com/captcha",
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin',
+				"Sec-Fetch-Dest": "empty",
+				"Sec-Fetch-Mode": "cors",
+				"Sec-Fetch-Site": "same-origin",
 				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
 			}
 			async with (await self.get_oauth()) as session:
@@ -435,42 +438,42 @@ class MyClient(discord.Client, data):
 			#Slot
 			if self.slot["mode"]:
 				#Lost
-				if 'won nothing' in after.content:
+				if "won nothing" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.red}Lost {self.current_slot_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_slot_bet
 					self.current_slot_bet *= self.slot["rate"]
 				#Draw
-				if '<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>' in after.content:
+				if "<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.gray}Draw {self.current_slot_bet} Cowoncy{color.reset}")
 				#Won x2
-				if '<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>' in after.content:
+				if "<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet} Cowoncy (x2){color.reset}")
 					self.benefit_amount += self.current_slot_bet
 					self.current_slot_bet = self.slot["bet"]
 				#Won x3
-				if '<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>' in after.content:
+				if "<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 2} Cowoncy (x3){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 2
 					self.current_slot_bet = self.slot["bet"]
 				#Won x4
-				if '<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>' in after.content:
+				if "<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 3} Cowoncy (x4){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 3
 					self.current_slot_bet = self.slot["bet"]
 				#Won x10
-				if '<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>' in after.content:
+				if "<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 9} Cowoncy (x10){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 9
 					self.current_slot_bet = self.slot["bet"]
 			#Coinflip
 			if self.coinflip["mode"]:
 				#Lost
-				if 'you lost' in after.content:
+				if "you lost" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.red}Lost {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_coinflip_bet
 					self.current_coinflip_bet *= self.coinflip["rate"]
 				#Won
-				if 'you won' in after.content:
+				if "you won" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount += self.current_coinflip_bet
 					self.current_coinflip_bet = self.coinflip["bet"]
@@ -615,7 +618,7 @@ class MyClient(discord.Client, data):
 			if daily_message:
 				#Waiting
 				if "Nu" in daily_message.content:
-					next_daily = findall('[0-9]+', daily_message.content)
+					next_daily = findall("[0-9]+", daily_message.content)
 					next_daily = int(int(next_daily[0]) * 3600 + int(next_daily[1]) * 60 + int(next_daily[2]))
 					self.daily_time = next_daily + time.time()
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Can Claim Daily After{color.reset} {color.orange}{str(timedelta(seconds=int(next_daily)))} Seconds{color.reset}")
@@ -638,7 +641,7 @@ class MyClient(discord.Client, data):
 					break
 			#Filter Objects
 			if gem_message:
-				gem_message = findall(r'`(.*?)`', gem_message.content)
+				gem_message = findall(r"`(.*?)`", gem_message.content)
 				#Common 051 065 072
 				if "051" in gem_message and "065" in gem_message and "072" in gem_message:
 					await self.channel.typing()
