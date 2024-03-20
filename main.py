@@ -722,7 +722,7 @@ class MyClient(discord.Client, data):
 				task.change_interval(seconds = sleep_time)
 			await self.send_webhooks(f"**🛌 | I'm Taking A Break For __{sleep_time} Seconds__**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Taking A Break For{color.reset} {color.cyan}{sleep_time} Seconds{color.reset}")
-			await asyncio.sleep(sleep_time)
+			await asyncio.sleep(sleep_time + 5)
 			self.work_time = random.randint(600, 1200)
 			await self.send_webhooks(f"**🌄 | Done! I'll Work For __{self.work_time} Seconds__**")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
