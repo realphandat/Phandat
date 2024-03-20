@@ -223,7 +223,7 @@ class MyClient(discord.Client, data):
 			#Other
 			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 
 	#Sumbit Oauth To OwO's Website
@@ -241,7 +241,7 @@ class MyClient(discord.Client, data):
 				return session
 			else:
 				print(res2.status)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Oauth Submiting Is Failed{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 
 	#Get Oauth To Sumbit Oauth
@@ -275,7 +275,7 @@ class MyClient(discord.Client, data):
 					return result_session
 				else:
 					print(await res.text())
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Oauth Getting Is Failed{color.reset} {color.red}!!!{color.reset}")
 					await self.goodbye()
 
 	#Solve OwO's HCaptcha
@@ -320,7 +320,7 @@ class MyClient(discord.Client, data):
 						await self.solve_hcaptcha()
 					else:
 						print(res.status)
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Captcha Solving Is Failed{color.reset} {color.red}!!!{color.reset}")
 						await self.goodbye()
 		except Exception as e:
 			#Invalid Key
@@ -338,7 +338,7 @@ class MyClient(discord.Client, data):
 			#Other
 			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
 
 	#Collect All Sent Messages
