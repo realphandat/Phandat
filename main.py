@@ -162,7 +162,7 @@ class MyClient(discord.Client, data):
 		print(f"{await self.cmd_stat()}")
 		choice = input(f"{color.yellow}Do You Wanna Continue? (Y/n) {color.reset}")
 		if choice.lower() == "yes" or choice.lower() == "y":
-			os.system("python 'main.py'")
+			os.system('python "main.py"')
 		elif choice.lower() == "no" or choice.lower() == "n":
 			exit()
 
@@ -314,6 +314,10 @@ class MyClient(discord.Client, data):
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully!{color.reset}")
 						self.captcha_amount += 1
 						await self.worker(True)
+					elif res.status == 401:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Will Try To{color.reset} {color.red}Solve It Again!{color.reset}")
+						await self.solve_hcaptcha()
 					else:
 						print(res.status)
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The System Failure Occurred{color.reset} {color.red}!!!{color.reset}")
