@@ -518,7 +518,7 @@ class MyClient(discord.Client, data):
 		try:
 			if self.owo_status:
 				if self.work and self.feature['owo']:
-					say = random.choice(['owo", "uwu'])
+					say = random.choice(["owo", "uwu"])
 					await self.channel.typing()
 					await self.channel.send(say)
 					print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
@@ -559,7 +559,7 @@ class MyClient(discord.Client, data):
 				self.fun_run = True
 				self.fun_pup = True
 				self.fun_piku = True
-			choice = random.choice(['run", "pup", "piku'])
+			choice = random.choice(["run", "pup", "piku"])
 			if choice == "run" and self.fun_run:
 				await self.channel.typing()
 				await self.channel.send(f"{self.info['prefix']}run")
@@ -745,7 +745,7 @@ class MyClient(discord.Client, data):
 		if self.current_coinflip_bet  >= 250000:
 			self.current_coinflip_bet = self.coinflip['bet']
 		if self.work and self.coinflip['mode']:
-			side = random.choice(['h", "t'])
+			side = random.choice(["h", "t"])
 			await self.channel.typing()
 			await self.channel.send(f"{self.info['prefix']}cf {self.current_coinflip_bet} {side}")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}cf {self.current_coinflip_bet} {side}{color.reset}")
