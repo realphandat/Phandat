@@ -213,7 +213,7 @@ class MyClient(discord.Client, data):
 		print(f"{await self.cmd_stat()}")
 		choice = input(f"{color.yellow}Do You Wanna Continue? (Y/n) {color.reset}")
 		if choice.lower() == "yes" or choice.lower() == "y":
-			os.system('python "main.py"')
+			await self.worker(True)
 		elif choice.lower() == "no" or choice.lower() == "n":
 			exit()
 
@@ -288,7 +288,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 				await self.goodbye()
 			#Other
-			if (str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY") and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if (str(e) != "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY") and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
@@ -409,7 +409,7 @@ class MyClient(discord.Client, data):
 									description = f"<a:Arrow:1065047400714088479>**Error:** {str(e)}",
 									color = 0xCDC9C9)
 			#Invalid Key
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+			if str(e) == str(e) == "ERROR_WRONG_USER_KEY":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
 				await self.goodbye()
 			#Out Of Money
@@ -421,7 +421,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 				await self.goodbye()
 			#Other
-			if (str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY") and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if notstr(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
@@ -649,7 +649,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(17, 25))
+	@tasks.loop(seconds = random.randint(15, 20))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
@@ -891,7 +891,7 @@ class MyClient(discord.Client, data):
 			self.work_time = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			await self.send_webhooks(title = "**🌄 WAKE UP 🌄**",
-									description = f"<a:Arrow:1065047400714088479>I'll Work For __{self.work_time}__ Seconds**",
+									description = f"<a:Arrow:1065047400714088479>I'll Work For **__{self.work_time}__ Seconds**",
 									color = 0xFFF68F)
 			self.work_time += time.time()
 			for index, task in enumerate(self.tasks):
