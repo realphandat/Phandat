@@ -15,7 +15,8 @@
     "fun": true,
     "daily": false,
     "gem": false,
-    "sleep": true
+    "sleep": true,
+    "command": true
   },
   "slot": {
     "mode": false,
@@ -29,6 +30,7 @@
   },
   "info": {
     "prefix": "o",
+    "owner": 1191744403463737456,
     "twocaptcha": "21028b88ad83ad5fe0345f4a0dce91c7",
     "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrfe_DByeerSw96bnm5LMC9_zCiDB949WsPgrV"
   }
