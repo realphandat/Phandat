@@ -276,7 +276,7 @@ class MyClient(discord.Client, data):
 									description = f"<a:Arrow:1065047400714088479>**Error:** {str(e)}",
 									color = 0xCDC9C9)
 			#Invalid Key
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+			if str(e) == str(e) == "ERROR_WRONG_USER_KEY":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
 				await self.goodbye()
 			#Out Of Money
@@ -288,7 +288,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 				await self.goodbye()
 			#Other
-			if (str(e) != "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY") and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
@@ -421,7 +421,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
 				await self.goodbye()
 			#Other
-			if notstr(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				await self.goodbye()
