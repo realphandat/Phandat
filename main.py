@@ -25,8 +25,6 @@ class data:
 			self.token = data['token']
 			self.all_channel = data['channel']
 			self.feature = data['feature']
-			self.slot = data['slot']
-			self.coinflip = data['coinflip']
 			self.info = data['info']
 
 #Color
@@ -51,14 +49,14 @@ class MyClient(discord.Client, data):
 		data.__init__(self)
 		self.tasks = [self.check_owo_status,
 					self.start_grind,
+					self.start_slot,
+					self.start_coinflip,
 					self.start_quote,
-					self.fun,
-					self.entertainment,
+					self.fun1,
+					self.fun2,
 					self.change_channel,
 					self.claim_daily,
-					self.bedtime,
-					self.start_slot,
-					self.start_coinflip
+					self.bedtime
 					]
 		self.OwO = ""
 		self.OwOID = 408785106942164992
@@ -83,8 +81,8 @@ class MyClient(discord.Client, data):
 		self.captcha_amount = 0
 		self.gem_amount = 0
 		self.benefit_amount = 0
-		self.current_slot_bet = self.slot['bet']
-		self.current_coinflip_bet = self.coinflip['bet']
+		self.current_slot_bet = self.info['slot_bet']
+		self.current_coinflip_bet = self.info['coinflip_bet']
 		self.legendary_list = ['gdeer', 'gfox', 'glion', 'gowl', 'gsquid']
 		self.gem_list = ['gcamel', 'gfish', 'gpanda', 'gshrimp', 'gspider']
 		self.fabled_list = ['dboar', 'deagle', 'dfrog', 'dgorilla', 'dwolf']
@@ -116,9 +114,9 @@ class MyClient(discord.Client, data):
 			self.feature_status['sleep']  = "☑️"
 		if self.feature['command']:
 			self.feature_status['command']  = "☑️"
-		if self.slot['mode']:
+		if self.feature['slot']:
 			self.feature_status['slot']  = "☑️"
-		if self.coinflip['mode']:
+		if self.feature['coinflip']:
 			self.feature_status['coinflip']  = "☑️"
 
 	#Log Time
@@ -544,7 +542,7 @@ class MyClient(discord.Client, data):
 										field1_name = "<a:Arrow:1065047400714088479>FEATURES",
 										field1_value = f"**{self.feature_status['owo']} OwO\n{self.feature_status['grind']} Grind\n{self.feature_status['quote']} Quote\n{self.feature_status['fun']} Fun\n{self.feature_status['daily']} Daily\n{self.feature_status['gem']} Gem\n{self.feature_status['sleep']} Sleep\n{self.feature_status['command']} Command\n{self.feature_status['slot']} Slot\n{self.feature_status['coinflip']} Coinflip**",
 										field2_name = "<a:Arrow:1065047400714088479>INFOS",
-										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][:10]}...\n**📢 Webhook:** ...{self.info['webhook'][:15]}...\n**🎰 Slot Index:** {self.slot['bet']} x {self.slot['rate']}\n**🪙 Coinflip Index:** {self.coinflip['bet']} x {self.coinflip['rate']}")
+										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][:10]}...\n**📢 Webhook:** ...{self.info['webhook'][:15]}...\n**🎰 Slot Index:** {self.info['slot_bet']} x {self.info['slot_rate']}\n**🪙 Coinflip Index:** {self.info['coinflip_bet']} x {self.info['coinflip_rate']}")
 			if message.content.lower() == "stat":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(title = f"📊 {self.nickname}'s STAT 📊",
@@ -573,12 +571,12 @@ class MyClient(discord.Client, data):
 	async def on_message_edit(self, before, after):
 		if self.work and self.nickname in after.content and after.channel.id == self.channel_id and after.author.id == self.OwOID:
 			#Slot
-			if self.slot['mode']:
+			if self.feature['slot']:
 				#Lost
 				if "won nothing" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.red}Lost {self.current_slot_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_slot_bet
-					self.current_slot_bet *= self.slot['rate']
+					self.current_slot_bet *= self.info['slot_rate']
 				#Draw
 				if "<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.gray}Draw {self.current_slot_bet} Cowoncy{color.reset}")
@@ -586,34 +584,34 @@ class MyClient(discord.Client, data):
 				if "<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet} Cowoncy (x2){color.reset}")
 					self.benefit_amount += self.current_slot_bet
-					self.current_slot_bet = self.slot['bet']
+					self.current_slot_bet = self.info['slot_bet']
 				#Won x3
 				if "<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 2} Cowoncy (x3){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 2
-					self.current_slot_bet = self.slot['bet']
+					self.current_slot_bet = self.info['slot_bet']
 				#Won x4
 				if "<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 3} Cowoncy (x4){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 3
-					self.current_slot_bet = self.slot['bet']
+					self.current_slot_bet = self.info['slot_bet']
 				#Won x10
 				if "<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_slot_bet * 9} Cowoncy (x10){color.reset}")
 					self.benefit_amount += self.current_slot_bet * 9
-					self.current_slot_bet = self.slot['bet']
+					self.current_slot_bet = self.info['slot_bet']
 			#Coinflip
-			if self.coinflip['mode']:
+			if self.feature['coinflip']:
 				#Lost
 				if "you lost" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.red}Lost {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount -= self.current_coinflip_bet
-					self.current_coinflip_bet *= self.coinflip['rate']
+					self.current_coinflip_bet *= self.info['coinflip_rate']
 				#Won
 				if "you won" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_coinflip_bet} Cowoncy{color.reset}")
 					self.benefit_amount += self.current_coinflip_bet
-					self.current_coinflip_bet = self.coinflip['bet']
+					self.current_coinflip_bet = self.info['coinflip_bet']
 
 	#Get Refesh Time
 	async def get_refresh_time(self):
@@ -650,7 +648,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(15, 20))
+	@tasks.loop(seconds = random.randint(17, 25))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
@@ -675,6 +673,29 @@ class MyClient(discord.Client, data):
 		except:
 			pass
 
+	#Start Playing Slot
+	@tasks.loop(seconds = random.randint(30, 60))
+	async def start_slot(self):
+		if self.current_slot_bet  >= 250000:
+			self.current_slot_bet = self.info['slot_bet']
+		if self.work and self.owo_status and self.feature['slot']:
+			await self.channel.typing()
+			await self.channel.send(f"{self.info['prefix']}s {self.current_slot_bet}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}s {self.current_slot_bet}{color.reset}")
+			self.cmd_amount += 1
+
+	#Start Playing Coinflip
+	@tasks.loop(seconds = random.randint(30, 60))
+	async def start_coinflip(self):
+		if self.current_coinflip_bet  >= 250000:
+			self.current_coinflip_bet = self.info['coinflip_bet']
+		if self.work and self.feature['coinflip']:
+			side = random.choice(['h', 't'])
+			await self.channel.typing()
+			await self.channel.send(f"{self.info['prefix']}cf {self.current_coinflip_bet} {side}")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}cf {self.current_coinflip_bet} {side}{color.reset}")
+			self.cmd_amount += 1
+
 	#Start Sending Quote
 	@tasks.loop(seconds = random.randint(30, 60))
 	async def start_quote(self):
@@ -694,7 +715,7 @@ class MyClient(discord.Client, data):
 
 	#Use Fun Commands
 	@tasks.loop(seconds = random.randint(300, 600))
-	async def fun(self):
+	async def fun1(self):
 		if self.work and self.owo_status and self.feature['fun']:
 			choice = random.choice(self.fun_command)
 			await self.channel.typing()
@@ -704,7 +725,7 @@ class MyClient(discord.Client, data):
 
 	#Run, Pup, Piku
 	@tasks.loop(seconds = random.randint(60, 120))
-	async def entertainment(self):
+	async def fun2(self):
 		if self.work and self.owo_status and self.feature['fun']:
 			if (await self.get_refresh_time()):
 				self.fun_run = True
@@ -897,29 +918,6 @@ class MyClient(discord.Client, data):
 			self.work_time += time.time()
 			for index, task in enumerate(self.tasks):
 				task.change_interval(seconds=interval_before[index])
-
-	#Start Playing Slot
-	@tasks.loop(seconds = random.randint(30, 60))
-	async def start_slot(self):
-		if self.current_slot_bet  >= 250000:
-			self.current_slot_bet = self.slot['bet']
-		if self.work and self.owo_status and self.slot['mode']:
-			await self.channel.typing()
-			await self.channel.send(f"{self.info['prefix']}s {self.current_slot_bet}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}s {self.current_slot_bet}{color.reset}")
-			self.cmd_amount += 1
-
-	#Start Playing Coinflip
-	@tasks.loop(seconds = random.randint(30, 60))
-	async def start_coinflip(self):
-		if self.current_coinflip_bet  >= 250000:
-			self.current_coinflip_bet = self.coinflip['bet']
-		if self.work and self.coinflip['mode']:
-			side = random.choice(['h', 't'])
-			await self.channel.typing()
-			await self.channel.send(f"{self.info['prefix']}cf {self.current_coinflip_bet} {side}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}cf {self.current_coinflip_bet} {side}{color.reset}")
-			self.cmd_amount += 1
 
 #Run Selfbot
 Client = MyClient()

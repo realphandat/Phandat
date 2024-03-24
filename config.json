@@ -1,5 +1,5 @@
 {
-  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.GxkghfOQ5YuBO04CYkLS6N5mAm5Edsq6eichxlHE7RZA",
+  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.GI24KH.hvvJvejcspuh3sGoC-Tx9uiRwaYwdIM",
   "channel": [
     949297064209166337,
     949297697481965598,
@@ -11,6 +11,8 @@
   "feature": {
     "owo": true,
     "grind": true,
+    "slot": true,
+    "coinflip": true,
     "quote": false,
     "fun": true,
     "daily": false,
@@ -18,20 +20,14 @@
     "sleep": true,
     "command": true
   },
-  "slot": {
-    "mode": false,
-    "bet": 15,
-    "rate": 2
-  },
-  "coinflip": {
-    "mode": false,
-    "bet": 15,
-    "rate": 2
-  },
   "info": {
     "prefix": "o",
+    "slot_bet": 15,
+    "slot_rate": 2,
+    "coinflip_bet": 15,
+    "coinflip_rate": 2,
     "owner": 1191744403463737456,
-    "twocaptcha": "21028b88ad83ad5fe0345f4a0dce91c7",
-    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrfe_DByeerSw96bnm5LMC9_zCiDB949WsPgrV"
+    "twocaptcha": "ebe81fe565e7977f42bf69a14036",
+    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0Oe3bsHvLKuXgrUzu6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
   }
 }
