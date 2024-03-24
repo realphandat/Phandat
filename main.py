@@ -211,10 +211,11 @@ class MyClient(discord.Client, data):
 								description = f"{await self.discord_stat()}",
 								color = 0x8B4513)
 		print(f"{await self.cmd_stat()}")
-		choice = input(f"{color.yellow}Do You Wanna Continue? (Y/n) {color.reset}")
-		if choice.lower() == "yes" or choice.lower() == "y":
+		password = random.randint(1, 999)
+		sumbit = input(f"{color.yellow}Enter '{password}' To Continue: {color.reset}")
+		if str(sumbit) == str(password):
 			await self.worker(True)
-		elif choice.lower() == "no" or choice.lower() == "n":
+		else:
 			exit()
 
 	#Get Nickname From Another Guild
@@ -543,7 +544,7 @@ class MyClient(discord.Client, data):
 										field1_name = "<a:Arrow:1065047400714088479>FEATURES",
 										field1_value = f"**{self.feature_status['owo']} OwO\n{self.feature_status['grind']} Grind\n{self.feature_status['quote']} Quote\n{self.feature_status['fun']} Fun\n{self.feature_status['daily']} Daily\n{self.feature_status['gem']} Gem\n{self.feature_status['sleep']} Sleep\n{self.feature_status['command']} Command\n{self.feature_status['slot']} Slot\n{self.feature_status['coinflip']} Coinflip**",
 										field2_name = "<a:Arrow:1065047400714088479>INFOS",
-										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][0:10]}...\n**📢 Webhook:** ...{self.info['webhook'][50:55]}...\n**🎰 Slot Index:** {self.slot['bet']} x {self.slot['rate']}\n**🪙 Coinflip Index:** {self.coinflip['bet']} x {self.coinflip['rate']}")
+										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][:10]}...\n**📢 Webhook:** ...{self.info['webhook'][:15]}...\n**🎰 Slot Index:** {self.slot['bet']} x {self.slot['rate']}\n**🪙 Coinflip Index:** {self.coinflip['bet']} x {self.coinflip['rate']}")
 			if message.content.lower() == "stat":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(title = f"📊 {self.nickname}'s STAT 📊",
