@@ -542,7 +542,7 @@ class MyClient(discord.Client, data):
 										field1_name = "<a:Arrow:1065047400714088479>FEATURES",
 										field1_value = f"**{self.feature_status['owo']} OwO\n{self.feature_status['grind']} Grind\n{self.feature_status['quote']} Quote\n{self.feature_status['fun']} Fun\n{self.feature_status['daily']} Daily\n{self.feature_status['gem']} Gem\n{self.feature_status['sleep']} Sleep\n{self.feature_status['command']} Command\n{self.feature_status['slot']} Slot\n{self.feature_status['coinflip']} Coinflip**",
 										field2_name = "<a:Arrow:1065047400714088479>INFOS",
-										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][:10]}...\n**📢 Webhook:** ...{self.info['webhook'][:15]}...\n**🎰 Slot Index:** {self.info['slot_bet']} x {self.info['slot_rate']}\n**🪙 Coinflip Index:** {self.info['coinflip_bet']} x {self.info['coinflip_rate']}")
+										field2_value = f"**🐄 OwO\'s Prefix:** {self.info['prefix']}\n**👑 Owner:** <@{self.info['owner']}>\n**🔢 2Captcha API:** {self.info['twocaptcha'][:10]}...\n**📢 Webhook:** {self.info['webhook'][:15]}...\n**🎰 Slot Index:** {self.info['slot_bet']} x {self.info['slot_rate']}\n**🪙 Coinflip Index:** {self.info['coinflip_bet']} x {self.info['coinflip_rate']}")
 			if message.content.lower() == "stat":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(title = f"📊 {self.nickname}'s STAT 📊",
@@ -648,7 +648,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(17, 25))
+	@tasks.loop(seconds = random.randint(15, 25))
 	async def start_grind(self):
 		try:
 			if self.owo_status:
