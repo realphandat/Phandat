@@ -629,7 +629,7 @@ class MyClient(discord.Client, data):
 	async def check_owo_status(self):
 		if self.work and self.check_owo_status.current_loop != 0:
 			status = False
-			async for message in self.channel.history(limit=25):
+			async for message in self.channel.history(limit=50):
 				if message.author.id == self.OwOID:
 					status = True
 					break
@@ -643,7 +643,7 @@ class MyClient(discord.Client, data):
 										description = f"<a:Arrow:1065047400714088479>I\'ll Wait For **An Hour!**",
 										color = 0xCDC9C9)
 				await self.worker(False)
-				await asyncio.sleep(3600)
+				sleep(3600)
 				self.owo_status = True
 				await self.worker(True)
 
@@ -909,7 +909,7 @@ class MyClient(discord.Client, data):
 			await self.send_webhooks(title = "**🛌 TAKE A BREAK 🛌**",
 									description = f"<a:Arrow:1065047400714088479>I'm Taking A Break For **__{sleep_time}__ Seconds**",
 									color = 0xA2B5CD)
-			await asyncio.sleep(sleep_time)
+			sleep(sleep_time)
 			self.work_time = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			await self.send_webhooks(title = "**🌄 WAKE UP 🌄**",
