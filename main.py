@@ -48,6 +48,7 @@ class MyClient(discord.Client, data):
 		super().__init__(*args, **kwargs)
 		data.__init__(self)
 		self.tasks = [self.check_owo_status,
+					self.start_owo,
 					self.start_grind,
 					self.start_slot,
 					self.start_coinflip,
@@ -643,35 +644,35 @@ class MyClient(discord.Client, data):
 										description = f"<a:Arrow:1065047400714088479>I\'ll Wait For **An Hour!**",
 										color = 0xCDC9C9)
 				await self.worker(False)
-				sleep(3600)
+				await asyncio.sleep(3600)
 				self.owo_status = True
 				await self.worker(True)
 
+	#Start OwO/UwU
+	@tasks.loop(seconds = random.randint(10, 12))
+	async def start_owo(self):
+		if self.owo_status and self.work and self.feature['owo']:
+			say = random.choice(['owo', 'uwu'])
+			await self.channel.typing()
+			await self.channel.send(say)
+			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
+			self.cmd_amount += 1
+
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(15, 25))
+	@tasks.loop(seconds = random.randint(15, 17))
 	async def start_grind(self):
-		try:
-			if self.owo_status:
-				if self.work and self.feature['owo']:
-					say = random.choice(['owo', 'uwu'])
-					await self.channel.typing()
-					await self.channel.send(say)
-					print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
-					self.cmd_amount += 1
-					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.feature['grind']:
-					await self.channel.typing()
-					await self.channel.send(f"{self.info['prefix']}h")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}h{color.reset}")
-					self.cmd_amount += 1
-					await asyncio.sleep(random.randint(1, 2))
-				if self.work and self.feature['grind']:
-					await self.channel.typing()
-					await self.channel.send(f"{self.info['prefix']}b")
-					print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}b{color.reset}")
-					self.cmd_amount += 1
-		except:
-			pass
+		if self.owo_status:
+			if self.work and self.feature['grind']:
+				await self.channel.typing()
+				await self.channel.send(f"{self.info['prefix']}h")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}h{color.reset}")
+				self.cmd_amount += 1
+				await asyncio.sleep(random.randint(1, 2))
+			if self.work and self.feature['grind']:
+				await self.channel.typing()
+				await self.channel.send(f"{self.info['prefix']}b")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}b{color.reset}")
+				self.cmd_amount += 1
 
 	#Start Playing Slot
 	@tasks.loop(seconds = random.randint(30, 60))
@@ -909,7 +910,7 @@ class MyClient(discord.Client, data):
 			await self.send_webhooks(title = "**🛌 TAKE A BREAK 🛌**",
 									description = f"<a:Arrow:1065047400714088479>I'm Taking A Break For **__{sleep_time}__ Seconds**",
 									color = 0xA2B5CD)
-			sleep(sleep_time)
+			await asyncio.sleep(sleep_time)
 			self.work_time = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			await self.send_webhooks(title = "**🌄 WAKE UP 🌄**",
