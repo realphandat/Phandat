@@ -53,8 +53,7 @@ class MyClient(discord.Client, data):
 					self.start_slot,
 					self.start_coinflip,
 					self.start_quote,
-					self.fun1,
-					self.fun2,
+					self.fun,
 					self.change_channel,
 					self.claim_daily,
 					self.bedtime
@@ -75,6 +74,7 @@ class MyClient(discord.Client, data):
 		self.fun_pup = True
 		self.fun_piku = True
 		self.daily_time = 0
+		self.solve_captcha_again = True
 		self.gem_check = True
 		self.gem_recheck = True
 		self.work_time = random.randint(600, 1200)
@@ -203,8 +203,14 @@ class MyClient(discord.Client, data):
 
 	#Stop Working
 	async def goodbye(self):
-		await self.worker(False)
-		os.startfile("music.mp3")
+		try:
+			await self.worker(False)
+		except:
+			pass
+		try:
+			os.startfile("music.mp3")
+		except:
+			pass
 		print()
 		await self.send_webhooks(title = f"🚧 STOP WORKING 🚧",
 								description = f"{await self.discord_stat()}",
@@ -248,15 +254,16 @@ class MyClient(discord.Client, data):
 							check = message
 			if "verified" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully!{color.reset}")
-				await self.send_webhooks(title = "**🎉 SOLVE SUCCESSFULLY 🎉**",
+				await self.send_webhooks(title = "**🎉 CORRECT SOLUTION 🎉**",
 										description = f"""<a:Arrow:1065047400714088479>**Answer:** {result['code']}\n<a:Arrow:1065047400714088479>**Continue To Work!**""",
 										color = 0x4EEE94,
 										thumnail = image)
 				solver.report(result['captchaId'], True)
+				self.solve_captcha_again = True
 				self.captcha_amount += 1
 			elif "(2/3)" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
-				await self.send_webhooks(title = "**⛔ SOLVE FAILED ⛔**",
+				await self.send_webhooks(title = "**⛔ INCORRECT SOLUTION ⛔**",
 										description = f"""<a:Arrow:1065047400714088479>**Answer:** {result['code']}\n<a:Arrow:1065047400714088479>I Solved It **Wrong Twice!**""",
 										color = 0xEE2C2C,
 										thumnail = image)
@@ -265,7 +272,7 @@ class MyClient(discord.Client, data):
 			elif "Wrong" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed!{color.reset}")
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
-				await self.send_webhooks(title = "**⛔ SOLVE FAILED ⛔**",
+				await self.send_webhooks(title = "**⛔ INCORRECT SOLUTION ⛔**",
 										description = f"""<a:Arrow:1065047400714088479>**Answer:** {result['code']}\n<a:Arrow:1065047400714088479>I\'ll Try To **Solve It Again!**""",
 										color = 0xEE2C2C,
 										thumnail = image)
@@ -283,15 +290,13 @@ class MyClient(discord.Client, data):
 			if str(e) == "ERROR_ZERO_BALANCE":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
 				await self.goodbye()
-			#Timeout
-			if str(e) == "timeout 300.0 exceeded":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
-				await self.goodbye()
 			#Other
-			if str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if self.solve_captcha_again and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
-				await self.goodbye()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
+				await self.solve_hcaptcha()
+				self.solve_captcha_again = False
 
 	#Sumbit Oauth To OwO's Website
 	async def submit_oauth(self, res):
@@ -308,8 +313,8 @@ class MyClient(discord.Client, data):
 				return session
 			else:
 				print(res2.status)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Oauth Submiting Is Failed{color.reset} {color.red}!!!{color.reset}")
-				await self.send_webhooks(title = "**⚙️ SYSTEM ERROR ⚙️**",
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Oauth Sumbiting Error{color.reset} {color.red}!!!{color.reset}")
+				await self.send_webhooks(title = "**⚙️ OAUTH SUMBITING ERROR ⚙️**",
 										description = f"<a:Arrow:1065047400714088479>**Error:** {res2.status}",
 										color = 0xCDC9C9)
 				await self.goodbye()
@@ -345,8 +350,8 @@ class MyClient(discord.Client, data):
 					return result_session
 				else:
 					print(await res.text())
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Oauth Getting Is Failed{color.reset} {color.red}!!!{color.reset}")
-					await self.send_webhooks(title = "**⚙️ SYSTEM ERROR ⚙️**",
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Oauth Getting Error{color.reset} {color.red}!!!{color.reset}")
+					await self.send_webhooks(title = "**⚙️ OAUTH GETTING ERROR ⚙️**",
 											description = f"<a:Arrow:1065047400714088479>**Error:** {await res.text()}",
 											color = 0xCDC9C9)
 					await self.goodbye()
@@ -385,22 +390,23 @@ class MyClient(discord.Client, data):
 										cookies=cookies) as res:
 					if res.status == 200:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully!{color.reset}")
-						await self.send_webhooks(title = "**🎉 SOLVE SUCCESSFULLY 🎉**",
+						await self.send_webhooks(title = "**🎉 CORRECT SOLUTION 🎉**",
 												description = f"<a:Arrow:1065047400714088479>**Continue To Work!**",
 												color = 0x4EEE94)
+						self.solve_captcha_again = True
 						self.captcha_amount += 1
 						await self.worker(True)
 					elif res.status == 401:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed!{color.reset}")
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
-						await self.send_webhooks(title = "**⛔ SOLVE FAILED ⛔**",
+						await self.send_webhooks(title = "**⛔ INCORRECT SOLUTION ⛔**",
 												description = f"<a:Arrow:1065047400714088479>I\'ll Try To **Solve It Again!**",
 												color = 0xEE2C2C)
 						await self.solve_hcaptcha()
 					else:
 						print(res.status)
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}The Captcha Solving Is Wrong{color.reset} {color.red}!!!{color.reset}")
-						await self.send_webhooks(title = "**⚙️ SOLVE ERROR ⚙️**",
+						await self.send_webhooks(title = "**⚙️ SOLUTION ERROR ⚙️**",
 												description = f"<a:Arrow:1065047400714088479>**Error:** {res.status}",
 												color = 0xCDC9C9)
 						await self.goodbye()
@@ -416,15 +422,14 @@ class MyClient(discord.Client, data):
 			if str(e) == "ERROR_ZERO_BALANCE":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
 				await self.goodbye()
-			#Timeout
-			if str(e) == "timeout 300.0 exceeded":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Hcaptcha{color.reset} {color.red}Isn\'t Solved So Far!{color.reset}")
-				await self.goodbye()
 			#Other
-			if str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE" and str(e) != "timeout 300.0 exceeded":
+			if self.solve_captcha_again and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
-				await self.goodbye()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
+				await self.solve_hcaptcha()
+				self.solve_captcha_again = False
+				
 
 	#Collect All Sent Messages
 	async def on_message(self, message):
@@ -659,7 +664,7 @@ class MyClient(discord.Client, data):
 			self.cmd_amount += 1
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(15, 17))
+	@tasks.loop(seconds = random.randint(17, 30))
 	async def start_grind(self):
 		if self.owo_status:
 			if self.work and self.feature['grind']:
@@ -714,19 +719,9 @@ class MyClient(discord.Client, data):
 			except:
 				pass
 
-	#Use Fun Commands
-	@tasks.loop(seconds = random.randint(300, 600))
-	async def fun1(self):
-		if self.work and self.owo_status and self.feature['fun']:
-			choice = random.choice(self.fun_command)
-			await self.channel.typing()
-			await self.channel.send(f"{self.info['prefix']}{choice}")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}{choice}{color.reset}")
-			self.cmd_amount += 1
-
 	#Run, Pup, Piku
 	@tasks.loop(seconds = random.randint(60, 120))
-	async def fun2(self):
+	async def fun(self):
 		if self.work and self.owo_status and self.feature['fun']:
 			if (await self.get_refresh_time()):
 				self.fun_run = True
