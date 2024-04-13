@@ -69,7 +69,6 @@ class MyClient(discord.Client, data):
 			self.channel_amount += 1
 		self.work = True
 		self.work1time = True
-		self.fun_command = ['help', 'tm', 'cash', 'w', 'ws', 'xp', 'profile', 'dt', 'z', 'pray', 'curse']
 		self.fun_run = True
 		self.fun_pup = True
 		self.fun_piku = True
