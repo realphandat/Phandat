@@ -452,7 +452,7 @@ class MyClient(discord.Client, data):
 						firstButton = components[0].children[0]
 						await firstButton.click()
 		#Identify Image Captcha
-		if "⚠" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.info['DM_CHANNEL_ID_OF_OWO'] or self.user in message.content) and self.work and message.author.id == self.OwOID:
+		if "⚠" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.info['DM_CHANNEL_ID_OF_OWO'] or f"{self.user}" in message.content) and self.work and message.author.id == self.OwOID:
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
 			await self.send_webhooks(content = f"<@{self.user.id}>",
@@ -473,7 +473,7 @@ class MyClient(discord.Client, data):
 									color = 0x7EC0EE)
 			await self.solve_hcaptcha()
 		#Check User's Problems
-		if (self.user in message.content or self.nickname in message.content) and self.work and message.author.id == self.OwOID:			
+		if (f"{self.user}" in message.content or self.nickname in message.content) and self.work and message.author.id == self.OwOID:			
 			#Have Been Banned
 			if "You have been banned" in message.content:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You Have Been Banned{color.reset} {color.red}!!!{color.reset}")
@@ -655,7 +655,7 @@ class MyClient(discord.Client, data):
 	@tasks.loop(seconds = random.randint(10, 12))
 	async def start_owo(self):
 		if self.owo_status and self.work and self.feature['owo']:
-			say = random.choice(['owo', 'uwu'])
+			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
 			await self.channel.typing()
 			await self.channel.send(say)
 			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
