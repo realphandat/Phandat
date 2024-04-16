@@ -282,7 +282,7 @@ class MyClient(discord.Client, data):
 									description = f"<a:Arrow:1065047400714088479>**Error:** {str(e)}",
 									color = 0xCDC9C9)
 			#Invalid Key
-			if str(e) == str(e) == "ERROR_WRONG_USER_KEY":
+			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
 				await self.goodbye()
 			#Out Of Money
@@ -290,7 +290,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
 				await self.goodbye()
 			#Other
-			if self.solve_captcha_again and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
+			if self.solve_captcha_again and str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
@@ -414,7 +414,7 @@ class MyClient(discord.Client, data):
 									description = f"<a:Arrow:1065047400714088479>**Error:** {str(e)}",
 									color = 0xCDC9C9)
 			#Invalid Key
-			if str(e) == str(e) == "ERROR_WRONG_USER_KEY":
+			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid!{color.reset}")
 				await self.goodbye()
 			#Out Of Money
@@ -422,13 +422,12 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
 				await self.goodbye()
 			#Other
-			if self.solve_captcha_again and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
+			if self.solve_captcha_again and str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
 				print(e)
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset}")
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again!{color.reset}")
 				await self.solve_hcaptcha()
 				self.solve_captcha_again = False
-				
 
 	#Collect All Sent Messages
 	async def on_message(self, message):
