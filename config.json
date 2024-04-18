@@ -22,9 +22,9 @@
   },
   "info": {
     "prefix": "o",
-    "slot_bet": 15,
+    "slot_bet": 7,
     "slot_rate": 2,
-    "coinflip_bet": 15,
+    "coinflip_bet": 7,
     "coinflip_rate": 2,
     "owner": 1191744403463737456,
     "twocaptcha": "ebe81fe565e7977f42bf69a14036",
