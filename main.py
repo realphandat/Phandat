@@ -652,7 +652,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start Grinding
-	@tasks.loop(seconds = random.randint(17, 30))
+	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
 		if self.owo_status and self.work and self.feature['owo']:
 			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
@@ -660,6 +660,7 @@ class MyClient(discord.Client, data):
 			await self.channel.send(say)
 			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
 			self.cmd_amount += 1
+			await asyncio.sleep(random.randint(1, 2))
 		if self.owo_status and self.work and self.feature['grind']:
 			await self.channel.typing()
 			await self.channel.send(f"{self.info['prefix']}h")
