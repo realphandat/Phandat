@@ -651,7 +651,7 @@ class MyClient(discord.Client, data):
 				await self.worker(True)
 
 	#Start OwO/UwU
-	@tasks.loop(seconds = random.randint(10, 12))
+	@tasks.loop(seconds = random.randint(10, 15))
 	async def start_owo(self):
 		if self.owo_status and self.work and self.feature['owo']:
 			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
