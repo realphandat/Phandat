@@ -651,16 +651,6 @@ class MyClient(discord.Client, data):
 				self.owo_status = True
 				await self.worker(True)
 
-	#Start OwO/UwU
-	@tasks.loop(seconds = random.randint(10, 15))
-	async def start_owo(self):
-		if self.owo_status and self.work and self.feature['owo']:
-			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
-			await self.channel.typing()
-			await self.channel.send(say)
-			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
-			self.cmd_amount += 1
-
 	#Start Grinding
 	@tasks.loop(seconds = random.randint(17, 30))
 	async def start_grind(self):
