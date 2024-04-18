@@ -60,6 +60,7 @@ class MyClient(discord.Client, data):
 					]
 		self.OwO = ""
 		self.OwOID = 408785106942164992
+		self.OwO_DM_CHANNEL_ID = ""
 		self.owo_status = True
 		self.nickname = ""
 		self.channel = ""
@@ -176,6 +177,7 @@ class MyClient(discord.Client, data):
 	async def on_ready(self):
 		if self.work1time:
 			self.OwO = self.get_user(self.OwOID)
+			self.OwO_DM_CHANNEL_ID = self.OwO.dm_channel.id
 			await self.get_nickname()
 			await self.send_webhooks(title = "**🌻 START WORKING 🌻**",
 									description = f"<a:Arrow:1065047400714088479>I\'ll Work For **__{self.work_time}__ Seconds**\n<a:Arrow:1065047400714088479><#{self.channel_id}>",
@@ -451,7 +453,7 @@ class MyClient(discord.Client, data):
 						firstButton = components[0].children[0]
 						await firstButton.click()
 		#Identify Image Captcha
-		if "⚠" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.info['DM_CHANNEL_ID_OF_OWO'] or f"{self.user}" in message.content) and self.work and message.author.id == self.OwOID:
+		if "⚠" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.OwO_DM_CHANNEL_ID or f"{self.user}" in message.content) and self.work and message.author.id == self.OwOID:
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
 			await self.send_webhooks(content = f"<@{self.user.id}>",
