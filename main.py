@@ -289,7 +289,7 @@ class MyClient(discord.Client, data):
 				await self.goodbye()
 			#Out Of Money
 			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money!{color.reset}")
 				await self.goodbye()
 			#Other
 			if self.solve_captcha_again and str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
@@ -421,7 +421,7 @@ class MyClient(discord.Client, data):
 				await self.goodbye()
 			#Out Of Money
 			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Out Of Money!{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money!{color.reset}")
 				await self.goodbye()
 			#Other
 			if self.solve_captcha_again and str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
@@ -675,7 +675,7 @@ class MyClient(discord.Client, data):
 			self.cmd_amount += 1
 
 	#Start Playing Slot
-	@tasks.loop(seconds = random.randint(30, 60))
+	@tasks.loop(seconds = random.randint(60, 120))
 	async def start_slot(self):
 		if self.current_slot_bet  >= 250000:
 			self.current_slot_bet = self.info['slot_bet']
@@ -686,7 +686,7 @@ class MyClient(discord.Client, data):
 			self.cmd_amount += 1
 
 	#Start Playing Coinflip
-	@tasks.loop(seconds = random.randint(30, 60))
+	@tasks.loop(seconds = random.randint(60, 120))
 	async def start_coinflip(self):
 		if self.current_coinflip_bet  >= 250000:
 			self.current_coinflip_bet = self.info['coinflip_bet']
@@ -895,7 +895,7 @@ class MyClient(discord.Client, data):
 			interval_before = [task.seconds for task in self.tasks]
 			sleep_time = int(random.randint(300, 600))
 			for task in self.tasks:
-				task.change_interval(seconds = sleep_time)
+				task.change_interval(seconds = 600)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Taking A Break For{color.reset} {color.cyan}{sleep_time} Seconds{color.reset}")
 			await self.send_webhooks(title = "**🛌 TAKE A BREAK 🛌**",
 									description = f"<a:Arrow:1065047400714088479>I'm Taking A Break For **__{sleep_time}__ Seconds**",
