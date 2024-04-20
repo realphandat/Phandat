@@ -76,7 +76,7 @@ class MyClient(discord.Client, data):
 		self.solve_captcha_again = True
 		self.gem_check = True
 		self.gem_recheck = True
-		self.work_time = random.randint(300, 600)
+		self.work_time = random.randint(600, 1200)
 		self.cmd_amount = 0
 		self.captcha_amount = 0
 		self.gem_amount = 0
@@ -261,6 +261,7 @@ class MyClient(discord.Client, data):
 				solver.report(result['captchaId'], True)
 				self.solve_captcha_again = True
 				self.captcha_amount += 1
+				await self.worker(True)
 			elif "(2/3)" in check.content and check.author.id == self.OwOID:
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}I Solved It Wrong Twice{color.reset} {color.red}!!!{color.reset}")
 				await self.send_webhooks(title = "**⛔ INCORRECT SOLUTION ⛔**",
@@ -660,13 +661,13 @@ class MyClient(discord.Client, data):
 			await self.channel.send(say)
 			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
 			self.cmd_amount += 1
-			await asyncio.sleep(random.randint(6, 8))
+			await asyncio.sleep(random.randint(8, 12))
 		if self.owo_status and self.work and self.feature['grind']:
 			await self.channel.typing()
 			await self.channel.send(f"{self.info['prefix']}h")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.info['prefix']}h{color.reset}")
 			self.cmd_amount += 1
-			await asyncio.sleep(random.randint(6, 8))
+			await asyncio.sleep(random.randint(8, 12))
 		if self.owo_status and self.work and self.feature['grind']:
 			await self.channel.typing()
 			await self.channel.send(f"{self.info['prefix']}b")
@@ -900,7 +901,7 @@ class MyClient(discord.Client, data):
 									description = f"<a:Arrow:1065047400714088479>I'm Taking A Break For **__{sleep_time}__ Seconds**",
 									color = 0xA2B5CD)
 			await asyncio.sleep(sleep_time)
-			self.work_time = random.randint(300, 600)
+			self.work_time = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.work_time} Seconds{color.reset}")
 			await self.send_webhooks(title = "**🌄 WAKE UP 🌄**",
 									description = f"<a:Arrow:1065047400714088479>I'll Work For **__{self.work_time}__ Seconds**",
