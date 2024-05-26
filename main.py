@@ -910,7 +910,7 @@ class MyClient(discord.Client, data):
 	@tasks.loop(minutes = 1)
 	async def go_to_sleep(self):
 		if self.sleep and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['work_time']) - time.time() <= 0:
-			self.selfbot['sleep_time'] = int(random.randint(30, 60))
+			self.selfbot['sleep_time'] = int(random.randint(300, 600))
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I'm Taking A Break For{color.reset} {color.cyan}{self.selfbot['sleep_time']} Seconds{color.reset}")
 			await self.send_webhooks(
 				title = "**🛌 TAKE A BREAK 🛌**",
@@ -918,7 +918,7 @@ class MyClient(discord.Client, data):
 				color = 0xA2B5CD
 				)
 			await self.worker(False, skip = [self.go_to_sleep])
-			await asyncio.sleep(10)
+			await asyncio.sleep(self.selfbot['sleep_time'])
 			self.selfbot['work_time'] = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.selfbot['work_time']} Seconds{color.reset}")
 			await self.send_webhooks(
