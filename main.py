@@ -38,6 +38,7 @@ class data:
 		with open("config.json", "r") as file:
 			data = json.load(file)
 			self.token = data['token']
+			self.get_owo_prefix = data['get_owo_prefix']
 			self.channel_id = data['channel_id']
 			self.solve_captcha = data['solve_captcha']
 			self.grind = data['grind']
@@ -221,17 +222,20 @@ class MyClient(discord.Client, data):
 		await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
 		print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}prefix{color.reset}")
 		self.amount['command'] += 1
-		owo_prefix_message = None
-		await asyncio.sleep(random.randint(3, 5))
-		async for message in self.discord['channel'].history(limit = 10):
-			if message.author.id == self.owo['id'] and (await self.get_messages(message, f"the current prefix is set to")):
-				owo_prefix_message = message
-				break
-		if owo_prefix_message:
-			self.owo['prefix'] = re.findall(r"`(.*?)`", owo_prefix_message.content)[0]
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}OwO\'s Prefix Is Currently{color.reset} {color.gray}{self.owo['prefix']}{color.reset}")
+		if self.get_owo_prefix['mode']:
+			owo_prefix_message = None
+			await asyncio.sleep(random.randint(3, 5))
+			async for message in self.discord['channel'].history(limit = 10):
+				if message.author.id == self.owo['id'] and (await self.get_messages(message, f"the current prefix is set to")):
+					owo_prefix_message = message
+					break
+			if owo_prefix_message:
+				self.owo['prefix'] = re.findall(r"`(.*?)`", owo_prefix_message.content)[0]
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}OwO\'s Prefix Is Currently{color.reset} {color.gray}{self.owo['prefix']}{color.reset}")
+			else:
+				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}OwO\'s Prefix ({self.owo['prefix']}){color.reset}")
 		else:
-			print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}OwO\'s Prefix ({self.owo['prefix']}){color.reset}")
+			self.owo['prefix'] = self.get_owo_prefix['default']
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
