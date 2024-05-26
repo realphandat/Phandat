@@ -244,7 +244,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
-		if len(self.channel_id) >= 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
+		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
 			await self.startup_channel()
 			await self.send_webhooks(
 				title = "**🏠 CHANGE CHANNEL 🏠**",
