@@ -925,7 +925,7 @@ class MyClient(discord.Client, data):
 			self.selfbot['work_time'] += time.time()
 			await self.worker(True, skip = [self.go_to_sleep])
 
-	@tasks.loop(seconds = random.randint(30, 60))
+	@tasks.loop(seconds = random.randint(60, 120))
 	async def play_gamble(self):
 		#Slot
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
