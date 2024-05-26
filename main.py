@@ -196,24 +196,20 @@ class MyClient(discord.Client, data):
 
 	async def send_webhooks(self, content = None, title = None, description = None, color = None, image = None, thumnail = None):
 		if self.webhook['mode']:
-			try:
-				async with aiohttp.ClientSession() as session:
-					webhook = Webhook.from_url(self.webhook['link'], session=session)
-					if title:
-						embed = discord.Embed(title = title, description = description, color = color)
-						embed.set_author(name = self.user, icon_url = self.user.avatar)
-						if image:
-							embed.set_image(url = image)
-						if thumnail:
-							embed.set_thumbnail(url = thumnail)
-						embed.timestamp = datetime.datetime.now()
-						embed.set_footer(text = self.owo['name'], icon_url = self.owo['name'].avatar)
-						await webhook.send(content = content, embed = embed)
-					else:
-						await webhook.send(content = content)
-			except Exception as e:
-				if str(e) == "Invalid Webhook Token":
-					pass
+			async with aiohttp.ClientSession() as session:
+				webhook = Webhook.from_url(self.webhook['link'], session=session)
+				if title:
+					embed = discord.Embed(title = title, description = description, color = color)
+					embed.set_author(name = self.user, icon_url = self.user.avatar)
+					if image:
+						embed.set_image(url = image)
+					if thumnail:
+						embed.set_thumbnail(url = thumnail)
+					embed.timestamp = datetime.datetime.now()
+					embed.set_footer(text = self.owo['name'], icon_url = self.owo['name'].avatar)
+					await webhook.send(content = content, embed = embed)
+				else:
+					await webhook.send(content = content)
 
 	async def startup_channel(self):
 		self.discord['channel_id'] = int(random.choice(self.channel_id))
@@ -244,7 +240,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
-		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
+		if len(self.channel_id) >= 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
 			await self.startup_channel()
 			await self.send_webhooks(
 				title = "**🏠 CHANGE CHANNEL 🏠**",
