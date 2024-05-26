@@ -1,3 +1,5 @@
 discord.py-self @ git+https://github.com/dolfies/discord.py-self.git
+numpy
+Pillow
 brotli
 2captcha-python
