@@ -810,7 +810,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}hb 1d {answer}{color.reset}")
 					self.amount['command'] += 1
 					try:
-						await self.client.wait_for("message", check=lambda m: "Wrong password" in m.content and m.channel.id == self.discord['channel'] and self.discord['user_nickname'] in m.content, timeout = 10)
+						await self.wait_for("message", check=lambda m: "Wrong password" in m.content and m.channel.id == self.discord['channel'] and self.discord['user_nickname'] in m.content, timeout = 10)
 					except TimeoutError:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Submitted Huntbot{color.reset} {color.green}Successfully{color.reset}")
 						await self.send_webhooks(
