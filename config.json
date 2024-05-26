@@ -1,33 +1,88 @@
 {
-  "token": "MTE5MTcwMzY4MTYzNzI5MDA4Ng.GI24KH.hvvJvejcspuh3sGoC-Tx9uiRwaYwdIM",
-  "channel": [
-    949297064209166337,
-    949297697481965598,
-    949689279943176202,
-    992651277404221480,
-    1169898021446750359,
-    1169898072877314069
-  ],
-  "feature": {
-    "owo": true,
-    "grind": true,
-    "slot": true,
-    "coinflip": true,
-    "quote": false,
-    "fun": true,
-    "daily": false,
-    "gem": false,
-    "sleep": true,
-    "command": true
-  },
-  "info": {
-    "prefix": "o",
-    "slot_bet": 7,
-    "slot_rate": 2,
-    "coinflip_bet": 7,
-    "coinflip_rate": 2,
-    "owner": 1191744403463737456,
-    "twocaptcha": "ebe81fe565e7977f42bf69a14036",
-    "webhook": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0Oe3bsHvLKuXgrUzu6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
-  }
+	"token": "aAbBcCTcwMzY4MTYzNzI5MDA4Ng.GLnfrb.EiMuls4SmNZ-vC1xkDrOK1jtWP1rAKU1KnOJ_c",
+
+	"get_owo_prefix": {
+		"mode": true,
+		"default": "o"
+	},
+
+	"channel_id": [949297064209166337, 949297697481965598, 949689279943176202, 992651277404221480, 1169898021446750359, 1169898072877314069],
+
+	"solve_captcha": {
+		"image_captcha": true,
+		"hcaptcha": true,
+		"twocaptcha_api": "1234568dff81bbd477b9d867c49087702"
+	},
+
+	"grind": {
+		"owo": true,
+		"hunt": true,
+		"battle": true,
+		"quote": false
+	},
+
+	"huntbot": {
+		"claim_submit": true,
+		"upgrade": {
+			"mode": true,
+			"type": "duration"
+		}
+	},
+
+	"gem": {
+		"mode": true,
+		"sort": "best",
+		"star": false,
+		"open_box": true,
+		"open_crate": true
+	},
+
+	"animal": {
+		"mode": true,
+		"type": "sac",
+		"rank": "all"
+	},
+
+	"daily": true,
+
+	"sleep": true,
+
+	"gamble": {
+		"slot": {
+			"mode": false,
+			"bet": 1,
+			"rate": 2,
+			"max": 250000
+		},
+		"coinflip": {
+			"mode": false,
+			"bet": 1,
+			"rate": 2,
+			"max": 250000
+		},
+		"blackjack": {
+			"mode": true,
+			"bet": 1,
+			"rate": 2,
+			"max": 250000
+		}
+	},
+
+	"pray_curse": {
+		"mode": true,
+		"type": "pray",
+		"user_id": "1191744403463737456"
+	},
+
+	"entertainment": {
+		"run": true,
+		"pup": true,
+		"piku": true
+	},
+
+	"webhook": {
+		"mode": true,
+		"owner_id": [994511658452000799, 1191744403463737456],
+		"link": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
+	}
 }
