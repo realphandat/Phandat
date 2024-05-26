@@ -96,7 +96,7 @@ class data:
 
 		self.checking = {
 			"no_gem": False,
-			"blackjack_emoji_click_number": 0,
+			"blackjack_end": False,
 			"run_limit": False,
 			"pup_limit": False,
 			"piku_limit": False
@@ -397,7 +397,6 @@ class MyClient(discord.Client, data):
 		async with (await self.get_oauth()) as session:
 			cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
 			async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
-				print(res.status)
 				if res.status == 200:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully{color.reset}")
 					await self.send_webhooks(
@@ -684,28 +683,6 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_gamble_bet['coinflip']} Cowoncy{color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
-			#Blackjack
-			if self.gamble['blackjack']['mode'] and after.embeds:
-				if str(self.discord['user']) in after.embeds[0].author.name and "play blackjack" in after.embeds[0].author.name:
-					if "in progress" in after.embeds[0].footer.text or "resuming previous" in after.embeds[0].footer.text:
-						my_blackjack_point = int(re.findall(r"\[(.*?)\]", after.embeds[0].fields[1].name)[0])
-						if my_blackjack_point <= 17:
-							if after.reactions[0].me:
-								await after.remove_reaction('👊', self.discord['user'])
-							else:
-								await after.add_reaction('👊')
-						else:
-							await after.add_reaction('🛑')
-					elif "You won" in after.embeds[0].footer.text:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
-						self.amount['gamble'] += self.current_gamble_bet['blackjack']
-						self.current_gamble_bet['blackjack'] = self.gamble['blackjack']['bet']
-					elif "You lost" in after.embeds[0].footer.text:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
-						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
-						self.current_gamble_bet['blackjack'] *= self.gamble['blackjack']['rate']
-					elif "You tied" in after.embeds[0].footer.text or "You both bust" in after.embeds[0].footer.text:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
@@ -943,7 +920,7 @@ class MyClient(discord.Client, data):
 			self.selfbot['work_time'] += time.time()
 			await self.worker(True, skip = [self.go_to_sleep])
 
-	@tasks.loop(seconds = random.randint(60, 120))
+	@tasks.loop(seconds = random.randint(30, 60))
 	async def play_gamble(self):
 		#Slot
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
@@ -972,16 +949,51 @@ class MyClient(discord.Client, data):
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}{color.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
-			async for message in self.discord['channel'].history(limit=10):
-				if message.author.id == self.owo['id'] and message.embeds:
-					if str(self.discord['user']) in message.embeds[0].author.name and "play blackjack" in message.embeds[0].author.name:
+			self.checking['blackjack_end'] = False
+			while not self.checking['blackjack_end']:
+				message = None
+				await asyncio.sleep(random.randint(3, 5))
+				async for m in self.discord['channel'].history(limit=10):
+					if m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'] and m.embeds:
+						if str(self.discord['user']) in m.embeds[0].author.name and "play blackjack" in m.embeds[0].author.name:
+							message = m
+							break
+				if message:
+					if "in progress" in message.embeds[0].footer.text or "resuming previous" in message.embeds[0].footer.text:
 						my_blackjack_point = int(re.findall(r"\[(.*?)\]", message.embeds[0].fields[1].name)[0])
 						if my_blackjack_point <= 17:
-							await message.add_reaction('👊')
+							try:
+								if message.reactions[0].emoji == "👊":
+									if message.reactions[0].me:
+										await message.remove_reaction('👊', self.discord['user'])
+									else:
+										await message.add_reaction('👊')
+								else:
+									if message.reactions[1].me:
+										await message.remove_reaction('👊', self.discord['user'])
+									else:
+										await message.add_reaction('👊')
+								print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn Has{color.reset} {color.blue}{my_blackjack_point} Points (Hit){color.reset}")
+							except IndexError:
+								pass
 						else:
 							await message.add_reaction('🛑')
-						break
+							print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn Has{color.reset} {color.blue}{my_blackjack_point} Points (Stand){color.reset}")
+					elif "You won" in message.embeds[0].footer.text:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
+						self.amount['gamble'] += self.current_gamble_bet['blackjack']
+						self.current_gamble_bet['blackjack'] = self.gamble['blackjack']['bet']
+						self.checking['blackjack_end'] = True
+					elif "You lost" in message.embeds[0].footer.text:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
+						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
+						self.current_gamble_bet['blackjack'] *= self.gamble['blackjack']['rate']
+						self.checking['blackjack_end'] = True
+					elif "You tied" in message.embeds[0].footer.text or "You both bust" in message.embeds[0].footer.text:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
+						self.checking['blackjack_end'] = True
+				else:
+					break
 
 	@tasks.loop(seconds = random.randint(300, 360))
 	async def start_pray_curse(self):
