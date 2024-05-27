@@ -33,7 +33,7 @@ class color:
 
 print()
 print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.reset} {color.bold}By{color.reset} {color.blue}Phandat (realphandat){color.reset} {color.bold}| https://github.com/realphandat/OwO{color.reset}")
-print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}ahuhu (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}ahehe (cesxos){color.reset}")
+print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}aduck (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}Cex (cesxos){color.reset}")
 print()
 
 class data:
