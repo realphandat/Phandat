@@ -649,7 +649,7 @@ class MyClient(discord.Client, data):
 					break
 
 		#Join owo's giveaway
-		if self.other_features['join_owo_giveaway'] and self.selfbot['work_status'] and self.owo['status'] and message.embeds in message.content and message.author.id == self.owo['id']:
+		if self.other_features['join_owo_giveaway'] and message.embeds in message.content and message.author.id == self.owo['id']:
 			if "A New Giveaway Appeared!" in message.embeds[0].author.name:
 				choice = random.choice([1, 2])
 				await asyncio.sleep(random.randint(3, 5))
