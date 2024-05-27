@@ -14,11 +14,9 @@ import numpy as np
 from PIL import Image
 from requests import get
 from base64 import b64encode
-from datetime import timedelta
-from twocaptcha import TwoCaptcha
-from time import strftime, localtime, time, sleep
 import time
 import datetime
+from twocaptcha import TwoCaptcha
 
 class color:
 	mark = '\033[104m'
@@ -93,6 +91,7 @@ class data:
 		self.selfbot = {
 			"on_ready": True,
 			"run_time": time.time(),
+			"turn_on_time": int(time.time()),
 			"work_time": random.randint(600, 1200),
 			"work_status": True,
 			"sleep_time": None,
@@ -146,7 +145,7 @@ class MyClient(discord.Client, data):
 		data.__init__(self)
 
 	async def intro(self):
-		return f"{color.mark}{strftime('%H:%M:%S', localtime())}{color.reset} - {color.red}{self.discord['user_nickname']}{color.reset} - "
+		return f"{color.mark}{time.strftime('%H:%M:%S', time.localtime())}{color.reset} - {color.red}{self.discord['user_nickname']}{color.reset} - "
 
 	async def on_ready(self):
 		if self.selfbot['on_ready']:
@@ -156,18 +155,19 @@ class MyClient(discord.Client, data):
 			self.discord['user'] = self.user
 			self.discord['user_id'] = self.user.id
 			await self.startup_channel()
+			webhook = f"<a:Arrow:1065047400714088479><#{self.discord['channel_id']}>"
 			if self.selfbot['work_time']:
-				x = f"<a:Arrow:1065047400714088479>I\'ll Work For **__{self.selfbot['work_time']}__ Seconds**\n<a:Arrow:1065047400714088479><#{self.discord['channel_id']}>"
-				y = f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.discord['channel']}{color.reset} {color.bold}For{color.reset} {color.cyan}{self.selfbot['work_time']} Seconds{color.reset}"
-			else:
-				x = f"<a:Arrow:1065047400714088479><#{self.discord['channel_id']}>"
-				y = f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.discord['channel']}{color.reset}"
+				webhook = f"<a:Arrow:1065047400714088479>I\'ll Work For **__{self.selfbot['work_time']}__ Seconds**\n" + webhook
+			
+			cmd = f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.discord['channel']}{color.reset}"
+			if self.selfbot['work_time']:
+				cmd = cmd + f" {color.bold}For{color.reset} {color.cyan}{self.selfbot['work_time']} Seconds{color.reset}"
 			await self.send_webhooks(
-				title = "**🌻 START WORKING 🌻**",
-				description = x,
+				title = f"**🌻 STARTED <t:{self.selfbot['turn_on_time']}:R> 🌻**",
+				description = webhook,
 				color = 0xCDC0B0
 				)
-			print(y)
+			print(cmd)
 			self.selfbot['work_time'] += time.time()
 			await self.worker(True)
 
@@ -219,11 +219,11 @@ class MyClient(discord.Client, data):
 			self.discord['user_nickname'] = str(member.nick)
 		elif not member.nick:
 			self.discord['user_nickname'] = str(member.display_name)
-		await self.discord['channel'].typing()
-		await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
-		print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}prefix{color.reset}")
-		self.amount['command'] += 1
 		if self.get_owo_prefix['mode']:
+			await self.discord['channel'].typing()
+			await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}prefix{color.reset}")
+			self.amount['command'] += 1
 			owo_prefix_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -585,7 +585,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(
 					title = f"📊 {self.discord['user_nickname']}'s STAT 📊",
-					description = f"I Worked For {strftime('**%H:%M:%S**',time.gmtime(time.time() - self.selfbot['run_time']))} With:\n{self.emoji['arrow']}Sent **__{self.amount['command']}__ Commands**\n{self.emoji['arrow']}Solved **__{self.amount['captcha']}__ Captchas**\n{self.emoji['arrow']}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.emoji['arrow']}Used Gem **__{self.amount['gem']}__ Times**\n{self.emoji['arrow']}Got **__{self.amount['cash']}__ Cowoncy**\n{self.emoji['arrow']} Gambled **__{self.amount['gamble']}__ Cowoncy**",
+					description = f"I Worked For {time.strftime('**%H:%M:%S**',time.gmtime(time.time() - self.selfbot['run_time']))} With:\n{self.emoji['arrow']}Sent **__{self.amount['command']}__ Commands**\n{self.emoji['arrow']}Solved **__{self.amount['captcha']}__ Captchas**\n{self.emoji['arrow']}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.emoji['arrow']}Used Gem **__{self.amount['gem']}__ Times**\n{self.emoji['arrow']}Got **__{self.amount['cash']}__ Cowoncy**\n{self.emoji['arrow']}Gambled **__{self.amount['gamble']}__ Cowoncy**",
 					color = 0x4EEE94
 				)
 
@@ -710,7 +710,7 @@ class MyClient(discord.Client, data):
 					color = 0xCDC9C9
 				)
 				await self.worker(False, skip = [self.check_owo_status])
-				sleep(600)
+				await asyncio.sleep(600)
 				self.owo['status'] = True
 				await self.worker(True, skip = [self.check_owo_status])
 
@@ -768,7 +768,7 @@ class MyClient(discord.Client, data):
 					next_huntbot = re.findall(r"(?<=Password will reset in )(\d+)", huntbot_message.content)
 					next_huntbot = int(int(next_huntbot[0]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Lost Huntbot Message, Retry After{color.reset} {color.yellow}{str(timedelta(seconds = int(next_huntbot)))} Seconds{color.reset}")
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Lost Huntbot Message, Retry After{color.reset} {color.yellow}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{color.reset}")
 				#Solve huntbot captchas
 				if "Here is" in huntbot_message.content:
 					await self.send_webhooks(
@@ -836,7 +836,7 @@ class MyClient(discord.Client, data):
 					else:
 						next_huntbot = int(int(next_huntbot[0]) * 3600 + int(next_huntbot[1]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Huntbot\'ll Be Back In{color.reset} {color.yellow}{str(timedelta(seconds = int(next_huntbot)))} Seconds{color.reset}")
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Huntbot\'ll Be Back In{color.reset} {color.yellow}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{color.reset}")
 					await self.send_webhooks(
 						title = "**📌 SUBMITTED HUNTBOT 📌**",
 						description = huntbot_message.content,
@@ -897,7 +897,7 @@ class MyClient(discord.Client, data):
 					next_daily = re.findall("[0-9]+", daily_message.content)
 					next_daily = int(int(next_daily[0]) * 3600 + int(next_daily[1]) * 60 + int(next_daily[2]))
 					self.selfbot['daily_time'] = next_daily + time.time()
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Can Claim Daily After{color.reset} {color.orange}{str(timedelta(seconds = int(next_daily)))} Seconds{color.reset}")
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Can Claim Daily After{color.reset} {color.orange}{str(datetime.timedelta(seconds = int(next_daily)))} Seconds{color.reset}")
 				elif "Your next daily" in daily_message.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.green}Claimed{color.reset} {color.bold}Daily{color.reset}")
 			else:
@@ -1036,9 +1036,8 @@ class MyClient(discord.Client, data):
 						run_message = message
 						break
 				if run_message:
-					if "tired to run" in run_message.content:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Run For Today Is{color.reset} {color.red}Over{color.reset}")
-						self.checking['run_limit'] = True
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Run For Today Is{color.reset} {color.red}Over{color.reset}")
+					self.checking['run_limit'] = True
 			#Pup
 			if self.entertainment['pup'] and not self.checking['pup_limit']:
 				await self.discord['channel'].typing()
@@ -1052,9 +1051,8 @@ class MyClient(discord.Client, data):
 						pup_message = message
 						break
 				if pup_message:
-					if "no puppies" in pup_message.content:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Pup For Today Is{color.reset} {color.red}Over{color.reset}")
-						self.checking['pup_limit'] = True
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Pup For Today Is{color.reset} {color.red}Over{color.reset}")
+					self.checking['pup_limit'] = True
 			#Piku
 			if self.entertainment['piku'] and not self.checking['piku_limit']:
 				await self.discord['channel'].typing()
@@ -1068,9 +1066,8 @@ class MyClient(discord.Client, data):
 						piku_message = message
 						break
 				if piku_message:
-					if "out of carrots" in piku_message.content:
-						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over{color.reset}")
-						self.checking['piku_limit'] = True
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over{color.reset}")
+					self.checking['piku_limit'] = True
 
 Client = MyClient()
 Client.run(Client.token)
