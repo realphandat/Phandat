@@ -54,6 +54,7 @@ class data:
 			self.pray_curse = data['pray_curse']
 			self.entertainment = data['entertainment']
 			self.webhook = data['webhook']
+			self.other_features = data['other_features']
 
 		self.tasks = [
 			self.check_owo_status,
@@ -65,7 +66,8 @@ class data:
 			self.go_to_sleep,
 			self.play_gamble,
 			self.start_pray_curse,
-			self.start_entertainment
+			self.start_entertainment,
+			self.check_distorted_animal
 		]
 
 		self.emoji = {
@@ -96,7 +98,8 @@ class data:
 			"work_status": True,
 			"sleep_time": None,
 			"huntbot_time": 0,
-			"daily_time": 0
+			"daily_time": 0,
+			"distorted_animals_time": 0
 		}
 
 		self.checking = {
@@ -117,7 +120,7 @@ class data:
 			"legendary": ['gdeer', 'gfox', 'glion', 'gowl', 'gsquid'],
 			"gem": ['gcamel', 'gfish', 'gpanda', 'gshrimp', 'gspider'],
 			"bot": ['dinobot', 'giraffbot', 'hedgebot', 'lobbot', 'slothbot'],
-			"distored": ['glitchflamingo', 'glitchotter', 'glitchparrot', 'glitchraccoon', 'glitchzebra'],
+			"distorted": ['glitchflamingo', 'glitchotter', 'glitchparrot', 'glitchraccoon', 'glitchzebra'],
 			"fabled": ['dboar', 'deagle', 'dfrog', 'dgorilla', 'dwolf'],
 			"hidden": ['hkoala', 'hlizard','hmonkey', 'hsnake', 'hsquid']
 		}
@@ -127,7 +130,8 @@ class data:
 			"captcha": 0,
 			"huntbot": 0,
 			"gem": 0,
-			"cash": 0,
+			sleep,
+			change
 			"gamble": 0
 		}
 
@@ -240,7 +244,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
-		if len(self.channel_id) >= 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
+		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
 			await self.startup_channel()
 			await self.send_webhooks(
 				title = "**🏠 CHANGE CHANNEL 🏠**",
@@ -492,7 +496,7 @@ class MyClient(discord.Client, data):
 					await firstButton.click()
 
 		#Check gems in use
-		if self.gem['mode'] and self.selfbot['work_status'] and self.owo['status'] and "🌱" in message.content and "gained" in message.content and (not self.checking["no_gem"] or int(self.selfbot['work_time']) - time.time() <= -300) and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.gem['mode'] and self.selfbot['work_status'] and self.owo['status'] and "🌱" in message.content and "gained" in message.content and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= -300 or self.selfbot['distorted_animals_time'] - time.time() <= 0) and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content:
 				empty.append("gem1")
@@ -514,7 +518,7 @@ class MyClient(discord.Client, data):
 						inv = message
 						break
 				if inv:
-					inv = [int(item) for item in  re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
+					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
 					if self.gem['open_box'] and 50 in inv:
 						await self.discord['channel'].typing()
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
@@ -623,12 +627,12 @@ class MyClient(discord.Client, data):
 						color = 0xAEDFFF
 					)
 					break
-			#Distored pet
-			for i in range(len(self.animal_list['distored'])):
-				if self.animal_list['distored'][i] in pet:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.red}The Distored Pet{color.reset}")
+			#Distorted pet
+			for i in range(len(self.animal_list['distorted'])):
+				if self.animal_list['distorted'][i] in pet:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Just Found{color.reset} {color.red}The Distorted Pet{color.reset}")
 					await self.send_webhooks(
-						title = "**<a:distorted:728812986147274835> FOUND DISTORED PET <a:distorted:728812986147274835>**",
+						title = "**<a:distorted:728812986147274835> FOUND DISTORTED PET <a:distorted:728812986147274835>**",
 						description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = 0x9E4D4D
 					)
@@ -642,7 +646,22 @@ class MyClient(discord.Client, data):
 						description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = 0xB400CB
 					)
-					break	
+					break
+
+		#Join owo's giveaway
+		if self.other_features['join_owo_giveaway'] and self.selfbot['work_status'] and self.owo['status'] and message.embeds in message.content and message.author.id == self.owo['id']:
+			if "A New Giveaway Appeared!" in message.embeds[0].author.name:
+				choice = random.choice([1, 2])
+				await asyncio.sleep(random.randint(3, 5))
+				components = message.components
+				firstButton = components[0].children[0]
+				await firstButton.click()
+				await self.send_webhooks(
+					title = "**🎁 OWO\'S GIVEAWAY 🎁**",
+					description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					color = 0xEE2C2C
+				)
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.red}Joined{color.reset} {color.bold}A New OwO\'s Giveaway{color.reset}")
 
 	async def on_message_edit(self, before, after):
 		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
@@ -865,19 +884,6 @@ class MyClient(discord.Client, data):
 			await self.discord['channel'].send(f"{self.owo['prefix']}{self.animal['type']} {self.animal['rank']}")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}{self.animal['type']} {self.animal['rank']}{color.reset}")
 			self.amount['command'] += 1
-			await self.discord['channel'].typing()
-			await self.discord['channel'].send(f"{self.owo['prefix']}cash")
-			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}cash{color.reset}")
-			self.amount['command'] += 1
-			cash_message = None
-			await asyncio.sleep(random.randint(3, 5))
-			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and (await self.get_messages(message, "you currently have")):
-					cash_message = message
-					break
-			if cash_message:
-				self.amount['cash'] = re.findall(r"__(.*?)__", cash_message.content)[0]
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Currently Have{color.reset} {color.green}{self.amount['cash']} Cowoncy{color.reset}")
 
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self):
@@ -929,7 +935,7 @@ class MyClient(discord.Client, data):
 	async def play_gamble(self):
 		#Slot
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['slot']  >= self.gamble['slot']['max']:
+			if self.current_gamble_bet['slot'] >= self.gamble['slot']['max']:
 				self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
@@ -938,7 +944,7 @@ class MyClient(discord.Client, data):
 			await asyncio.sleep(random.randint(3, 5))
 		#Coinflip
 		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['coinflip']  >= self.gamble['coinflip']['max']:
+			if self.current_gamble_bet['coinflip'] >= self.gamble['coinflip']['max']:
 				self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
 			side = random.choice(['h', 't'])
 			await self.discord['channel'].typing()
@@ -948,7 +954,7 @@ class MyClient(discord.Client, data):
 			await asyncio.sleep(random.randint(3, 5))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['blackjack']  >= self.gamble['blackjack']['max']:
+			if self.current_gamble_bet['blackjack'] >= self.gamble['blackjack']['max']:
 				self.current_gamble_bet['blackjack'] = self.gamble['blackjack']['bet']
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
@@ -1068,6 +1074,30 @@ class MyClient(discord.Client, data):
 				if piku_message:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over{color.reset}")
 					self.checking['piku_limit'] = True
+
+	@tasks.loop(seconds = random.randint(300, 600))
+	async def check_distorted_animal(self):
+		if self.other_features['use_gem_when_distorted_animals_are_available'] and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['distorted_animals_time'] - time.time() <= 0:
+			await self.discord['channel'].typing()
+			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
+			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}dt{color.reset}")
+			self.amount['command'] += 1
+			distorted_animals_message = None
+			await asyncio.sleep(random.randint(3, 5))
+			async for message in self.discord['channel'].history(limit = 10):
+				if message.author.id == self.owo['id'] and (await self.get_messages(message, "are available") or await self.get_messages(message, "not available")):
+					distorted_message = message
+					break
+			if distorted_animals_message:
+				if "are available" in distorted_animals_message.content:
+					distorted_animals_end = re.findall("[0-9]+", distorted_animals_message.content)
+					distorted_animals_end = int(int(distorted_animals_end[0]) * 3600 + int(distorted_animals_end[1]) * 60 + int(distorted_animals_end[2]))
+					self.selfbot['distorted_animals_time'] = distorted_end + time.time()
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals Are Available For{color.reset} {color.green}{str(datetime.timedelta(seconds = int(distorted_animals_end)))} Seconds{color.reset}")
+				elif "not available" in distorted_animals_message.content:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals{color.reset} {color.red}Aren\'t Available{color.reset}")
+			else:
+				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Distorted Animals Message{color.reset}")
 
 Client = MyClient()
 Client.run(Client.token)
