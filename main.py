@@ -499,6 +499,7 @@ class MyClient(discord.Client, data):
 		#Check gems in use
 		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0)) or (self.selfbot['distorted_animals_time'] - time.time() <= 0 and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0))) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
+			print(message.content)
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
 			if not "gem3" in message.content and "gem3" in self.discord['inventory']:
@@ -533,12 +534,13 @@ class MyClient(discord.Client, data):
 						print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}wc all{color.reset}")
 						self.amount['command'] += 1
 						await asyncio.sleep(random.randint(3, 5))
-					gem_in_inv = None
+					gems_in_inv = None
 					if self.gem['sort'].lower() == "worst":
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
 					else:
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse=True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
-					if gem_in_inv != [[], [], [], []]:
+					print(gems_in_inv)
+					if gems_in_inv != [[], [], [], []]:
 						use_gem = ""
 						if "gem1" in empty and gems_in_inv[0] != []:
 							use_gem = use_gem + str(gems_in_inv[0][0]) + " "
