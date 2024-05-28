@@ -37,7 +37,7 @@
 		"open_crate": true
 	},
 
-	"animal": {
+	"animals": {
 		"mode": true,
 		"type": "sac",
 		"rank": "all"
