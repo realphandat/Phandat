@@ -37,6 +37,8 @@
 		"open_crate": true
 	},
 
+	"use_gem_when_distorted_animals_are_available": true,
+
 	"animals": {
 		"mode": true,
 		"type": "sac",
@@ -86,8 +88,5 @@
 		"link": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
 	},
 
-	"other_features": {
-		"use_gem_when_distorted_animals_are_available": true,
-		"join_owo_giveaway": true
-	}
+	"join_owo_giveaway": true
 }
