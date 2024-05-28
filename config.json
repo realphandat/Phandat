@@ -1,5 +1,5 @@
 {
-	"token": "MTExMDE0NTMyMTE3NjE0NTk1MA.G4_orl.rGvu_-K77WDUX3FRXwereWE75u_3y8",
+	"token": "MTExMDE0NTMyMTE3NjdfgghoaMdN6AsdHtBLdsfsdBid4OiqR79FJwfDgA",
 
 	"get_owo_prefix": {
 		"mode": false,
@@ -8,10 +8,12 @@
 
 	"channel_id": [949297064209166337, 949297697481965598, 949689279943176202, 992651277404221480, 1169898021446750359, 1169898072877314069],
 
+	"change_channel_when_someone_mentions": true,
+
 	"solve_captcha": {
 		"image_captcha": true,
 		"hcaptcha": true,
-		"twocaptcha_api": "618458dff81bbd477d8wrc49087702"
+		"twocaptcha_api": "618458dff8b9d867c49087702"
 	},
 
 	"grind": {
@@ -25,7 +27,7 @@
 		"claim_submit": true,
 		"upgrade": {
 			"mode": true,
-			"type": "gain"
+			"type": "experience"
 		}
 	},
 
@@ -37,7 +39,7 @@
 		"open_crate": true
 	},
 
-	"distorted_animals": true,
+	"use_gem_when_distorted_animals_are_available": true,
 
 	"animals": {
 		"mode": false,
@@ -84,9 +86,11 @@
 
 	"webhook": {
 		"mode": true,
-		"owner_id": [1191703681637990086, 1191744409063737456],
-		"url": "https://discord.com/api/webhooks/120462864957636654bMFe0HfOe3weruXgrUzu6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
+		"owner_id": [119170368163720086, 119174440463737456],
+		"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0Hfzu6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
 	},
 
-	"join_owo_giveaway": true
+	"join_owo_giveaway": true,
+
+	"accept_challenge_invitation": true 
 }

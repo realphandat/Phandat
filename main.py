@@ -43,11 +43,12 @@ class data:
 			self.token = data['token']
 			self.get_owo_prefix = data['get_owo_prefix']
 			self.channel_id = data['channel_id']
+			self.change_channel_when_someone_mentions = data['change_channel_when_someone_mentions']
 			self.solve_captcha = data['solve_captcha']
 			self.grind = data['grind']
 			self.huntbot = data['huntbot']
 			self.gem = data['gem']
-			self.distorted_animals = data['distorted_animals']
+			self.use_gem_when_distorted_animals_are_available = data['use_gem_when_distorted_animals_are_available']
 			self.animals = data['animals']
 			self.daily = data['daily']
 			self.sleep = data['sleep']
@@ -56,6 +57,7 @@ class data:
 			self.entertainment = data['entertainment']
 			self.webhook = data['webhook']
 			self.join_owo_giveaway = data['join_owo_giveaway']
+			self.accept_challenge_invitation = data['accept_challenge_invitation']
 
 		self.tasks = [
 			self.check_owo_status,
@@ -105,6 +107,7 @@ class data:
 		}
 
 		self.checking = {
+			"change_channel_times": 0,
 			"no_gem": False,
 			"blackjack_end": False,
 			"run_limit": False,
@@ -247,7 +250,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def change_channel(self):
-		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.change_channel.current_loop != 0:
+		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.checking['change_channel_times'] > 0:
 			await self.startup_channel()
 			await self.send_webhooks(
 				title = "**🏠 CHANGE CHANNEL 🏠**",
@@ -256,6 +259,7 @@ class MyClient(discord.Client, data):
 			)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Changed Channel To{color.reset} {color.purple}{self.discord['channel']}{color.reset}")
 			self.amount['change_channel'] += 1
+		self.checking['change_channel_times'] += 1
 
 	async def solve_image_captcha(self, image, captcha, lenghth):
 		try:
@@ -431,8 +435,18 @@ class MyClient(discord.Client, data):
 					await self.solve_hcaptcha()
 
 	async def on_message(self, message):
+		#Change channel when someone ping
+		if self.change_channel_when_someone_mentions and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
+			await self.send_webhooks(
+				title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
+				description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+				color = 0xFFC125
+			)
+			await self.change_channel()
+
 		#Detect image captchas
-		if "⚠" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
+		if "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
 			await self.send_webhooks(
@@ -545,7 +559,15 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Your Inventory{color.reset}")
 
 		#Commands
-		if self.webhook['mode'] and (message.author.id in self.webhook['owner_id'] or message.author.id == self.discord['user_id']):
+		if self.webhook['mode'] and message.author.id in self.webhook['owner_id']:
+			#Help
+			if message.content.lower() == "start":
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
+				await self.send_webhooks(
+					title = f"📋 HELP MENU 📋",
+					description = "**`help`\n`start`\n`pause`\n`stat`\n`setting`**",
+					color = 0x8B4513
+				)
 			#Start
 			if message.content.lower() == "start":
 				if not self.selfbot['work_status']:
@@ -580,13 +602,13 @@ class MyClient(discord.Client, data):
 				)
 			if message.content.lower() == "setting":
 				await self.send_webhooks(
-					content = f"<@{message.author.id}>",
-					title = f"🔥 **Confirm `(Yes/No)`**  🔥",
-					description = "**Send via webhook including __token__, __2captcha API__, __webhook url__, ...**",
+					content = self.selfbot['ping_user'],
+					title = f"🔥 **CONFIRM IN 10S`** 🔥",
+					description = "**Send setting via webhook including __token__, __2captcha API__, __webhook url__, ...**",
 					color = 0xEE2C2C
 				)
 				try:
-					await self.wait_for("message", check=lambda m: (m.content.lower() in ["yes", "y"] and m.author.id in self.webhook['owner_id'] or m.author.id == self.discord['user_id']), timeout = 10)
+					await self.wait_for("message", check=lambda m: m.content.lower() in ["yes", "y"] and m.author.id in self.webhook['owner_id'], timeout = 10)
 				except asyncio.TimeoutError:
 					pass
 				else:
@@ -597,26 +619,6 @@ class MyClient(discord.Client, data):
 						description = config,
 						color = 0xEE2C2C
 					)
-
-		#Someone challenge you
-		if self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
-			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
-				await self.send_webhooks(
-					title = "**🥊 SOMEONE CHALLENGE YOU 🥊**",
-					description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
-					color = 0xEE2C2C
-				)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.red}Challenges{color.reset} {color.bold}You{color.reset}")
-				choice = random.choice([1, 2])
-				await asyncio.sleep(random.randint(3, 5))
-				if choice == 1:
-					await message.channel.typing()
-					await message.channel.send(f"{self.owo['prefix']}ab")
-					self.amount['command'] += 1
-				if choice == 2:
-					components = message.components
-					firstButton = components[0].children[0]
-					await firstButton.click()
 
 		#Check the caught animals
 		if self.selfbot['work_status'] and self.owo['status'] and str(self.discord['user_nickname']) in message.content and "🌱" in message.content and "gained" in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
@@ -672,6 +674,26 @@ class MyClient(discord.Client, data):
 						color = 0xB400CB
 					)
 					break
+
+		#Someone challenge you
+		if self.accept_challenge_invitation and self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.red}Challenges{color.reset} {color.bold}You{color.reset}")
+				await self.send_webhooks(
+					title = "**🥊 SOMEONE CHALLENGE YOU 🥊**",
+					description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					color = 0xEE2C2C
+				)
+				choice = random.choice([1, 2])
+				await asyncio.sleep(random.randint(3, 5))
+				if choice == 1:
+					await message.channel.typing()
+					await message.channel.send(f"{self.owo['prefix']}ab")
+					self.amount['command'] += 1
+				if choice == 2:
+					components = message.components
+					firstButton = components[0].children[0]
+					await firstButton.click()
 
 	async def on_message_edit(self, before, after):
 		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
@@ -738,7 +760,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
-		if self.selfbot['work_status'] and self.check_owo_status.current_loop != 0:
+		if self.selfbot['work_status'] and self.owo['status'] and self.check_owo_status.current_loop != 0:
 			status = False
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id']:
@@ -916,7 +938,7 @@ class MyClient(discord.Client, data):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def check_distorted_animal(self):
-		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['distorted_animals_time'] - time.time() <= 0:
+		if self.use_gem_when_distorted_animals_are_available and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['distorted_animals_time'] - time.time() <= 0:
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}dt{color.reset}")
