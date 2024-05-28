@@ -603,7 +603,7 @@ class MyClient(discord.Client, data):
 			if message.content.lower() == "setting":
 				await self.send_webhooks(
 					content = self.selfbot['ping_user'],
-					title = f"🔥 **CONFIRM `YES` IN 10S`** 🔥",
+					title = f"🔥 **CONFIRM `YES` IN 10S** 🔥",
 					description = "**Send setting via webhook including __token__, __2captcha API__, __webhook url__, ...**",
 					color = 0xEE2C2C
 				)
