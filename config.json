@@ -1,5 +1,5 @@
 {
-	"token": "aAbBcCTcwMzY4MTYzNzI5MDA4Ng.GLnfrb.EiMuls4SmNZ-vC1xkDrOK1jtWP1rAKU1KnOJ_c",
+	"token": "aAbBcCTcwMzY4MTYzNzI5MDA4Ng.GLnfrb.uls4SmNZ-vC1xkDrOK1jtWP1rAKU1KnOJ_c",
 
 	"get_owo_prefix": {
 		"mode": true,
@@ -11,7 +11,7 @@
 	"solve_captcha": {
 		"image_captcha": true,
 		"hcaptcha": true,
-		"twocaptcha_api": "1234568dff81bbd477b9d867c49087702"
+		"twocaptcha_api": "1234568dff8bbd477b9d867c49087702"
 	},
 
 	"grind": {
@@ -73,7 +73,7 @@
 	"pray_curse": {
 		"mode": true,
 		"type": "pray",
-		"user_id": "1191744403463737456"
+		"user_id": ""
 	},
 
 	"entertainment": {
@@ -85,7 +85,7 @@
 	"webhook": {
 		"mode": true,
 		"owner_id": [994511658452000799, 1191744403463737456],
-		"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
+		"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC_DByeerSw965LMC9_zCiDB949WsPgrV"
 	},
 
 	"join_owo_giveaway": true
