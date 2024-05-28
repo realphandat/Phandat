@@ -94,7 +94,6 @@ class data:
 
 		self.selfbot = {
 			"on_ready": True,
-			"run_time": time.time(),
 			"turn_on_time": int(time.time()),
 			"work_time": random.randint(600, 1200),
 			"work_status": True,
@@ -576,7 +575,7 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(
 					title = f"📊 {self.discord['user_nickname']}'s STAT 📊",
-					description = f"I Worked For {time.strftime('**%H:%M:%S**',time.gmtime(time.time() - self.selfbot['run_time']))} With:\n{self.emoji['arrow']}Sent **__{self.amount['command']}__ Commands**\n{self.emoji['arrow']}Solved **__{self.amount['captcha']}__ Captchas**\n{self.emoji['arrow']}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.emoji['arrow']}Used Gem **__{self.amount['gem']}__ Times**\n{self.emoji['arrow']}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.emoji['arrow']}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.emoji['arrow']}Slept **__{self.amount['sleep']}__ Times**",
+					description = f"I Worked <t:{self.selfbot['turn_on_time']}:R> With:\n{self.emoji['arrow']}Sent **__{self.amount['command']}__ Commands**\n{self.emoji['arrow']}Solved **__{self.amount['captcha']}__ Captchas**\n{self.emoji['arrow']}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.emoji['arrow']}Used Gem **__{self.amount['gem']}__ Times**\n{self.emoji['arrow']}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.emoji['arrow']}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.emoji['arrow']}Slept **__{self.amount['sleep']}__ Times**",
 					color = 0x4EEE94
 				)
 			if message.content.lower() == "setting":
