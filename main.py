@@ -91,7 +91,8 @@ class data:
 			"channel_id": None,
 			"user": None,	
 			"user_id": None,
-			"user_nickname": None
+			"user_nickname": None,
+			"inventory": "gem1 gem3 gem4 star"
 		}
 
 		self.selfbot = {
@@ -498,13 +499,13 @@ class MyClient(discord.Client, data):
 		#Check gems in use
 		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0)) or (self.selfbot['distorted_animals_time'] - time.time() <= 0 and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0))) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
-			if not "gem1" in message.content:
+			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
-			if not "gem3" in message.content:
+			if not "gem3" in message.content and "gem3" in self.discord['inventory']:
 				empty.append("gem3")
-			if not "gem4" in message.content:
+			if not "gem4" in message.content and "gem4" in self.discord['inventory']:
 				empty.append("gem4")
-			if not "star" in message.content and self.gem['star']:
+			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star']:
 				empty.append("star")
 			if empty:
 				await self.discord['channel'].typing()
@@ -516,6 +517,7 @@ class MyClient(discord.Client, data):
 				async for message in self.discord['channel'].history(limit = 10):
 					if message.author.id == self.owo['id'] and (await self.get_messages(message, f"{self.discord['user_nickname']}'s Inventory")):
 						inv = message
+						self.discord['inventory'] = inv
 						break
 				if inv:
 					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
