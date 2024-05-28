@@ -482,7 +482,7 @@ class MyClient(discord.Client, data):
 				await self.worker(False)
 
 		#Check gems in use
-		if self.gem['mode'] and self.selfbot['work_status'] and self.owo['status'] and "🌱" in message.content and "gained" in message.content and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= -300 or self.selfbot['distorted_animals_time'] - time.time() <= 0) and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= -300)) or self.selfbot['distorted_animals_time'] - time.time() <= 0) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content:
 				empty.append("gem1")
