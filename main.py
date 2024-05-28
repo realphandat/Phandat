@@ -569,7 +569,7 @@ class MyClient(discord.Client, data):
 					color = 0x8B4513
 				)
 			#Start
-			if message.content.lower() == "start":
+			if message.content.lower() == "help":
 				if not self.selfbot['work_status']:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Start{color.reset} {color.gray}Selfbot{color.reset}")
 					await self.send_webhooks(
