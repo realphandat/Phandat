@@ -80,7 +80,8 @@ class data:
 			"id": 408785106942164992,
 			"dm_channel_id": None,
 			"prefix": "owo",
-			"status": True
+			"status": True,
+			"giveaway_entered": []
 		}
 		
 		self.discord = {
@@ -554,7 +555,7 @@ class MyClient(discord.Client, data):
 						title = f"💼 START SELFBOT 💼",
 						color = 0x8B4513
 					)
-					await self.worker(True)
+					self.selfbot['work_status'] = True
 				else:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Can\'t Start,{color.reset} {color.gray}I\'m Working{color.reset}")
 					await self.send_webhooks(content = f"**🍁 | You Can\'t Resume, I\'m Working**")
@@ -566,7 +567,7 @@ class MyClient(discord.Client, data):
 						title = f"⏰ PAUSE SELFBOT ⏰",
 						color = 0xCDC9C9
 					)
-					await self.worker(False)
+					self.selfbot['work_status'] = False
 				else:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ve Been{color.reset} {color.gray}Pause Before{color.reset}")
 					await self.send_webhooks(content = f"**🍁 | I\'ve Been Pause Before**")
@@ -673,19 +674,6 @@ class MyClient(discord.Client, data):
 					)
 					break
 
-		#Join owo's giveaway
-		if self.join_owo_giveaway and message.embeds and message.author.id == self.owo['id']:
-			if "A New Giveaway Appeared!" in str(message.embeds[0].author.name):
-				components = message.components
-				firstButton = components[0].children[0]
-				await firstButton.click()
-				await self.send_webhooks(
-					title = "**🎁 OWO\'S GIVEAWAY 🎁**",
-					description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
-					color = 0xEE2C2C
-				)
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.red}Joined{color.reset} {color.bold}A New OwO\'s Giveaway{color.reset}")
-
 	async def on_message_edit(self, before, after):
 		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
 			#Slot
@@ -718,6 +706,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_gamble_bet['slot'] * 9} Cowoncy (x10){color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 9
 					self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+
 			#Coinflip
 			if self.gamble['coinflip']['mode'] and str(self.discord['user_nickname']) in after.content:
 				#Lost
@@ -730,6 +719,23 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_gamble_bet['coinflip']} Cowoncy{color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
+
+		#Join owo's giveaway
+		if self.join_owo_giveaway and after.embeds and not after.id in self.owo['giveaway_entered'] and after.author.id == self.owo['id']:
+			if "A New Giveaway Appeared!" in str(after.embeds[0].author.name):
+				try:
+					components = after.components
+					firstButton = components[0].children[0]
+					await firstButton.click()
+					await self.send_webhooks(
+						title = "**🎁 OWO\'S GIVEAWAY 🎁**",
+						description = f"{self.emoji['arrow']}https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id}",
+						color = 0xEE2C2C
+					)
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.red}Joined{color.reset} {color.bold}A New OwO\'s Giveaway{color.reset}")
+				except Exception as e:
+					if "COMPONENT_VALIDATION_FAILED" in str(e):
+						self.owo['giveaway_entered'].append(after.id)
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
@@ -751,7 +757,7 @@ class MyClient(discord.Client, data):
 					description = f"{self.emoji['arrow']}I\'ll Wait For **10 Minutes**",
 					color = 0xCDC9C9
 				)
-				await self.worker(False, skip = [self.check_owo_status])
+				self.selfbot['work_status'] = False
 				await asyncio.sleep(600)
 				self.owo['status'] = True
 				await self.worker(True, skip = [self.check_owo_status])
@@ -865,7 +871,7 @@ class MyClient(discord.Client, data):
 								title = "**🎉 CORRECT SOLUTION 🎉**",
 								description = f"{self.emoji['arrow']}**Answer:** {answer}",
 								color = 0xCDC0B0,
-								thumnail = message.attachments[0]
+								thumnail = huntbot_message.attachments[0]
 							)
 						#Incorrect
 						if "Wrong password" in huntbot_verification_message.content:
@@ -874,7 +880,7 @@ class MyClient(discord.Client, data):
 								title = "**⛔ INCORRECT SOLUTION ⛔**",
 								description = f"{self.emoji['arrow']}**Answer:** {answer}",
 								color = 0xEE2C2C,
-								thumnail = message.attachments[0]
+								thumnail = huntbot_message.attachments[0]
 							)
 					else:
 						print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Huntbot Verification Message{color.reset}")
@@ -975,7 +981,7 @@ class MyClient(discord.Client, data):
 				description = f"{self.emoji['arrow']}I'm Taking A Break For **__{self.selfbot['sleep_time']}__ Seconds**",
 				color = 0xA2B5CD
 				)
-			await self.worker(False, skip = [self.go_to_sleep])
+			self.selfbot['work_status'] = False
 			await asyncio.sleep(self.selfbot['sleep_time'])
 			self.selfbot['work_time'] = random.randint(600, 1200)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Done! I'll Work For{color.reset} {color.cyan}{self.selfbot['work_time']} Seconds{color.reset}")
