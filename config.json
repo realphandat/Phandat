@@ -85,7 +85,7 @@
 	"webhook": {
 		"mode": true,
 		"owner_id": [994511658452000799, 1191744403463737456],
-		"link": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
+		"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKu12aAbC6fe_DByeerSw965LMC9_zCiDB949WsPgrV"
 	},
 
 	"join_owo_giveaway": true
