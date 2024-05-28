@@ -437,13 +437,18 @@ class MyClient(discord.Client, data):
 	async def on_message(self, message):
 		#Change channel when someone ping
 		if self.change_channel_when_someone_mentions and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
-			await self.send_webhooks(
-				title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
-				description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
-				color = 0xFFC125
-			)
-			await self.change_channel()
+			try:
+				await self.wait_for("message", check=lambda m: m.embeds and m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
+			except asyncio.TimeoutError:
+				pass
+			else:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
+				await self.send_webhooks(
+					title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
+					description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					color = 0xFFC125
+				)
+				await self.change_channel()
 
 		#Detect image captchas
 		if "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
@@ -496,7 +501,7 @@ class MyClient(discord.Client, data):
 				await self.worker(False)
 
 		#Check gems in use
-		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= -300)) or self.selfbot['distorted_animals_time'] - time.time() <= 0) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0)) or (self.selfbot['distorted_animals_time'] - time.time() <= 0 and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0))) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content:
 				empty.append("gem1")
@@ -603,7 +608,7 @@ class MyClient(discord.Client, data):
 			if message.content.lower() == "setting":
 				await self.send_webhooks(
 					content = self.selfbot['ping_user'],
-					title = f"🔥 **CONFIRM IN 10S`** 🔥",
+					title = f"🔥 **CONFIRM `YES` IN 10S`** 🔥",
 					description = "**Send setting via webhook including __token__, __2captcha API__, __webhook url__, ...**",
 					color = 0xEE2C2C
 				)
@@ -952,8 +957,9 @@ class MyClient(discord.Client, data):
 			if distorted_animals_message:
 				if "are available" in distorted_animals_message.content:
 					distorted_animals_end = re.findall("[0-9]+", distorted_animals_message.content)
-					distorted_animals_end = int(int(distorted_animals_end[0]) * 3600 + int(distorted_animals_end[1]) * 60 + int(distorted_animals_end[2]))
+					distorted_animals_end = int(int(distorted_animals_end[1]) * 3600 + int(distorted_animals_end[2]) * 60 + int(distorted_animals_end[3]))
 					self.selfbot['distorted_animals_time'] = distorted_animals_end + time.time()
+					print()
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals Are Available For{color.reset} {color.green}{str(datetime.timedelta(seconds = int(distorted_animals_end)))} Seconds{color.reset}")
 				elif "not available" in distorted_animals_message.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals{color.reset} {color.red}Aren\'t Available{color.reset}")
