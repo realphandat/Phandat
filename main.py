@@ -82,8 +82,7 @@ class data:
 			"id": 408785106942164992,
 			"dm_channel_id": None,
 			"prefix": "owo",
-			"status": True,
-			"giveaway_entered": []
+			"status": True
 		}
 		
 		self.discord = {
@@ -104,11 +103,14 @@ class data:
 			"huntbot_time": 0,
 			"distorted_animals_time": 0,
 			"daily_time": 0,
-			"ping_user": ""
+			"ping_user": "",
+			"giveaway_entered": []
 		}
 
 		self.checking = {
 			"change_channel_times": 0,
+			"check_distorted_animals_times": 0,
+			"daily_times": 0,
 			"no_gem": False,
 			"blackjack_end": False,
 			"run_limit": False,
@@ -173,12 +175,12 @@ class MyClient(discord.Client, data):
 			cmd = f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Start At Channel{color.reset} {color.purple}{self.discord['channel']}{color.reset}"
 			if self.selfbot['work_time']:
 				cmd = cmd + f" {color.bold}For{color.reset} {color.cyan}{self.selfbot['work_time']} Seconds{color.reset}"
+			print(cmd)
 			await self.send_webhooks(
 				title = f"**🌻 STARTED <t:{self.selfbot['turn_on_time']}:R> 🌻**",
 				description = webhook,
 				color = discord.Colour.random()
 				)
-			print(cmd)
 			self.selfbot['work_time'] += time.time()
 			await self.worker(True)
 
@@ -437,7 +439,7 @@ class MyClient(discord.Client, data):
 
 	async def on_message(self, message):
 		#Change channel when someone meations
-		if self.change_channel_when_someone_mentions and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
+		if self.change_channel_when_someone_mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
 			await self.send_webhooks(
 				title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
@@ -497,9 +499,8 @@ class MyClient(discord.Client, data):
 				await self.worker(False)
 
 		#Check gems in use
-		if self.selfbot['work_status'] and self.owo['status'] and ((self.gem['mode'] and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0)) or (self.selfbot['distorted_animals_time'] - time.time() <= 0 and (not self.checking["no_gem"] or self.selfbot['work_time'] - time.time() <= 0))) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.use_gem_when_distorted_animals_are_available and not self.selfbot['distorted_animals_time'] - time.time() <= 0 and self.checking['check_distorted_animals_times'] > 0)) and (not self.checking["no_gem"] or (self.sleep and self.selfbot['daily_time'] - time.time() <= 0 and self.checking['daily_times'] > 0)) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
-			print(message.content)
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
 			if not "gem3" in message.content and "gem3" in self.discord['inventory']:
@@ -518,7 +519,7 @@ class MyClient(discord.Client, data):
 				async for message in self.discord['channel'].history(limit = 10):
 					if message.author.id == self.owo['id'] and (await self.get_messages(message, f"{self.discord['user_nickname']}'s Inventory")):
 						inv = message
-						self.discord['inventory'] = inv
+						self.discord['inventory'] = inv.content
 						break
 				if inv:
 					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
@@ -539,7 +540,6 @@ class MyClient(discord.Client, data):
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
 					else:
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse=True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
-					print(gems_in_inv)
 					if gems_in_inv != [[], [], [], []]:
 						use_gem = ""
 						if "gem1" in empty and gems_in_inv[0] != []:
@@ -746,7 +746,7 @@ class MyClient(discord.Client, data):
 					self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
 
 		#Join owo's giveaway
-		if self.join_owo_giveaway and after.embeds and not after.id in self.owo['giveaway_entered'] and after.author.id == self.owo['id']:
+		if self.join_owo_giveaway and after.embeds and not after.id in self.selfbot['giveaway_entered'] and after.author.id == self.owo['id']:
 			if "A New Giveaway Appeared!" in str(after.embeds[0].author.name):
 				try:
 					components = after.components
@@ -760,7 +760,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.red}Joined{color.reset} {color.bold}A New OwO\'s Giveaway{color.reset}")
 				except Exception as e:
 					if "COMPONENT_VALIDATION_FAILED" in str(e):
-						self.owo['giveaway_entered'].append(after.id)
+						self.selfbot['giveaway_entered'].append(after.id)
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
@@ -963,6 +963,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals{color.reset} {color.red}Aren\'t Available{color.reset}")
 			else:
 				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Distorted Animals Message{color.reset}")
+		self.checking['check_distorted_animals_times'] += 1
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def sell_sac_animal(self):
@@ -995,6 +996,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I{color.reset} {color.green}Claimed{color.reset} {color.bold}Daily{color.reset}")
 			else:
 				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Daily Message{color.reset}")
+		self.checking['daily_times'] += 1
 
 	@tasks.loop(minutes = 1)
 	async def go_to_sleep(self):
