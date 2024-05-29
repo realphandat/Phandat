@@ -1156,18 +1156,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Piku For Today Is{color.reset} {color.red}Over{color.reset}")
 					self.checking['piku_limit'] = True
 
-print()
 print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.reset} {color.bold}By{color.reset} {color.blue}Phandat (realphandat){color.reset} {color.bold}| https://github.com/realphandat/discord-owo-selfbot{color.reset}")
 print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}aduck (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}Cex (cesxos){color.reset}")
-print()
-key = get("https://raw.githubusercontent.com/realphandat/realphandat/main/phandat.txt").text.split("\n")
-key.pop()
-password = json.load(open("config.json"))['password']
-if password in key:
-	print(f"{color.bold}Your Password Is{color.reset} {color.green}Correct{color.reset} {color.bold}-{color.reset} {color.gray}({password}){color.reset}")
-	print()
-	Client = MyClient()
-	Client.run(Client.token)
-else:
-	print(f"{color.bold}Your Password Is{color.reset} {color.red}Incorrect{color.reset} {color.bold}-{color.reset} {color.gray}{password}{color.reset}")
-	print()
+Client = MyClient()
+Client.run(Client.token)
