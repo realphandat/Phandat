@@ -560,7 +560,7 @@ class MyClient(discord.Client, data):
 		#Commands
 		if self.webhook['mode'] and message.author.id in self.webhook['owner_id']:
 			#Help
-			if message.content.lower() == "start":
+			if message.content.lower() == "help":
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(
 					title = f"📋 HELP MENU 📋",
@@ -568,7 +568,7 @@ class MyClient(discord.Client, data):
 					color = discord.Colour.random()
 				)
 			#Start
-			if message.content.lower() == "help":
+			if message.content.lower() == "start":
 				if not self.selfbot['work_status']:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Start{color.reset} {color.gray}Selfbot{color.reset}")
 					await self.send_webhooks(
