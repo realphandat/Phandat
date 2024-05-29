@@ -260,177 +260,181 @@ class MyClient(discord.Client, data):
 		self.checking['change_channel_times'] += 1
 
 	async def solve_image_captcha(self, image, captcha, lenghth):
-		try:
-			balance = self.solver.balance()
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-			result = self.solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
-		except Exception as e:
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⚙️ 2CAPTCHA API ⚙️**",
-				description = f"{self.emoji['arrow']}Error: {str(e)}",
-				color = discord.Colour.random()
-			)
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
-			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
-			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
-				await self.solve_image_captcha()
-		await self.owo['name'].typing()
-		await self.owo['name'].send(result['code'])
-		self.amount['command'] += 1
-		await asyncio.sleep(random.randint(3, 5))
-		captcha_verification_message = None
-		async for message in self.owo['name'].dm_channel.history(limit = 1):
-					if message.author.id == self.owo['id'] and (await self.get_messages(message, "verified") or await self.get_messages(message, "Wrong")):
-						captcha_verification_message = message
-		if "verified" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully{color.reset}")
-			await self.send_webhooks(
-				title = "**🎉 CORRECT SOLUTION 🎉**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}**Continue To Work**",
-				color = discord.Colour.random(),
-				thumnail = image
-			)
-			self.solver.report(result['captchaId'], True)
-			self.amount['captcha'] += 1
-			await self.worker(True)
-		elif "(2/3)" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved It{color.reset} {color.red}Wrong Twice{color.reset}")
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⛔ INCORRECT SOLUTION ⛔**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I Solved It **Wrong Twice**",
-				color = discord.Colour.random(),
-				thumnail = image
-			)
-			self.solver.report(result['captchaId'], False)
-		elif "Wrong" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed{color.reset}")
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⛔ INCORRECT SOLUTION ⛔**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
-				color = discord.Colour.random(),
-				thumnail = image
-			)
-			self.solver.report(result['captchaId'], False)
-			await self.solve_image_captcha(image, captcha, lenghth)
-
-	async def submit_oauth(self, res):
-		response = await res.json()
-		locauri = response.get("location")
-		headers = {
-			"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8", "accept-encoding": "gzip, deflate, br", "accept-language": "en-US,en;q=0.5", "connection": "keep-alive",
-			"host": "owobot.com",
-			"referer": "https://discord.com/", "sec-fetch-dest": "document", "sec-fetch-mode": "navigate", "sec-fetch-site": "cross-site", "sec-fetch-user": "?1", "upgrade-insecure-requests": "1", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
-		}
-		session = ClientSession(cookie_jar=CookieJar())
-		async with session.get(locauri, headers=headers, allow_redirects=False) as res2:
-			if res2.status in (302, 307):
-				return session
-			else:
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Failed To Add Token To Oauth{color.reset} {color.red}!!!{color.reset} | {res2.status}")
+		if not self.selfbot['work_status']:
+			try:
+				balance = self.solver.balance()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+				result = self.solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
+			except Exception as e:
 				await self.send_webhooks(
 					content = self.selfbot['ping_user'],
-					title = "**⚙️ SUMBIT OAUTH ⚙️**",
-					description = f"{self.emoji['arrow']}Error: {res2.status}",
+					title = "**⚙️ 2CAPTCHA API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
 					color = discord.Colour.random()
 				)
-				await self.submit_oauth(res)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
+				if str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
+					await self.solve_image_captcha()
+			await self.owo['name'].typing()
+			await self.owo['name'].send(result['code'])
+			self.amount['command'] += 1
+			await asyncio.sleep(random.randint(3, 5))
+			captcha_verification_message = None
+			async for message in self.owo['name'].dm_channel.history(limit = 1):
+						if message.author.id == self.owo['id'] and (await self.get_messages(message, "verified") or await self.get_messages(message, "Wrong")):
+							captcha_verification_message = message
+			if "verified" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully{color.reset}")
+				await self.send_webhooks(
+					title = "**🎉 CORRECT SOLUTION 🎉**",
+					description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}**Continue To Work**",
+					color = discord.Colour.random(),
+					thumnail = image
+				)
+				self.solver.report(result['captchaId'], True)
+				self.amount['captcha'] += 1
+				await self.worker(True)
+			elif "(2/3)" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved It{color.reset} {color.red}Wrong Twice{color.reset}")
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⛔ INCORRECT SOLUTION ⛔**",
+					description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I Solved It **Wrong Twice**",
+					color = discord.Colour.random(),
+					thumnail = image
+				)
+				self.solver.report(result['captchaId'], False)
+			elif "Wrong" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed{color.reset}")
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⛔ INCORRECT SOLUTION ⛔**",
+					description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
+					color = discord.Colour.random(),
+					thumnail = image
+				)
+				self.solver.report(result['captchaId'], False)
+				await self.solve_image_captcha(image, captcha, lenghth)
+
+	async def submit_oauth(self, res):
+		if not self.selfbot['work_status']:
+			response = await res.json()
+			locauri = response.get("location")
+			headers = {
+				"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8", "accept-encoding": "gzip, deflate, br", "accept-language": "en-US,en;q=0.5", "connection": "keep-alive",
+				"host": "owobot.com",
+				"referer": "https://discord.com/", "sec-fetch-dest": "document", "sec-fetch-mode": "navigate", "sec-fetch-site": "cross-site", "sec-fetch-user": "?1", "upgrade-insecure-requests": "1", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
+			}
+			session = ClientSession(cookie_jar=CookieJar())
+			async with session.get(locauri, headers=headers, allow_redirects=False) as res2:
+				if res2.status in (302, 307):
+					return session
+				else:
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Failed To Add Token To Oauth{color.reset} {color.red}!!!{color.reset} | {res2.status}")
+					await self.send_webhooks(
+						content = self.selfbot['ping_user'],
+						title = "**⚙️ SUMBIT OAUTH ⚙️**",
+						description = f"{self.emoji['arrow']}Error: {res2.status}",
+						color = discord.Colour.random()
+					)
+					await self.submit_oauth(res)
 
 
 	async def get_oauth(self):
-		async with ClientSession() as session:
-			oauth = "https://discord.com/api/v9/oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992"
-			payload = {"permissions": "0", "authorize": True}
-			headers = {
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0',
-				'Accept': '*/*',
-				'Accept-Language': 'en-US,en;q=0.5',
-				'Accept-Encoding': 'gzip, deflate, br',
-				'Content-Type': 'application/json',
-				'Authorization': self.token,
-				'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwOS4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzExMS4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTExLjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTg3NTk5LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==',
-				'X-Debug-Options': 'bugReporterEnabled',
-				'Origin': 'https://discord.com',
-				'Connection': 'keep-alive',
-				'Referer': "https://discord.com//oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992",
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin',
-				'TE': 'trailers',
-			}
-			async with session.post(oauth, headers=headers, json=payload) as res:
-				if res.status == 200:
-					result_session = await self.submit_oauth(res)
-					return result_session
-				else:
-					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Getting Oauth Has The Problem{color.reset} {color.red}!!!{color.reset} | {await res.text()}")
-					await self.send_webhooks(
-						content = self.selfbot['ping_user'],
-						title = "**⚙️ GET OAUTH ⚙️**",
-						description = f"{self.emoji['arrow']}Error: {await res.text()}",
-						color = discord.Colour.random()
-					)
-					await self.get_oauth()
+		if not self.selfbot['work_status']:
+			async with ClientSession() as session:
+				oauth = "https://discord.com/api/v9/oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992"
+				payload = {"permissions": "0", "authorize": True}
+				headers = {
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0',
+					'Accept': '*/*',
+					'Accept-Language': 'en-US,en;q=0.5',
+					'Accept-Encoding': 'gzip, deflate, br',
+					'Content-Type': 'application/json',
+					'Authorization': self.token,
+					'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwOS4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzExMS4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTExLjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTg3NTk5LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==',
+					'X-Debug-Options': 'bugReporterEnabled',
+					'Origin': 'https://discord.com',
+					'Connection': 'keep-alive',
+					'Referer': "https://discord.com//oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992",
+					'Sec-Fetch-Dest': 'empty',
+					'Sec-Fetch-Mode': 'cors',
+					'Sec-Fetch-Site': 'same-origin',
+					'TE': 'trailers',
+				}
+				async with session.post(oauth, headers=headers, json=payload) as res:
+					if res.status == 200:
+						result_session = await self.submit_oauth(res)
+						return result_session
+					else:
+						print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Getting Oauth Has The Problem{color.reset} {color.red}!!!{color.reset} | {await res.text()}")
+						await self.send_webhooks(
+							content = self.selfbot['ping_user'],
+							title = "**⚙️ GET OAUTH ⚙️**",
+							description = f"{self.emoji['arrow']}Error: {await res.text()}",
+							color = discord.Colour.random()
+						)
+						await self.get_oauth()
 
 	async def solve_hcaptcha(self):
-		headers = {
-			"Accept": "application/json, text/plain, */*",
-			"Accept-Encoding": "gzip, deflate, br",
-			"Accept-Language": "en-US;en;q=0.8",
-			"Content-Type": "application/json;charset=UTF-8",
-			"Origin": "https://owobot.com",
-			"Referer": "https://owobot.com/captcha",
-			"Sec-Fetch-Dest": "empty",
-			"Sec-Fetch-Mode": "cors",
-			"Sec-Fetch-Site": "same-origin",
-			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
-		}
-		try:
-			balance = self.solver.balance()
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-			result = self.solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
-		except Exception as e:
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⚙️ 2CAPTCHA API ⚙️**",
-				description = f"{self.emoji['arrow']}Error: {str(e)}",
-				color = discord.Colour.random()
-			)
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
-			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
-			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
-				await self.solve_hcaptcha()
-		async with (await self.get_oauth()) as session:
-			cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
-			async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
-				if res.status == 200:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully{color.reset}")
-					await self.send_webhooks(
-						title = "**🎉 CORRECT SOLUTION 🎉**",
-						description = f"{self.emoji['arrow']}**Continue To Work**",
-						color = discord.Colour.random()
-					)
-					self.amount['captcha'] += 1
-					await self.worker(True)
-				else:
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed{color.reset}")
-					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
-					await self.send_webhooks(
-						content = self.selfbot['ping_user'],
-						title = "**⛔ INCORRECT SOLUTION ⛔**",
-						description = f"{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
-						color = discord.Colour.random()
-					)
+		if not self.selfbot['work_status']:
+			headers = {
+				"Accept": "application/json, text/plain, */*",
+				"Accept-Encoding": "gzip, deflate, br",
+				"Accept-Language": "en-US;en;q=0.8",
+				"Content-Type": "application/json;charset=UTF-8",
+				"Origin": "https://owobot.com",
+				"Referer": "https://owobot.com/captcha",
+				"Sec-Fetch-Dest": "empty",
+				"Sec-Fetch-Mode": "cors",
+				"Sec-Fetch-Site": "same-origin",
+				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
+			}
+			try:
+				balance = self.solver.balance()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+				result = self.solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
+			except Exception as e:
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⚙️ 2CAPTCHA API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
+					color = discord.Colour.random()
+				)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
+				if str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
 					await self.solve_hcaptcha()
+			async with (await self.get_oauth()) as session:
+				cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
+				async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
+					if res.status == 200:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully{color.reset}")
+						await self.send_webhooks(
+							title = "**🎉 CORRECT SOLUTION 🎉**",
+							description = f"{self.emoji['arrow']}**Continue To Work**",
+							color = discord.Colour.random()
+						)
+						self.amount['captcha'] += 1
+						await self.worker(True)
+					else:
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed{color.reset}")
+						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
+						await self.send_webhooks(
+							content = self.selfbot['ping_user'],
+							title = "**⛔ INCORRECT SOLUTION ⛔**",
+							description = f"{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
+							color = discord.Colour.random()
+						)
+						await self.solve_hcaptcha()
 
 	async def on_message(self, message):
 		#Change channel when someone meations
