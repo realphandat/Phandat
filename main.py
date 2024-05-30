@@ -17,6 +17,7 @@ from PIL import Image
 from requests import get
 from base64 import b64encode
 from twocaptcha import TwoCaptcha
+from capmonster_python import ImageToTextTask, HCaptchaTask
 
 class color:
 	mark = '\033[104m'
@@ -103,6 +104,8 @@ class data:
 		}
 
 		self.checking = {
+			"captcha_appear": False,
+			"captcha_attempts": 0,
 			"change_channel_times": 0,
 			"check_distorted_animals_times": 0,
 			"daily_times": 0,
@@ -138,12 +141,16 @@ class data:
 			"sleep": 0
 		}
 
-		self.solver = TwoCaptcha(**{
+		self.twocaptcha_solver = TwoCaptcha(**{
 			"server": "2captcha.com",
-			"apiKey": self.solve_captcha['twocaptcha_api'],
+			"apiKey": self.solve_captcha['service']['twocaptcha']['key'],
 			"defaultTimeout": 300,
 			"pollingInterval": 5
 		})
+
+		self.capmonster_solver_image_captcha = ImageToTextTask(self.solve_captcha['service']['capmonster']['key'])
+
+		self.capmonster_solver_hcaptcha = HCaptchaTask(self.solve_captcha['service']['capmonster']['key'])
 
 class MyClient(discord.Client, data):
 	def __init__(self, *args, **kwargs):
@@ -260,24 +267,52 @@ class MyClient(discord.Client, data):
 		self.checking['change_channel_times'] += 1
 
 	async def solve_image_captcha(self, image, captcha, lenghth):
-		try:
-			balance = self.solver.balance()
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-			result = self.solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
-		except Exception as e:
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⚙️ 2CAPTCHA API ⚙️**",
-				description = f"{self.emoji['arrow']}Error: {str(e)}",
-				color = discord.Colour.random()
-			)
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
-			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
-			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
-				await self.solve_image_captcha()
+		key = {
+			"answer": None,
+			"service": None
+		}
+		#TwoCaptcha
+		if self.solve_captcha['service']['twocaptcha']['mode'] and not key['answer']:
+			try:
+				balance = self.twocaptcha_solver.balance()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your TwoCaptcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+				key['answer'] = self.twocaptcha_solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
+				key['service'] = "TwoCaptcha"
+			except Exception as e:
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⚙️ TWOCAPTCHA API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
+					color = discord.Colour.random()
+				)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your TwoCaptcha API Is{color.reset} {color.red}Invalid{color.reset}")
+				elif str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your TwoCaptcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				else:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your TwoCaptcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
+					await self.solve_image_captcha()
+		#CapMonster
+		if self.solve_captcha['service']['capmonster']['mode'] and not key['answer']:
+			try:
+				task_id = self.capmonster_solver_image_captcha.create_task(base64_encoded_image = captcha)
+				result = self.capmonster_solver_image_captcha.join_task_result(task_id)
+				key['answer'] = result.get("text")
+				key['service'] = "CapMonster"
+			except Exception as e:
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⚙️ CAPMONSTER API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
+					color = discord.Colour.random()
+				)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your CapMonster API Is{color.reset} {color.red}Invalid{color.reset}")
+				elif str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your CapMonster API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				else:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your CapMonster API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
+					await self.solve_image_captcha()
 		await self.owo['name'].typing()
 		await self.owo['name'].send(result['code'])
 		self.amount['command'] += 1
@@ -294,19 +329,12 @@ class MyClient(discord.Client, data):
 				color = discord.Colour.random(),
 				thumnail = image
 			)
-			self.solver.report(result['captchaId'], True)
+			if key['service'] == "TwoCaptcha":
+				self.twocaptcha_solver.report(result['captchaId'], True)
 			self.amount['captcha'] += 1
+			self.checking['captcha_appear'] = False
+			self.solve_captcha['attempts'] = 0
 			await self.worker(True)
-		elif "(2/3)" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved It{color.reset} {color.red}Wrong Twice{color.reset}")
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⛔ INCORRECT SOLUTION ⛔**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I Solved It **Wrong Twice**",
-				color = discord.Colour.random(),
-				thumnail = image
-			)
-			self.solver.report(result['captchaId'], False)
 		elif "Wrong" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed{color.reset}")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
@@ -317,8 +345,11 @@ class MyClient(discord.Client, data):
 				color = discord.Colour.random(),
 				thumnail = image
 			)
-			self.solver.report(result['captchaId'], False)
-			await self.solve_image_captcha(image, captcha, lenghth)
+			if key['service'] == "TwoCaptcha":
+				self.twocaptcha_solver.report(result['captchaId'], False)
+			self.checking['captcha_attempts'] += 1
+			if self.checking['captcha_attempts'] <= int(self.solve_captcha['image_captcha_attempts']):
+				await self.solve_image_captcha(image, captcha, lenghth)
 
 	async def submit_oauth(self, res):
 		response = await res.json()
@@ -391,27 +422,51 @@ class MyClient(discord.Client, data):
 			"Sec-Fetch-Site": "same-origin",
 			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
 		}
-		try:
-			balance = self.solver.balance()
-			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your 2Captcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-			result = self.solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
-		except Exception as e:
-			await self.send_webhooks(
-				content = self.selfbot['ping_user'],
-				title = "**⚙️ 2CAPTCHA API ⚙️**",
-				description = f"{self.emoji['arrow']}Error: {str(e)}",
-				color = discord.Colour.random()
-			)
-			if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API Is{color.reset} {color.red}Invalid{color.reset}")
-			if str(e) == "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your 2Captcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
-			if str(e) != "ERROR_KEY_DOES_NOT_EXIST" and str(e) != "ERROR_WRONG_USER_KEY" and str(e) != "ERROR_ZERO_BALANCE":
-				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Your 2Captcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
-				await self.solve_hcaptcha()
+		key = None
+		#TwoCaptcha
+		if self.solve_captcha['service']['twocaptcha']['mode'] and not key:
+			try:
+				balance = self.twocaptcha_solver.balance()
+				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your TwoCaptcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
+				key = self.twocaptcha_solver.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
+				key = key['code']
+			except Exception as e:
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⚙️ TWOCAPTCHA API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
+					color = discord.Colour.random()
+				)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your TwoCaptcha API Is{color.reset} {color.red}Invalid{color.reset}")
+				elif str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your TwoCaptcha API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				else:
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Your TwoCaptcha API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
+					await self.solve_hcaptcha()
+		#CapMonster
+		if self.solve_captcha['service']['capmonster']['mode'] and not key:
+			try:
+				task_id = self.capmonster_solver_hcaptcha.create_task(website_url = "https://owobot.com/captcha", website_key = "a6a1d5ce-612d-472d-8e37-7601408fbc09")
+				result = self.capmonster_solver_hcaptcha.join_task_result(task_id)
+				key = result.get("gRecaptchaResponse")
+			except Exception as e:
+				await self.send_webhooks(
+					content = self.selfbot['ping_user'],
+					title = "**⚙️ CAPMONSTER API ⚙️**",
+					description = f"{self.emoji['arrow']}Error: {str(e)}",
+					color = discord.Colour.random()
+				)
+				if str(e) == "ERROR_KEY_DOES_NOT_EXIST":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your CapMonster API Is{color.reset} {color.red}Invalid{color.reset}")
+				elif str(e) == "ERROR_ZERO_BALANCE":
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}Your CapMonster API{color.reset} {color.red}Run Out Of Money{color.reset}")
+				else:
+					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Your CapMonster API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
+					await self.solve_hcaptcha()
 		async with (await self.get_oauth()) as session:
 			cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
-			async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
+			async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": key}, cookies=cookies) as res:
 				if res.status == 200:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.green}Successfully{color.reset}")
 					await self.send_webhooks(
@@ -420,6 +475,8 @@ class MyClient(discord.Client, data):
 						color = discord.Colour.random()
 					)
 					self.amount['captcha'] += 1
+					self.checking['captcha_appear'] = False
+					self.checking['captcha_attempts'] = 0
 					await self.worker(True)
 				else:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Hcaptcha{color.reset} {color.red}Failed{color.reset}")
@@ -430,11 +487,13 @@ class MyClient(discord.Client, data):
 						description = f"{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
 						color = discord.Colour.random()
 					)
-					await self.solve_hcaptcha()
+					self.checking['captcha_attempts'] += 1
+					if self.checking['captcha_attempts'] <= int(self.solve_captcha['hcaptcha_attempts']):
+						await self.solve_hcaptcha()
 
 	async def on_message(self, message):
 		#Change channel when someone meations
-		if self.change_channel_when_someone_mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
+		if self.change_channel_when_someone_mentions and str(message.type) == "MessageType.reply" and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
 			await self.send_webhooks(
 				title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
@@ -444,7 +503,8 @@ class MyClient(discord.Client, data):
 			await self.change_channel()
 
 		#Detect image captchas
-		if self.selfbot['work_status'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
+		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
+			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
 			await self.send_webhooks(
@@ -460,7 +520,8 @@ class MyClient(discord.Client, data):
 				await self.solve_image_captcha(message.attachments[0], captcha, lenghth)
 
 		#Detect hcaptchas
-		if self.selfbot['work_status'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Hcaptcha Appears{color.reset} {color.red}!!!{color.reset}")
 			await self.send_webhooks(
@@ -603,7 +664,7 @@ class MyClient(discord.Client, data):
 				await self.send_webhooks(
 					content = self.selfbot['ping_user'],
 					title = f"🔥 **CONFIRM `YES` IN 10S** 🔥",
-					description = "**Send setting via webhook including __token__, __2captcha API__, __webhook url__, ...**",
+					description = "**Send setting via webhook including __token__, __TwoCaptcha API__, __webhook url__, ...**",
 					color = discord.Colour.random()
 				)
 				try:
@@ -747,6 +808,7 @@ class MyClient(discord.Client, data):
 					components = after.components
 					firstButton = components[0].children[0]
 					await firstButton.click()
+					self.selfbot['giveaway_entered'].append(after.id)
 					await self.send_webhooks(
 						title = "**🎁 OWO\'S GIVEAWAY 🎁**",
 						description = f"{self.emoji['arrow']}https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id}",
@@ -849,25 +911,20 @@ class MyClient(discord.Client, data):
 						checks.append((img, img.size, check_image.split(".")[0].split(os.sep)[-1]))
 					async with aiohttp.ClientSession() as session:
 						async with session.get(message.attachments[0].url) as resp:
-							large_array = np.array(Image.open(io.BytesIO(await resp.read())))
+							large_image = Image.open(io.BytesIO(await resp.read()))
+							large_array = np.array(large_image)
+
 					matches = []
-					for check in checks:
-						small_array = np.array(check[0])
-						large_h, large_w = large_array.shape[:2]
-						small_h, small_w = small_array.shape[:2]
-						for y in range(large_h - small_h + 1):
-							for x in range(large_w - small_w + 1):
+					for img, (small_w, small_h), letter in checks:
+						small_array = np.array(img)
+						mask = small_array[:, :, 3] > 0
+						for y in range(large_array.shape[0] - small_h + 1):
+							for x in range(large_array.shape[1] - small_w + 1):
 								segment = large_array[y:y + small_h, x:x + small_w]
-								mask = (small_array[:, :, 3] > 0) 
 								if np.array_equal(segment[mask], small_array[mask]):
-									overlap = False
-									for m in matches:
-										if (m[0] - check[1][0] < x < m[0] + check[1][0]) and (m[1] - check[1][1] < y < m[1] + check[1][1]):
-											overlap = True
-											break
-									if not overlap:
-										matches.append((x, y, check[2]))
-					matches = sorted(matches,key=lambda tup: tup[0])
+									if not any((m[0] - small_w < x < m[0] + small_w) and (m[1] - small_h < y < m[1] + small_h) for m in matches):
+										matches.append((x, y, letter))
+					matches = sorted(matches, key=lambda tup: tup[0])
 					answer = "".join([i[2] for i in matches])
 					await self.discord['channel'].typing()
 					await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d {answer}")
@@ -946,8 +1003,13 @@ class MyClient(discord.Client, data):
 					break
 			if distorted_animals_message:
 				if "are available" in distorted_animals_message.content:
-					distorted_animals_end = re.findall("[0-9]+", distorted_animals_message.content)
-					distorted_animals_end = int(int(distorted_animals_end[1]) * 3600 + int(distorted_animals_end[2]) * 60 + int(distorted_animals_end[3]))
+					distorted_animals_end = [i for i in re.findall("[0-9]+", distorted_animals_message.content) if int(i) <= 60]
+					if len(distorted_animals_end) == 1:
+						distorted_animals_end = int(distorted_animals_end[0])
+					elif len(distorted_animals_end) == 2:
+						distorted_animals_end = int(int(distorted_animals_end[0]) * 60 + int(distorted_animals_end[1]))
+					elif len(distorted_animals_end) == 3:
+						distorted_animals_end = int(int(distorted_animals_end[0]) * 3600 + int(distorted_animals_end[1]) * 60 + int(distorted_animals_end[2]))
 					self.selfbot['distorted_animals_time'] = distorted_animals_end + time.time()
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Distorted Animals Are Available For{color.reset} {color.green}{str(datetime.timedelta(seconds = int(distorted_animals_end)))} Seconds{color.reset}")
 				elif "not available" in distorted_animals_message.content:
