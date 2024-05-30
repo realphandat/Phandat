@@ -115,6 +115,10 @@ class data:
 			"pup_limit": False,
 			"piku_limit": False
 		}
+		
+		self.emote_commands = ['blush', 'cry', 'dance', 'lewd', 'pout', 'shrug', 'sleepy', 'smile', 'smug', 'thumbsup', 'wag', 'thinking', 'triggered', 'teehee', 'deredere', 'thonking', 'scoff', 'happy', 'thumbs', 'grin']
+
+		self.owo_uwu_commands = ['owo', 'Owo', 'uwu', 'Uwu']
 
 		self.current_gamble_bet = {
 			"slot": int(self.gamble['slot']['bet']),
@@ -268,6 +272,7 @@ class MyClient(discord.Client, data):
 
 	async def solve_image_captcha(self, image, captcha, lenghth):
 		key = {
+			"result": None,
 			"answer": None,
 			"service": None
 		}
@@ -276,7 +281,8 @@ class MyClient(discord.Client, data):
 			try:
 				balance = self.twocaptcha_solver.balance()
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your TwoCaptcha API Currently Have{color.reset} {color.green}{balance}${color.reset}")
-				key['answer'] = self.twocaptcha_solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
+				key['result'] = self.twocaptcha_solver.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
+				key['answer'] = key['result']['code']
 				key['service'] = "TwoCaptcha"
 			except Exception as e:
 				await self.send_webhooks(
@@ -296,8 +302,8 @@ class MyClient(discord.Client, data):
 		if self.solve_captcha['service']['capmonster']['mode'] and not key['answer']:
 			try:
 				task_id = self.capmonster_solver_image_captcha.create_task(base64_encoded_image = captcha)
-				result = self.capmonster_solver_image_captcha.join_task_result(task_id)
-				key['answer'] = result.get("text")
+				key['result'] = self.capmonster_solver_image_captcha.join_task_result(task_id)
+				key['answer'] = key['result'].get("text")
 				key['service'] = "CapMonster"
 			except Exception as e:
 				await self.send_webhooks(
@@ -314,7 +320,7 @@ class MyClient(discord.Client, data):
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Your CapMonster API Has The Problem{color.reset} {color.red}!!!{color.reset} | {e}")
 					await self.solve_image_captcha()
 		await self.owo['name'].typing()
-		await self.owo['name'].send(result['code'])
+		await self.owo['name'].send(key['answer'])
 		self.amount['command'] += 1
 		await asyncio.sleep(random.randint(3, 5))
 		captcha_verification_message = None
@@ -325,12 +331,12 @@ class MyClient(discord.Client, data):
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.green}Successfully{color.reset}")
 			await self.send_webhooks(
 				title = "**🎉 CORRECT SOLUTION 🎉**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}**Continue To Work**",
+				description = f"{self.emoji['arrow']}**Answer:** {key['answer']}\n{self.emoji['arrow']}**Continue To Work**",
 				color = discord.Colour.random(),
 				thumnail = image
 			)
 			if key['service'] == "TwoCaptcha":
-				self.twocaptcha_solver.report(result['captchaId'], True)
+				self.twocaptcha_solver.report(key['result']['captchaId'], True)
 			self.amount['captcha'] += 1
 			self.checking['captcha_appear'] = False
 			self.solve_captcha['attempts'] = 0
@@ -341,12 +347,12 @@ class MyClient(discord.Client, data):
 			await self.send_webhooks(
 				content = self.selfbot['ping_user'],
 				title = "**⛔ INCORRECT SOLUTION ⛔**",
-				description = f"{self.emoji['arrow']}**Answer:** {result['code']}\n{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
+				description = f"{self.emoji['arrow']}**Answer:** {key['answer']}\n{self.emoji['arrow']}I\'ll Try To **Solve It Again**",
 				color = discord.Colour.random(),
 				thumnail = image
 			)
 			if key['service'] == "TwoCaptcha":
-				self.twocaptcha_solver.report(result['captchaId'], False)
+				self.twocaptcha_solver.report(key['result']['captchaId'], False)
 			self.checking['captcha_attempts'] += 1
 			if self.checking['captcha_attempts'] <= int(self.solve_captcha['image_captcha_attempts']):
 				await self.solve_image_captcha(image, captcha, lenghth)
@@ -555,7 +561,7 @@ class MyClient(discord.Client, data):
 				await self.worker(False)
 
 		#Check gems in use
-		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.use_gem_when_distorted_animals_are_available and not self.selfbot['distorted_animals_time'] - time.time() <= 0 and self.checking['check_distorted_animals_times'] > 0)) and (not self.checking["no_gem"] or (self.sleep and self.selfbot['daily_time'] - time.time() <= 0 and self.checking['daily_times'] > 0)) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.use_gem_when_distorted_animals_are_available and not self.selfbot['distorted_animals_time'] - time.time() <= 0 and self.checking['check_distorted_animals_times'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.selfbot['daily_time'] - time.time() <= 0 and self.checking['daily_times'] > 0)) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
@@ -639,7 +645,7 @@ class MyClient(discord.Client, data):
 					self.selfbot['work_status'] = True
 				else:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}You Can\'t Start,{color.reset} {color.gray}I\'m Working{color.reset}")
-					await self.send_webhooks(content = f"**🍁 | You Can\'t Resume, I\'m Working**")
+					await self.send_webhooks(content = f"**🍁 | You Can\'t Start, I\'m Working**")
 			#Pause
 			if message.content.lower() == "pause":
 				if self.selfbot['work_status']:
@@ -668,7 +674,7 @@ class MyClient(discord.Client, data):
 					color = discord.Colour.random()
 				)
 				try:
-					await self.wait_for("message", check=lambda m: m.content.lower() in ["yes", "y"] and m.author.id in self.webhook['owner_id'], timeout = 10)
+					await self.wait_for("message", check=lambda m: m.content.lower() in ['yes', 'y'] and m.author.id in self.webhook['owner_id'], timeout = 10)
 				except asyncio.TimeoutError:
 					pass
 				else:
@@ -826,24 +832,36 @@ class MyClient(discord.Client, data):
 				if message.author.id == self.owo['id']:
 					break
 			else:
-				self.owo['status'] = False
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}OwO Doesn\'t Respond{color.reset} {color.red}!!!{color.reset}")
-				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Wait For{color.reset} {color.gray}10 Minutes{color.reset}")
-				await self.send_webhooks(
-					content = self.selfbot['ping_user'],
-					title = "**💀 OWO IS OFFLINE 💀**",
-					description = f"{self.emoji['arrow']}I\'ll Wait For **10 Minutes**",
-					color = discord.Colour.random()
-				)
-				self.selfbot['work_status'] = False
-				await asyncio.sleep(600)
-				self.owo['status'] = True
-				await self.worker(True, skip = [self.check_owo_status])
+				action = random.choice(self.emote_commands)
+				await self.discord['channel'].typing()
+				await self.discord['channel'].send(f"{self.owo['prefix']}{action}")
+				print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}{action}{color.reset}")
+				self.amount['command'] += 1
+				owo_status = False
+				await asyncio.sleep(random.randint(3, 5))
+				async for message in self.discord['channel'].history(limit = 10):
+					if message.author.id == self.owo['id']:
+						owo_status = True
+						break
+				if not owo_status:
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}OwO Doesn\'t Respond{color.reset} {color.red}!!!{color.reset}")
+					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Wait For{color.reset} {color.gray}10 Minutes{color.reset}")
+					await self.send_webhooks(
+						content = self.selfbot['ping_user'],
+						title = "**💀 OWO IS OFFLINE 💀**",
+						description = f"{self.emoji['arrow']}I\'ll Wait For **10 Minutes**",
+						color = discord.Colour.random()
+					)
+					self.owo['status'] = False
+					self.selfbot['work_status'] = False
+					await asyncio.sleep(600)
+					self.owo['status'] = True
+					self.selfbot['work_status'] = True
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
 		if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
-			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
+			say = random.choice(self.owo_uwu_commands)
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(say)
 			print(f"{await self.intro()}{color.yellow}[SEND] {say}{color.reset}")
