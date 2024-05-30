@@ -493,7 +493,7 @@ class MyClient(discord.Client, data):
 
 	async def on_message(self, message):
 		#Change channel when someone meations
-		if self.change_channel_when_someone_mentions and str(message.type) == "MessageType.reply" and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and f"<@{self.discord['user_id']}>" in message.content and message.channel.id == self.discord['channel_id']:
+		if self.change_channel_when_someone_mentions and (str(message.type) == "MessageType.reply" or f"<@{self.discord['user_id']}>" in message.content) and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Someone{color.reset} {color.yellow}Meations{color.reset} {color.bold}You{color.reset}")
 			await self.send_webhooks(
 				title = "**🏷️ SOMEONE MEATIONS YOU 🏷️**",
