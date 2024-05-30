@@ -763,7 +763,7 @@ class MyClient(discord.Client, data):
 				if "won nothing" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.red}Lost {self.current_gamble_bet['slot']} Cowoncy{color.reset}")
 					self.amount['gamble'] -= self.current_gamble_bet['slot']
-					self.current_gamble_bet['slot'] *= self.gamble['slot']['rate']
+					self.current_gamble_bet['slot'] *= int(self.gamble['slot']['rate'])
 				#Draw
 				if "<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.gray}Draw {self.current_gamble_bet['slot']} Cowoncy{color.reset}")
@@ -771,22 +771,22 @@ class MyClient(discord.Client, data):
 				if "<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_gamble_bet['slot']} Cowoncy (x2){color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot']
-					self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x3
 				if "<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_gamble_bet['slot'] * 2} Cowoncy (x3){color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 2
-					self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x4
 				if "<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_gamble_bet['slot'] * 3} Cowoncy (x4){color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 3
-					self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x10
 				if "<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Slot Turn{color.reset} {color.green}Won {self.current_gamble_bet['slot'] * 9} Cowoncy (x10){color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 9
-					self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 
 			#Coinflip
 			if self.gamble['coinflip']['mode'] and str(self.discord['user_nickname']) in after.content:
@@ -794,12 +794,12 @@ class MyClient(discord.Client, data):
 				if "you lost" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.red}Lost {self.current_gamble_bet['coinflip']} Cowoncy{color.reset}")
 					self.amount['gamble'] -= self.current_gamble_bet['coinflip']
-					self.current_gamble_bet['coinflip'] *= self.gamble['coinflip']['rate']
+					self.current_gamble_bet['coinflip'] *= int(self.gamble['coinflip']['rate'])
 				#Won
 				if "you won" in after.content:
 					print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Coinflip Turn{color.reset} {color.green}Won {self.current_gamble_bet['coinflip']} Cowoncy{color.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['coinflip']
-					self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
+					self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 
 		#Join owo's giveaway
 		if self.join_owo_giveaway and after.embeds and not after.id in self.selfbot['giveaway_entered'] and after.author.id == self.owo['id']:
@@ -1078,8 +1078,8 @@ class MyClient(discord.Client, data):
 	async def play_gamble(self):
 		#Slot
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['slot'] >= self.gamble['slot']['max']:
-				self.current_gamble_bet['slot'] = self.gamble['slot']['bet']
+			if self.current_gamble_bet['slot'] >= int(self.gamble['slot']['max']):
+				self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}s {self.current_gamble_bet['slot']}{color.reset}")
@@ -1087,8 +1087,8 @@ class MyClient(discord.Client, data):
 			await asyncio.sleep(random.randint(3, 5))
 		#Coinflip
 		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['coinflip'] >= self.gamble['coinflip']['max']:
-				self.current_gamble_bet['coinflip'] = self.gamble['coinflip']['bet']
+			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']):
+				self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 			side = random.choice(['h', 't'])
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
@@ -1097,8 +1097,8 @@ class MyClient(discord.Client, data):
 			await asyncio.sleep(random.randint(3, 5))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['blackjack'] >= self.gamble['blackjack']['max']:
-				self.current_gamble_bet['blackjack'] = self.gamble['blackjack']['bet']
+			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']):
+				self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			print(f"{await self.intro()}{color.yellow}[SEND] {self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}{color.reset}")
@@ -1136,12 +1136,12 @@ class MyClient(discord.Client, data):
 					elif "You won" in message.embeds[0].footer.text:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
 						self.amount['gamble'] += self.current_gamble_bet['blackjack']
-						self.current_gamble_bet['blackjack'] = self.gamble['blackjack']['bet']
+						self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 						self.checking['blackjack_end'] = True
 					elif "You lost" in message.embeds[0].footer.text:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
 						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
-						self.current_gamble_bet['blackjack'] *= self.gamble['blackjack']['rate']
+						self.current_gamble_bet['blackjack'] *= int(self.gamble['blackjack']['rate'])
 						self.checking['blackjack_end'] = True
 					elif "You tied" in message.embeds[0].footer.text or "You both bust" in message.embeds[0].footer.text:
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Your Blackjack Turn{color.reset} {color.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{color.reset}")
