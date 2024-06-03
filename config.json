@@ -1,107 +1,255 @@
 {
-	"token": "abc123",
+	"MTE5MTcwMzY4MTYzNzIDA4Ng.G6TwobkddtazoPij_pqpNvktLDs3Q0": {
+		"get_owo_prefix": {
+			"mode": false,
+			"default": "w"
+		},
 
-	"get_owo_prefix": {
-		"mode": false,
-		"default": "w"
-	},
+		"channel_id": [
+			967224513244831825, 
+			907122946345140255,
+			907123150632943628,
+			967225320476401664,
+			908588451455201320,
+			908589615760408586,
+			908593913328197663,
+			908594458956804127,
+			908595251067891773,
+			908598260468420658,
+			908598348439773194,
+			908598752992952330,
+			908598928335851520,
+			908599013094342706,
+			908599013094342706,
+			908602863352184894,
+			908602930037403648,
+			967225869217173564,
+			908603090796675133,
+			908603167518883841,
+			908603236867514368,
+			990184669289009203,
+			908603354647785522
+		],
 
-	"channel_id": [123, 456],
+		"change_channel_when_someone_mentions": true,
 
-	"change_channel_when_someone_mentions": true,
-
-	"solve_captcha": {
-		"image_captcha_attempts": 3,
-		"image_captcha": true,
-		"hcaptcha_attempts": 3,
-		"hcaptcha": true,
-		"service": {
-			"twocaptcha": {
-				"mode": true,
-				"key": "abc123"
-			},
-			"capmonster": {
-				"mode": true,
-				"key": "abc123"
+		"solve_captcha": {
+			"image_captcha_attempts": 3,
+			"image_captcha": true,
+			"hcaptcha_attempts": 3,
+			"hcaptcha": true,
+			"service": {
+				"twocaptcha": {
+					"mode": false,
+					"key": "61845sdf458dff8cvh34d67c4g9087702"
+				},
+				"capmonster": {
+					"mode": true,
+					"key": "7382aabe9e04930fgfghhfghd2566e9"
+				}
 			}
-		}
-	},
+		},
 
-	"grind": {
-		"owo": true,
-		"hunt": true,
-		"battle": true,
-		"quote": false
-	},
+		"grind": {
+			"owo": true,
+			"hunt": true,
+			"battle": true,
+			"quote": false
+		},
 
-	"huntbot": {
-		"claim_submit": true,
-		"upgrade": {
+		"huntbot": {
+			"claim_submit": true,
+			"upgrade": {
+				"mode": false,
+				"type": "experience"
+			}
+		},
+
+		"gem": {
+			"mode": false,
+			"sort": "max",
+			"star": false,
+			"open_box": false,
+			"open_crate": false
+		},
+
+		"use_gem_when_distorted_animals_are_available": true,
+
+		"animals": {
+			"mode": false,
+			"type": "sac",
+			"rank": "all"
+		},
+
+		"daily": true,
+
+		"sleep": true,
+
+		"gamble": {
+			"slot": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			},
+			"coinflip": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			},
+			"blackjack": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			}
+		},
+
+		"pray_curse": {
+			"mode": false,
+			"type": "pray",
+			"user_id": ""
+		},
+
+		"entertainment": {
+			"run": false,
+			"pup": false,
+			"piku": false
+		},
+
+		"command": {
 			"mode": true,
-			"type": "experience"
-		}
-	},
-
-	"gem": {
-		"mode": false,
-		"sort": "best",
-		"star": false,
-		"open_box": false,
-		"open_crate": false
-	},
-
-	"use_gem_when_distorted_animals_are_available": true,
-
-	"animals": {
-		"mode": false,
-		"type": "sac",
-		"rank": "all"
-	},
-
-	"daily": true,
-
-	"sleep": true,
-
-	"gamble": {
-		"slot": {
-			"mode": false,
-			"bet": 1,
-			"rate": 2,
-			"max": 250000
+			"owner_id": [1191703681637290086, 1191744403463737456]
 		},
-		"coinflip": {
-			"mode": false,
-			"bet": 1,
-			"rate": 2,
-			"max": 250000
+
+		"webhook": {
+			"mode": true,
+			"mentioner_id": [1191703681637290086, 1191744403463737456],
+			"url": "https://discord.com/api/webhdg49576366120/mPdbvtSlW54bMfgh0HsdfDByeerSw965LMC9_zCiDB949WsPgrV"
 		},
-		"blackjack": {
+
+		"join_owo_giveaway": true,
+
+		"accept_challenge_invitation": true
+	},
+	"MTAyNjQzNDY2NDcwMjk1MTQdfgMG7ctaiBXdfg95UblAIp8": {
+		"get_owo_prefix": {
 			"mode": false,
-			"bet": 1,
-			"rate": 2,
-			"max": 250000
-		}
-	},
+			"default": "h"
+		},
 
-	"pray_curse": {
-		"mode": false,
-		"type": "pray",
-		"user_id": ""
-	},
+		"channel_id": [
+			1204800608847007795,
+			1137814222114410636,
+			1202632575630315550,
+			1142116199560384533,
+			1175076194958442566,
+			1048963821466828840,
+			1185182584314015794,
+			1195379256683933837
+		],
 
-	"entertainment": {
-		"run": false,
-		"pup": false,
-		"piku": false
-	},
+		"change_channel_when_someone_mentions": true,
 
-	"webhook": {
-		"mode": true,
-		"owner_id": [123, 456],
-		"url": "https://discord.com/api/webhooks/123/abc"
-	},
+		"solve_captcha": {
+			"image_captcha_attempts": 3,
+			"image_captcha": true,
+			"hcaptcha_attempts": 3,
+			"hcaptcha": true,
+			"service": {
+				"twocaptcha": {
+					"mode": false,
+					"key": "61845sdf458dff8cvdfgh67c4g9087702"
+				},
+				"capmonster": {
+					"mode": true,
+					"key": "7382aabe9e04930fghffghghd2566e9"
+				}
+			}
+		},
 
-	"join_owo_giveaway": true,
+		"grind": {
+			"owo": true,
+			"hunt": true,
+			"battle": true,
+			"quote": false
+		},
 
-	"accept_challenge_invitation": true
+		"huntbot": {
+			"claim_submit": false,
+			"upgrade": {
+				"mode": true,
+				"type": "experience"
+			}
+		},
+
+		"gem": {
+			"mode": false,
+			"sort": "max",
+			"star": false,
+			"open_box": false,
+			"open_crate": false
+		},
+
+		"use_gem_when_distorted_animals_are_available": true,
+
+		"animals": {
+			"mode": false,
+			"type": "sac",
+			"rank": "all"
+		},
+
+		"daily": true,
+
+		"sleep": true,
+
+		"gamble": {
+			"slot": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			},
+			"coinflip": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			},
+			"blackjack": {
+				"mode": false,
+				"bet": 1,
+				"rate": 2,
+				"max": 250000
+			}
+		},
+
+		"pray_curse": {
+			"mode": false,
+			"type": "pray",
+			"user_id": ""
+		},
+
+		"entertainment": {
+			"run": false,
+			"pup": false,
+			"piku": false
+		},
+
+		"command": {
+			"mode": true,
+			"owner_id": [1191703681637290086, 1191744403463737456]
+		},
+
+		"webhook": {
+			"mode": true,
+			"mentioner_id": [1191703681637290086, 1191744403463737456],
+			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLghj8i-mTdSrO2NYiqlbjxVQmh2"
+		},
+
+		"join_owo_giveaway": true,
+
+		"accept_challenge_invitation": true
+	}
 }
