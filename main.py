@@ -1,6 +1,7 @@
 import discord
 from discord import Webhook
 from discord.ext import tasks
+from logging.config import dictConfig
 import asyncio
 from aiohttp import ClientSession, CookieJar
 import re
@@ -18,6 +19,7 @@ from requests import get
 from base64 import b64encode
 from twocaptcha import TwoCaptcha
 from capmonster_python import ImageToTextTask, HCaptchaTask
+import threading
 
 class color:
 	mark = '\033[104m'
@@ -32,29 +34,31 @@ class color:
 	purple = '\033[95m'
 	reset = '\033[0m'
 
-class data:
-	def __init__(self):
+class MyClient(discord.Client):
+	def __init__(self, token, *args, **kwargs):
+		discord.Client.__init__(self, *args, **kwargs)
+		super().__init__(*args, **kwargs)
+		self.token = token
 		with open("config.json", "r") as file:
 			data = json.load(file)
-			self.token = data['token']
-			self.get_owo_prefix = data['get_owo_prefix']
-			self.channel_id = data['channel_id']
-			self.change_channel_when_someone_mentions = data['change_channel_when_someone_mentions']
-			self.solve_captcha = data['solve_captcha']
-			self.grind = data['grind']
-			self.huntbot = data['huntbot']
-			self.gem = data['gem']
-			self.use_gem_when_distorted_animals_are_available = data['use_gem_when_distorted_animals_are_available']
-			self.animals = data['animals']
-			self.daily = data['daily']
-			self.sleep = data['sleep']
-			self.gamble = data['gamble']
-			self.pray_curse = data['pray_curse']
-			self.entertainment = data['entertainment']
-			self.command = data['command']
-			self.webhook = data['webhook']
-			self.join_owo_giveaway = data['join_owo_giveaway']
-			self.accept_challenge_invitation = data['accept_challenge_invitation']
+			self.get_owo_prefix = data[token]['get_owo_prefix']
+			self.channel_id = data[token]['channel_id']
+			self.change_channel_when_someone_mentions = data[token]['change_channel_when_someone_mentions']
+			self.solve_captcha = data[token]['solve_captcha']
+			self.grind = data[token]['grind']
+			self.huntbot = data[token]['huntbot']
+			self.gem = data[token]['gem']
+			self.use_gem_when_distorted_animals_are_available = data[token]['use_gem_when_distorted_animals_are_available']
+			self.animals = data[token]['animals']
+			self.daily = data[token]['daily']
+			self.sleep = data[token]['sleep']
+			self.gamble = data[token]['gamble']
+			self.pray_curse = data[token]['pray_curse']
+			self.entertainment = data[token]['entertainment']
+			self.command = data[token]['command']
+			self.webhook = data[token]['webhook']
+			self.join_owo_giveaway = data[token]['join_owo_giveaway']
+			self.accept_challenge_invitation = data[token]['accept_challenge_invitation']
 
 		self.tasks = [
 			self.check_owo_status,
@@ -156,12 +160,6 @@ class data:
 		self.capmonster_solver_image_captcha = ImageToTextTask(self.solve_captcha['service']['capmonster']['key'])
 
 		self.capmonster_solver_hcaptcha = HCaptchaTask(self.solve_captcha['service']['capmonster']['key'])
-
-class MyClient(discord.Client, data):
-	def __init__(self, *args, **kwargs):
-		discord.Client.__init__(self, *args, **kwargs)
-		super().__init__(*args, **kwargs)
-		data.__init__(self)
 
 	async def intro(self):
 		return f"{color.mark}{time.strftime('%H:%M:%S', time.localtime())}{color.reset} - {color.red}{self.discord['user_nickname']}{color.reset} - "
@@ -539,6 +537,18 @@ class MyClient(discord.Client, data):
 			if self.solve_captcha['hcaptcha']:
 				await self.solve_hcaptcha()
 
+		#Detect Unknown Captchas
+		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			self.checking['captcha_appear'] = True
+			await self.worker(False)
+			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Unknown Captcha Appears{color.reset} {color.red}!!!{color.reset}")
+			await self.send_webhooks(
+				content = self.selfbot['mentioner'],
+				title = "**🚨 UNKNOWN CAPTCHA APPEARS 🚨**",
+				description = f"{self.emoji['arrow']}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+				color = discord.Colour.random()
+			)
+
 		#Detect problems
 		if (str(self.discord['user']) in message.content or str(self.discord['user_nickname']) in message.content) and message.author.id == self.owo['id']:
 			if "You have been banned" in message.content:
@@ -598,7 +608,7 @@ class MyClient(discord.Client, data):
 						self.amount['command'] += 1
 						await asyncio.sleep(random.randint(3, 5))
 					gems_in_inv = None
-					if self.gem['sort'].lower() == "worst":
+					if self.gem['sort'].lower() == "min":
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
 					else:
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse=True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
@@ -631,9 +641,15 @@ class MyClient(discord.Client, data):
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}Send Stat{color.reset} {color.gray}Via Webhook{color.reset}")
 				await self.send_webhooks(
 					title = f"📋 HELP MENU 📋",
-					description = "**`help`\n`start`\n`pause`\n`stat`\n`setting`**",
+					description = "**`help`\n`send` + `text`\n`start`\n`pause`\n`stat`\n`setting`**",
 					color = discord.Colour.random()
 				)
+			#Send
+			if message.content.lower().startswith("send"):
+				text = message.content[5:]
+				await message.channel.typing()
+				await message.channel.send(text)
+				print(f"{await self.intro()}{color.yellow}[SEND] {text}{color.reset}")
 			#Start
 			if message.content.lower() == "start":
 				if not self.selfbot['work_status']:
@@ -1241,4 +1257,13 @@ print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.re
 print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}aduck (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}Cex (cesxos){color.reset}")
 print()
 
-MyClient.run(MyClient.token)
+dictConfig({"version": 1, "disable_existing_loggers": True})
+config = json.load(open("config.json"))
+threads = []
+for token in config:
+	Client = MyClient(token)
+	thread = threading.Thread(target=Client.run, args=(token,))
+	threads.append(thread)
+	thread.start()
+for thread in threads:
+	thread.join()
