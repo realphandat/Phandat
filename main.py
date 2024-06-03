@@ -698,7 +698,7 @@ class MyClient(discord.Client):
 					config = json.load(open("config.json"))
 					await self.send_webhooks(
 						title = f"💾 SETTING 💾",
-						description = config,
+						description = config[self.token],
 						color = discord.Colour.random()
 					)
 
