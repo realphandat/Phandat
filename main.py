@@ -1,7 +1,6 @@
 import discord
 from discord import Webhook
 from discord.ext import tasks
-from logging.config import dictConfig
 import asyncio
 from aiohttp import ClientSession, CookieJar
 import re
@@ -179,7 +178,7 @@ class MyClient(discord.Client):
 			self.discord['user_id'] = self.user.id
 			for i in self.webhook['mentioner_id']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{i}>"
-			if self.discord['user_id'] not in self.selfbot['mentioner']:
+			if str(self.discord['user_id']) not in self.selfbot['mentioner']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{self.discord['user_id']}>"
 			await self.startup_channel()
 			webhook = f"{self.arrow}<#{self.discord['channel_id']}>"
@@ -1271,7 +1270,6 @@ print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.re
 print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}aduck (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}Cex (cesxos){color.reset}")
 print()
 
-dictConfig({"version": 1, "disable_existing_loggers": True})
 config = json.load(open("config.json"))
 threads = []
 for token in config:
