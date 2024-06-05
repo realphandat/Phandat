@@ -283,6 +283,10 @@ class MyClient(discord.Client):
 			key = self.twocaptcha_image_captcha.normal(captcha, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang="en")
 			key = key['code']
 		except Exception as e:
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "TWOCAPTCHA API ⚙️",
@@ -313,6 +317,10 @@ class MyClient(discord.Client):
 				thumnail = image
 			)
 		elif "Wrong" in captcha_verification_message.content and captcha_verification_message.author.id == self.owo['id']:
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved Image Captcha{color.reset} {color.red}Failed{color.reset}")
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
 			await self.send_webhooks(
@@ -341,6 +349,10 @@ class MyClient(discord.Client):
 				if res2.status in (302, 307):
 					return session
 				else:
+					try:
+						os.startfile('music.mp3')
+					except:
+						pass
 					print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Failed To Add Token To Oauth{color.reset} {color.red}!!!{color.reset} | {res2.status}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
@@ -379,6 +391,10 @@ class MyClient(discord.Client):
 						result_session = await self.submit_oauth(res)
 						return result_session
 					else:
+						try:
+							os.startfile('music.mp3')
+						except:
+							pass
 						print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.red}!!!{color.reset} {color.bold}Getting Oauth Has The Problem{color.reset} {color.red}!!!{color.reset} | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
@@ -410,6 +426,10 @@ class MyClient(discord.Client):
 				key = self.twocaptcha_hcaptcha.hcaptcha(sitekey="a6a1d5ce-612d-472d-8e37-7601408fbc09", url="https://owobot.com/captcha")
 				key = key['code']
 			except Exception as e:
+				try:
+					os.startfile('music.mp3')
+				except:
+					pass
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "TWOCAPTCHA API ⚙️",
@@ -432,6 +452,10 @@ class MyClient(discord.Client):
 				result = self.capmonster.join_task_result(task_id)
 				key = result.get("gRecaptchaResponse")
 			except Exception as e:
+				try:
+					os.startfile('music.mp3')
+				except:
+					pass
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "CAPMONSTER API ⚙️",
@@ -459,6 +483,10 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 					else:
+						try:
+							os.startfile('music.mp3')
+						except:
+							pass
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I Solved HCaptcha{color.reset} {color.red}Failed{color.reset}")
 						print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.bold}I\'ll Try To{color.reset} {color.red}Solve It Again{color.reset}")
 						await self.send_webhooks(
@@ -491,6 +519,10 @@ class MyClient(discord.Client):
 
 		#Detect Image Captcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Image Captcha Appears{color.reset} {color.red}!!!{color.reset}")
@@ -508,6 +540,10 @@ class MyClient(discord.Client):
 
 		#Detect HCaptcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}HCaptcha Appears{color.reset} {color.red}!!!{color.reset}")
@@ -522,6 +558,10 @@ class MyClient(discord.Client):
 
 		#Detect Unknown Captcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}Unknown Captcha Appears{color.reset} {color.red}!!!{color.reset}")
@@ -535,6 +575,10 @@ class MyClient(discord.Client):
 		#Detect Problem
 		if (str(self.discord['user']) in message.content or str(self.discord['user_nickname']) in message.content) and (message.channel.id == self.owo['dm_channel_id'] or message.author.id == self.owo['id']):
 			if "You have been banned" in message.content:
+				try:
+					os.startfile('music.mp3')
+				except:
+					pass
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You Have Been Banned{color.reset} {color.red}!!!{color.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
@@ -544,6 +588,10 @@ class MyClient(discord.Client):
 				)
 				await self.worker(False)
 			if "don\'t have enough cowoncy!" in message.content:
+				try:
+					os.startfile('music.mp3')
+				except:
+					pass
 				print(f"{await self.intro()}{color.blue}[INFO]{color.reset} {color.red}!!!{color.reset} {color.bold}You\'ve Run Out Of Cowoncy{color.reset} {color.red}!!!{color.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
@@ -667,7 +715,6 @@ class MyClient(discord.Client):
 				)
 			if message.content.lower() == "setting":
 				await self.send_webhooks(
-					content = self.selfbot['mentioner'],
 					title = f"CONFIRM `YES` IN 10S 🔥",
 					description = "**Send setting via webhook including __token__, __TwoCaptcha API__, __webhook url__, ...**",
 					color = discord.Colour.random()
@@ -915,7 +962,6 @@ class MyClient(discord.Client):
 				#Solve Huntbot Captcha
 				if "Here is" in huntbot_message.content:
 					await self.send_webhooks(
-						content = self.selfbot['mentioner'],
 						title = "HUNTBOT CAPTCHA APPEARS 🚨",
 						description = f"{self.arrow}https://discord.com/channels/{huntbot_message.guild.id}/{huntbot_message.channel.id}/{huntbot_message.id}",
 						color = discord.Colour.random(),
@@ -1005,7 +1051,7 @@ class MyClient(discord.Client):
 			else:
 				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Huntbot Message{color.reset}")
 
-	@tasks.loop(seconds = random.randint(300, 600))
+	@tasks.loop(seconds = random.randint(600, 1200))
 	async def check_distorted_animal(self):
 		if self.use_gem_when_glitch_are_available and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
 			await self.discord['channel'].typing()
@@ -1035,7 +1081,7 @@ class MyClient(discord.Client):
 				print(f"{await self.intro()}{color.red}[ERROR]{color.reset} {color.bold}I{color.reset} {color.red}Couldn't Get{color.reset} {color.bold}Distorted Animals Message{color.reset}")
 		self.checking['check_glitch_times'] += 1
 
-	@tasks.loop(seconds = random.randint(300, 600))
+	@tasks.loop(seconds = random.randint(600, 1200))
 	async def sell_sac_animal(self):
 		if self.animals['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].typing()
