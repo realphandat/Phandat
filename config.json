@@ -20,16 +20,7 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"service": {
-				"twocaptcha": {
-					"mode": true,
-					"key": "618458dff81bbd4jkl49jkl087702"
-				},
-				"capmonster": {
-					"mode": false,
-					"key": "7382aabe9e0jkljklcaed2566e9"
-				}
-			}
+			"twocaptcha": "618458dff8dfgdfgb9d867c49087702"
 		},
 
 		"hcaptcha": {
@@ -153,16 +144,7 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"service": {
-				"twocaptcha": {
-					"mode": true,
-					"key": "618458dff81bjkljkl867c49087702"
-				},
-				"capmonster": {
-					"mode": false,
-					"key": "7382aabe9ejkljkghjghj7caed2566e9"
-				}
-			}
+			"twocaptcha": "6184dfgdfgdfg81sdf7702"
 		},
 
 		"hcaptcha": {
