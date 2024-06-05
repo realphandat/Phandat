@@ -119,7 +119,9 @@
 
 		"join_owo_giveaway": true,
 
-		"accept_challenge_invitation": true
+		"accept_challenge_invitation": true,
+
+		"music_notification": false
 	},
 
 	"MTAyNjQzNDYfghyNA.GwTpmB.AN3657jhjgzqlZZApYZghjgkl67567UblAIp8": {
@@ -243,6 +245,8 @@
 
 		"join_owo_giveaway": true,
 
-		"accept_challenge_invitation": true
+		"accept_challenge_invitation": true,
+
+		"music_notification": false
 	}
 }
