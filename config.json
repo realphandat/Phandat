@@ -1,51 +1,48 @@
 {
-	"MTE5MTcwMzY4MTYzNzIDA4Ng.G6TwobkddtazoPij_pqpNvktLDs3Q0": {
+	"MTE5MTcwMzY4MTYzNzIghjjghj4Ng.G6xZgu.rkhjklij_pqpNvktLDs3Q0": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "w"
 		},
 
 		"channel_id": [
-			967224513244831825, 
-			907122946345140255,
-			907123150632943628,
-			967225320476401664,
-			908588451455201320,
-			908589615760408586,
-			908593913328197663,
-			908594458956804127,
-			908595251067891773,
-			908598260468420658,
-			908598348439773194,
-			908598752992952330,
-			908598928335851520,
-			908599013094342706,
-			908599013094342706,
-			908602863352184894,
-			908602930037403648,
-			967225869217173564,
-			908603090796675133,
-			908603167518883841,
-			908603236867514368,
-			990184669289009203,
-			908603354647785522
+			9672245132448431825, 
+			9071229463451440255,
+			9071231506294443628,
+			9672253204762401664,
+			9085884514552401320,
+			9085896157604408586,
+			9085939133228197663
 		],
 
 		"change_channel_when_someone_mentions": true,
 
-		"solve_captcha": {
-			"image_captcha_attempts": 3,
-			"image_captcha": true,
-			"hcaptcha_attempts": 3,
-			"hcaptcha": true,
+		"image_captcha": {
+			"mode": true,
+			"attempts": 3,
+			"service": {
+				"twocaptcha": {
+					"mode": true,
+					"key": "618458dff81bbd4jkl49jkl087702"
+				},
+				"capmonster": {
+					"mode": false,
+					"key": "7382aabe9e0jkljklcaed2566e9"
+				}
+			}
+		},
+
+		"hcaptcha": {
+			"mode": true,
+			"attempts": 3,
 			"service": {
 				"twocaptcha": {
 					"mode": false,
-					"key": "61845sdf458dff8cvh34d67c4g9087702"
+					"key": "618458dff81bbjlkjlkjklc49087702"
 				},
 				"capmonster": {
 					"mode": true,
-					"key": "7382aabe9e04930fgfghhfghd2566e9"
+					"key": "7382aabe9e05678678789caed2566e9"
 				}
 			}
 		},
@@ -73,7 +70,7 @@
 			"open_crate": false
 		},
 
-		"use_gem_when_distorted_animals_are_available": true,
+		"use_gem_when_glitch_are_available": true,
 
 		"animals": {
 			"mode": false,
@@ -120,51 +117,65 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [1191703681637290086, 1191744403463737456]
+			"owner_id": [1191703681456290086, 1191744404563737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [1191703681637290086, 1191744403463737456],
-			"url": "https://discord.com/api/webhdg49576366120/mPdbvtSlW54bMfgh0HsdfDByeerSw965LMC9_zCiDB949WsPgrV"
+			"mentioner_id": [11917036816372456086, 1191744404563737456],
+			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvghjgjhByeerSw965LMC9_zCiDB949WsPgrV"
 		},
 
 		"join_owo_giveaway": true,
 
 		"accept_challenge_invitation": true
 	},
-	"MTAyNjQzNDY2NDcwMjk1MTQdfgMG7ctaiBXdfg95UblAIp8": {
+
+	"MTAyNjQzNDYfghyNA.GwTpmB.AN3657jhjgzqlZZApYZghjgkl67567UblAIp8": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "h"
 		},
 
 		"channel_id": [
-			1204800608847007795,
-			1137814222114410636,
-			1202632575630315550,
-			1142116199560384533,
-			1175076194958442566,
-			1048963821466828840,
-			1185182584314015794,
-			1195379256683933837
+			12048006088470057795,
+			11378142221144150636,
+			12026325756303155550,
+			11421161995603854533,
+			11750761949584452566,
+			10489638214668258840,
+			11851825843140155794,
+			11953792566839353837
 		],
 
 		"change_channel_when_someone_mentions": true,
 
-		"solve_captcha": {
-			"image_captcha_attempts": 3,
-			"image_captcha": true,
-			"hcaptcha_attempts": 3,
-			"hcaptcha": true,
+		"image_captcha": {
+			"mode": true,
+			"attempts": 3,
+			"service": {
+				"twocaptcha": {
+					"mode": true,
+					"key": "618458dff81bjkljkl867c49087702"
+				},
+				"capmonster": {
+					"mode": false,
+					"key": "7382aabe9ejkljkghjghj7caed2566e9"
+				}
+			}
+		},
+
+		"hcaptcha": {
+			"mode": true,
+			"attempts": 3,
 			"service": {
 				"twocaptcha": {
 					"mode": false,
-					"key": "61845sdf458dff8cvdfgh67c4g9087702"
+					"key": "618458djkljld86ghjghj087702"
 				},
 				"capmonster": {
 					"mode": true,
-					"key": "7382aabe9e04930fghffghghd2566e9"
+					"key": "7382aabe9e0493jklfghghjaed2566e9"
 				}
 			}
 		},
@@ -177,7 +188,7 @@
 		},
 
 		"huntbot": {
-			"claim_submit": false,
+			"claim_submit": true,
 			"upgrade": {
 				"mode": true,
 				"type": "experience"
@@ -192,7 +203,7 @@
 			"open_crate": false
 		},
 
-		"use_gem_when_distorted_animals_are_available": true,
+		"use_gem_when_glitch_are_available": true,
 
 		"animals": {
 			"mode": false,
@@ -239,13 +250,13 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [1191703681637290086, 1191744403463737456]
+			"owner_id": [11917036816345690086, 1191744403456737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [1191703681637290086, 1191744403463737456],
-			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLghj8i-mTdSrO2NYiqlbjxVQmh2"
+			"mentioner_id": [11917036814567290086, 1191744403456737456],
+			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtghj3VYlok_lSza4I9TZG88iSrO2NYiqlbjxVQmh2"
 		},
 
 		"join_owo_giveaway": true,
