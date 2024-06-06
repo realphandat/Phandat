@@ -1,18 +1,20 @@
 {
-	"MTE5MTcwMzY4MTYzNzIghjjghj4Ng.G6xZgu.rkhjklij_pqpNvktLDs3Q0": {
+	"MTE5MTcwMzY4MTtyuMDA4Ng.G6xZgu.raT0FyKQ67_pqpNvkDs3Q0": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "w"
 		},
 
 		"channel_id": [
-			9672245132448431825, 
-			9071229463451440255,
-			9071231506294443628,
-			9672253204762401664,
-			9085884514552401320,
-			9085896157604408586,
-			9085939133228197663
+			96724513244831825, 
+			90712946345140255,
+			90712150632943628,
+			96722520476401664,
+			90858841455201320,
+			90858961760408586,
+			90859391328197663,
+			90859445896804127,
+			90859525106891773
 		],
 
 		"change_channel_when_someone_mentions": true,
@@ -20,22 +22,18 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": "618458dff8dfgdfgb9d867c49087702"
+			"twocaptcha": ["618458dff81bbd477b9867c49087702"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"service": {
-				"twocaptcha": {
-					"mode": false,
-					"key": "618458dff81bbjlkjlkjklc49087702"
-				},
-				"capmonster": {
-					"mode": true,
-					"key": "7382aabe9e05678678789caed2566e9"
-				}
-			}
+			"twocaptcha": ["618458dff81bbd477b9d67c49087702"]
+		},
+
+		"stop_when_not_enough_2captcha_balance": {
+			"mode": true,
+			"amount": 0.01
 		},
 
 		"grind": {
@@ -67,6 +65,13 @@
 			"mode": false,
 			"type": "sac",
 			"rank": "all"
+		},
+
+		"give_cowoncy": {
+			"mode": false,
+			"percent": 50,
+			"amount": 1000000,
+			"user_id": 119170368163720086
 		},
 
 		"daily": true,
@@ -108,37 +113,37 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [1191703681456290086, 1191744404563737456]
+			"owner_id": [119170681637290086, 119174403463737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [11917036816372456086, 1191744404563737456],
-			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvghjgjhByeerSw965LMC9_zCiDB949WsPgrV"
+			"mentioner_id": [119170368163720086, 119174440343737456],
+			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHyeerSw965LMC9_zCiDB949WsPgrV"
 		},
 
 		"join_owo_giveaway": true,
 
 		"accept_challenge_invitation": true,
 
-		"music_notification": false
+		"music_notification": true
 	},
 
-	"MTAyNjQzNDYfghyNA.GwTpmB.AN3657jhjgzqlZZApYZghjgkl67567UblAIp8": {
+	"MTAyNjhjkhj2NDcwMjk1MTQyNA.GwTpmB.AN3nxMZ6W-xzqlZZ8675UblAIp8": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "h"
 		},
 
 		"channel_id": [
-			12048006088470057795,
-			11378142221144150636,
-			12026325756303155550,
-			11421161995603854533,
-			11750761949584452566,
-			10489638214668258840,
-			11851825843140155794,
-			11953792566839353837
+			120480060847007795,
+			113781421194410636,
+			120263255630315550,
+			114211619950384533,
+			117507619495844566,
+			104896382146688840,
+			118518258431415794,
+			119537925668933837
 		],
 
 		"change_channel_when_someone_mentions": true,
@@ -146,22 +151,18 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": "6184dfgdfgdfg81sdf7702"
+			"twocaptcha": ["618458dff81bbd477b9d87c49087702"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"service": {
-				"twocaptcha": {
-					"mode": false,
-					"key": "618458djkljld86ghjghj087702"
-				},
-				"capmonster": {
-					"mode": true,
-					"key": "7382aabe9e0493jklfghghjaed2566e9"
-				}
-			}
+			"twocaptcha": ["618458dff81bbd477bd867c49087702"]
+		},
+
+		"stop_when_not_enough_2captcha_balance": {
+			"mode": true,
+			"amount": 0.01
 		},
 
 		"grind": {
@@ -174,7 +175,7 @@
 		"huntbot": {
 			"claim_submit": true,
 			"upgrade": {
-				"mode": true,
+				"mode": false,
 				"type": "experience"
 			}
 		},
@@ -193,6 +194,13 @@
 			"mode": false,
 			"type": "sac",
 			"rank": "all"
+		},
+
+		"give_cowoncy": {
+			"mode": false,
+			"percent": 50,
+			"amount": 1000000,
+			"user_id": 119170368163290086
 		},
 
 		"daily": true,
@@ -234,13 +242,13 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [11917036816345690086, 1191744403456737456]
+			"owner_id": [119170368163790086, 119174440463737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [11917036814567290086, 1191744403456737456],
-			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtghj3VYlok_lSza4I9TZG88iSrO2NYiqlbjxVQmh2"
+			"mentioner_id": [119170368167290086, 119174440463737456],
+			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtEvKlZUYlok_SzcggKVha4I88i-mTdSrO2NYiqlbjxVQmh2"
 		},
 
 		"join_owo_giveaway": true,
