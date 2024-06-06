@@ -44,6 +44,7 @@ class MyClient(discord.Client):
 			self.change_channel_when_someone_mentions = data[token]['change_channel_when_someone_mentions']
 			self.image_captcha = data[token]['image_captcha']
 			self.hcaptcha = data[token]['hcaptcha']
+			self.stop_when_not_enough_2captcha_balance = data[token]['stop_when_not_enough_2captcha_balance']
 			self.grind = data[token]['grind']
 			self.huntbot = data[token]['huntbot']
 			self.gem = data[token]['gem']
@@ -63,6 +64,7 @@ class MyClient(discord.Client):
 
 		self.tasks = [
 			self.check_owo_status,
+			self.check_2captcha_balance,
 			self.change_channel,
 			self.start_grind,
 			self.claim_submit_huntbot,
@@ -120,10 +122,6 @@ class MyClient(discord.Client):
 			"pup_limit": False,
 			"piku_limit": False
 		}
-		
-		self.emote_commands = ['blush', 'cry', 'dance', 'lewd', 'pout', 'shrug', 'sleepy', 'smile', 'smug', 'thumbsup', 'wag', 'thinking', 'triggered', 'teehee', 'deredere', 'thonking', 'scoff', 'happy', 'thumbs', 'grin']
-
-		self.owo_uwu_commands = ['owo', 'Owo', 'uwu', 'Uwu']
 
 		self.current_gamble_bet = {
 			"slot": int(self.gamble['slot']['bet']),
@@ -182,7 +180,7 @@ class MyClient(discord.Client):
 				cmd = cmd + f" {c.bold}For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}"
 			print(cmd)
 			await self.send_webhooks(
-				title = f"STARTED <t:{self.selfbot['turn_on_time']}:R> 🌻",
+				title = f"🚀 STARTED <t:{self.selfbot['turn_on_time']}:R> 🚀",
 				description = webhook,
 				color = discord.Colour.random()
 				)
@@ -206,11 +204,6 @@ class MyClient(discord.Client):
 				if task in skip:
 					continue
 				task.cancel()
-
-	async def get_messages(self, message, content, includes_self = False):
-		if includes_self:
-			return (content.lower() in message.content.lower() and self.user.display_name in message.content)
-		return content.lower() in message.content.lower()
 
 	async def send_webhooks(self, content = None, title = None, description = None, color = None, image = None, thumnail = None):
 		if self.webhook['mode']:
@@ -245,7 +238,7 @@ class MyClient(discord.Client):
 			owo_prefix_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and await self.get_messages(message, f"the current prefix is set to"):
+				if message.author.id == self.owo['id'] and "the current prefix is set to" in message.content:
 					owo_prefix_message = message
 					break
 			if owo_prefix_message:
@@ -261,7 +254,7 @@ class MyClient(discord.Client):
 		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.checking['change_channel_times'] > 0:
 			await self.startup_channel()
 			await self.send_webhooks(
-				title = "CHANGE CHANNEL 🏠",
+				title = "🏠 CHANGED CHANNEL 🏠",
 				description = f"{self.arrow}<#{self.discord['channel_id']}>",
 				color = discord.Colour.random()
 			)
@@ -289,10 +282,9 @@ class MyClient(discord.Client):
 						await self.solve_image_captcha(image, captcha, lenghth, result['code'])
 					break
 				except Exception as e:
-					await self.notify()
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
-						title = "TWOCAPTCHA API ⚙️",
+						title = "⚙️ TWOCAPTCHA API ⚙️",
 						description = f"{self.arrow}Error: {str(e)}",
 						color = discord.Colour.random()
 					)
@@ -314,24 +306,24 @@ class MyClient(discord.Client):
 			self.amount['command'] += 1
 			verification = None
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
-						if message.author.id == self.owo['id'] and (await self.get_messages(message, "verified") or await self.get_messages(message, "Wrong")):
+						if message.author.id == self.owo['id'] and ("verified" in message.content or "Wrong" in message.content):
 							verification = message
-			if "verified" in verification.content and verification.author.id == self.owo['id']:
+			if "verified" in verification.content:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved Image Captcha{c.reset} {c.green}Successfully{c.reset}")
 				await self.send_webhooks(
-					title = "CORRECT SOLUTION 🎉",
+					title = "🎉 CORRECT SOLUTION 🎉",
 					description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
 					color = discord.Colour.random(),
 					thumnail = image
 				)
 				twocaptcha.report(result['captchaId'], True)
-			elif "Wrong" in verification.content and verification.author.id == self.owo['id']:
+			elif "Wrong" in verification.content:
 				await self.notify()
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
-					title = "INCORRECT SOLUTION ⛔",
+					title = "⛔ INCORRECT SOLUTION ⛔",
 					description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}I\'ll Try To **Solve It Again**",
 					color = discord.Colour.random(),
 					thumnail = image
@@ -356,15 +348,16 @@ class MyClient(discord.Client):
 				if res2.status in (302, 307):
 					return session
 				else:
-					await self.notify()
 					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Failed To Add Token To Oauth{c.reset} {c.red}!!!{c.reset} | {res2.status}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
-						title = "SUMBIT OAUTH ⚙️",
+						title = "⚙️ SUMBIT OAUTH ⚙️",
 						description = f"{self.arrow}Error: {res2.status}",
 						color = discord.Colour.random()
 					)
 			retry_times += 1
+		else:
+			await self.notify()
 
 
 	async def get_oauth(self):
@@ -395,15 +388,16 @@ class MyClient(discord.Client):
 						result_session = await self.submit_oauth(res)
 						return result_session
 					else:
-						await self.notify()
 						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
-							title = "GET OAUTH ⚙️",
+							title = "⚙️ GET OAUTH ⚙️",
 							description = f"{self.arrow}Error: {await res.text()}",
 							color = discord.Colour.random()
 						)
 			retry_times += 1
+		else:
+			await self.notify()
 
 	async def solve_hcaptcha(self):
 		headers = {
@@ -435,10 +429,9 @@ class MyClient(discord.Client):
 					result = twocaptcha.hcaptcha(sitekey = "a6a1d5ce-612d-472d-8e37-7601408fbc09", url = "https://owobot.com/captcha")
 					break
 				except Exception as e:
-					await self.notify()
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
-						title = "TWOCAPTCHA API ⚙️",
+						title = "⚙️ TWOCAPTCHA API ⚙️",
 						description = f"{self.arrow}Error: {str(e)}",
 						color = discord.Colour.random()
 					)
@@ -460,7 +453,7 @@ class MyClient(discord.Client):
 					if res.status == 200:
 						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.green}Successfully{c.reset}")
 						await self.send_webhooks(
-							title = "CORRECT SOLUTION 🎉",
+							title = "🎉 CORRECT SOLUTION 🎉",
 							description = f"{self.arrow}**Continue To Work**",
 							color = discord.Colour.random()
 						)
@@ -471,7 +464,7 @@ class MyClient(discord.Client):
 						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
-							title = "INCORRECT SOLUTION ⛔",
+							title = "⛔ INCORRECT SOLUTION ⛔",
 							description = f"{self.arrow}I\'ll Try To **Solve It Again**",
 							color = discord.Colour.random()
 						)
@@ -486,7 +479,7 @@ class MyClient(discord.Client):
 			if message.mentions[0].id == int(self.discord['user_id']) or f"<@{self.discord['user_id']}>" in message.content:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Meations{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
-					title = "SOMEONE MEATIONS YOU 🏷️",
+					title = "🏷️ SOMEONE MEATIONS YOU 🏷️",
 					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 					color = discord.Colour.random()
 				)
@@ -501,13 +494,12 @@ class MyClient(discord.Client):
 
 		#Detect Image Captcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
-			await self.notify()
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Image Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
-				title = "IMAGE CAPTCHA APPEARS 🚨",
+				title = "🚨 IMAGE CAPTCHA APPEARS 🚨",
 				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 				color = discord.Colour.random(),
 				image = message.attachments[0]
@@ -516,21 +508,24 @@ class MyClient(discord.Client):
 				captcha = b64encode(await message.attachments[0].read()).decode("utf-8")
 				lenghth = message.content[message.content.find("letter word") - 2]
 				await self.solve_image_captcha(message.attachments[0], captcha, lenghth)
+			else:
+				await self.notify()
 
 		#Detect HCaptcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
-			await self.notify()
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
 			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}HCaptcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
-				title = "HCAPTCHA APPEARS 🚨",
+				title = "🚨 HCAPTCHA APPEARS 🚨",
 				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 				color = discord.Colour.random()
 			)
 			if self.hcaptcha['mode']:
 				await self.solve_hcaptcha()
+			else:
+				await self.notify()
 
 		#Detect Unknown Captcha
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
@@ -540,7 +535,7 @@ class MyClient(discord.Client):
 			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Unknown Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
-				title = "UNKNOWN CAPTCHA APPEARS 🚨",
+				title = "🔒 UNKNOWN CAPTCHA APPEARS 🔒",
 				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 				color = discord.Colour.random()
 			)
@@ -552,7 +547,7 @@ class MyClient(discord.Client):
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}You Have Been Banned{c.reset} {c.red}!!!{c.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
-					title = "YOU\'VE BEEN BANNED 🔨",
+					title = "🔨 YOU\'VE BEEN BANNED 🔨",
 					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 					color = discord.Colour.random()
 				)
@@ -562,7 +557,7 @@ class MyClient(discord.Client):
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}You\'ve Run Out Of Cowoncy{c.reset} {c.red}!!!{c.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
-					title = "RUN OUT OF COWONCY 💸",
+					title = "💸 RUN OUT OF COWONCY 💸",
 					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 					color = discord.Colour.random()
 				)
@@ -587,7 +582,7 @@ class MyClient(discord.Client):
 				inv = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for message in self.discord['channel'].history(limit = 10):
-					if message.author.id == self.owo['id'] and await self.get_messages(message, f"{self.discord['user_nickname']}'s Inventory"):
+					if message.author.id == self.owo['id'] and f"{self.discord['user_nickname']}'s Inventory" in message.content:
 						inv = message
 						self.discord['inventory'] = inv.content
 						break
@@ -633,12 +628,12 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Your Inventory{c.reset}")
 
 		#Commands
-		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id  == self.discord['user_id']):
+		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id == self.discord['user_id']):
 			#Help
 			if message.content.lower() == "help":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Command Menu{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
-					title = f"COMMAND MENU 📋",
+					title = f"📋 COMMAND MENU 📋",
 					description = "**`help`\n`say` + `text`\n`start`\n`pause`\n`stat`\n`setting`**",
 					color = discord.Colour.random()
 				)
@@ -652,7 +647,7 @@ class MyClient(discord.Client):
 			if message.content.lower() == "start":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Start{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
-					title = f"START SELFBOT 💼",
+					title = f"🌤️ START SELFBOT 🌤️",
 					color = discord.Colour.random()
 				)
 				self.selfbot['work_status'] = True
@@ -660,7 +655,7 @@ class MyClient(discord.Client):
 			if message.content.lower() == "pause":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Pause{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
-					title = f"PAUSE SELFBOT ⏰",
+					title = f"🌑 PAUSE SELFBOT 🌑",
 					color = discord.Colour.random()
 				)
 				self.selfbot['work_status'] = False
@@ -668,13 +663,13 @@ class MyClient(discord.Client):
 			if message.content.lower() == "stat":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Stat{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
-					title = f"STAT 📊",
+					title = f"📊 STAT 📊",
 					description = f"I Worked **<t:{self.selfbot['turn_on_time']}:R>** With:\n{self.arrow}Sent **__{self.amount['command']}__ Commands**\n{self.arrow}Solved **__{self.amount['captcha']}__ Captchas**\n{self.arrow}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.arrow}Used Gem **__{self.amount['gem']}__ Times**\n{self.arrow}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.arrow}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.arrow}Slept **__{self.amount['sleep']}__ Times**",
 					color = discord.Colour.random()
 				)
 			if message.content.lower() == "setting":
 				await self.send_webhooks(
-					title = f"CONFIRM `YES` IN 10S 🔥",
+					title = f"🔥 CONFIRM `YES` IN 10S 🔥",
 					description = "**Send setting via webhook including __token__, __TwoCaptcha API__, __webhook url__, ...**",
 					color = discord.Colour.random()
 				)
@@ -686,7 +681,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Setting{c.reset} {c.gray}Via Webhook{c.reset}")
 					config = json.load(open("config.json"))
 					await self.send_webhooks(
-						title = f"SETTING 💾",
+						title = f"💾 SETTING 💾",
 						description = config[self.token],
 						color = discord.Colour.random()
 					)
@@ -700,7 +695,7 @@ class MyClient(discord.Client):
 				if self.animals_list['legendary'][i] in pet:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.orange}The Legendary Pet{c.reset}")
 					await self.send_webhooks(
-						title = "LEGENDARY PET <a:legendary:417955061801680909>",
+						title = "<a:legendary:417955061801680909> LEGENDARY PET <a:legendary:417955061801680909>",
 						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = discord.Colour.random()
 					)
@@ -710,7 +705,7 @@ class MyClient(discord.Client):
 				if self.animals_list['gem'][i] in pet:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.green}The Gem Pet{c.reset}")
 					await self.send_webhooks(
-						title = "GEM PET <a:gem:510023576489951232>",
+						title = "<a:gem:510023576489951232> GEM PET <a:gem:510023576489951232>",
 						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = discord.Colour.random()
 					)
@@ -720,7 +715,7 @@ class MyClient(discord.Client):
 				if self.animals_list['fabled'][i] in pet:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.cyan}The Fabled Pet{c.reset}")
 					await self.send_webhooks(
-						title = "FABLED PET <a:fabled:438857004493307907>",
+						title = "<a:fabled:438857004493307907> FABLED PET <a:fabled:438857004493307907>",
 						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = discord.Colour.random()
 					)
@@ -730,7 +725,7 @@ class MyClient(discord.Client):
 				if self.animals_list['distorted'][i] in pet:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.red}The Distorted Pet{c.reset}")
 					await self.send_webhooks(
-						title = "DISTORTED PET <a:distorted:728812986147274835>",
+						title = "<a:distorted:728812986147274835> DISTORTED PET <a:distorted:728812986147274835>",
 						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = discord.Colour.random()
 					)
@@ -740,7 +735,7 @@ class MyClient(discord.Client):
 				if self.animals_list['hidden'][i] in pet:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.purple}The Hidden Pet{c.reset}")
 					await self.send_webhooks(
-						title = "HIDDEN PET <a:hidden:459203677438083074>",
+						title = "<a:hidden:459203677438083074> HIDDEN PET <a:hidden:459203677438083074>",
 						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 						color = discord.Colour.random()
 					)
@@ -751,7 +746,7 @@ class MyClient(discord.Client):
 			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.red}Challenges{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
-					title = "SOMEONE CHALLENGE YOU 🥊",
+					title = "🥊 SOMEONE CHALLENGE YOU 🥊",
 					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 					color = discord.Colour.random()
 				)
@@ -821,7 +816,7 @@ class MyClient(discord.Client):
 					await firstButton.click()
 					self.discord['giveaway_entered'].append(after.id)
 					await self.send_webhooks(
-						title = "OWO\'S GIVEAWAY 🎁",
+						title = "🎁 JOINED OWO\'S GIVEAWAY 🎁",
 						description = f"{self.arrow}https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id}",
 						color = discord.Colour.random()
 					)
@@ -834,22 +829,18 @@ class MyClient(discord.Client):
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
 		if self.selfbot['work_status'] and self.owo['status'] and self.check_owo_status.current_loop != 0:
-			async for message in self.discord['channel'].history(limit = 10):
+			async for message in self.discord['channel'].history(limit = 5):
 				if message.author.id == self.owo['id']:
 					break
 			else:
-				action = random.choice(self.emote_commands)
+				command = random.choice(['h', 'b'])
 				await self.discord['channel'].typing()
-				await self.discord['channel'].send(f"{self.owo['prefix']}{action}")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}{action}{c.reset}")
+				await self.discord['channel'].send(f"{self.owo['prefix']}{command}")
+				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}{command}{c.reset}")
 				self.amount['command'] += 1
-				owo_status = False
-				await asyncio.sleep(random.randint(3, 5))
-				async for message in self.discord['channel'].history(limit = 10):
-					if message.author.id == self.owo['id']:
-						owo_status = True
-						break
-				if not owo_status:
+				try:
+					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
+				except asyncio.TimeoutError:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}OwO Doesn\'t Respond{c.reset} {c.red}!!!{c.reset}")
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Wait For{c.reset} {c.gray}30 Minutes{c.reset}")
 					await self.send_webhooks(
@@ -864,10 +855,68 @@ class MyClient(discord.Client):
 					self.owo['status'] = True
 					self.selfbot['work_status'] = True
 
+	@tasks.loop(minutes = 1)
+	async def check_2captcha_balance(self):
+		if self.selfbot['work_status'] and self.stop_when_not_enough_2captcha_balance['mode']:
+			if self.image_captcha['mode']:
+				for api_key in self.image_captcha['twocaptcha']:
+					try:
+						twocaptcha = TwoCaptcha(**{
+							"server": "2captcha.com",
+							"apiKey": str(api_key),
+							"defaultTimeout": 300,
+							"pollingInterval": 5
+						})
+						balance = twocaptcha.balance()
+						if balance >= self.stop_when_not_enough_2captcha_balance['amount']:
+							break
+						else:
+							continue
+					except:
+						pass
+				else:
+					await self.notify()
+					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your Image Captcha\'s TwoCaptcha API Has Under {self.stop_when_not_enough_2captcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					await self.send_webhooks(
+						content = self.selfbot['mentioner'],
+						title = "💸 NOT ENOUGH BALANCE 💸",
+						description = f"{self.arrow}Your Image Captcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
+						color = discord.Colour.random()
+					)
+					await self.worker(False)
+					return
+			if self.hcaptcha['mode']:
+				for api_key in self.hcaptcha['twocaptcha']:
+					try:
+						twocaptcha = TwoCaptcha(**{
+							"server": "2captcha.com",
+							"apiKey": str(api_key),
+							"defaultTimeout": 300,
+							"pollingInterval": 5
+						})
+						balance = twocaptcha.balance()
+						if balance >= self.stop_when_not_enough_2captcha_balance['amount']:
+							break
+						else:
+							continue
+					except:
+						pass
+				else:
+					await self.notify()
+					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your HCaptcha\'s TwoCaptcha API Has Under {self.stop_when_not_enough_2captcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					await self.send_webhooks(
+						content = self.selfbot['mentioner'],
+						title = "💸 NOT ENOUGH BALANCE 💸",
+						description = f"{self.arrow}Your HCaptcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
+						color = discord.Colour.random()
+					)
+					await self.worker(False)
+					return
+
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
 		if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
-			say = random.choice(self.owo_uwu_commands)
+			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(say)
 			print(f"{await self.intro()}{c.yellow}[SEND] {say}{c.reset}")
@@ -909,7 +958,7 @@ class MyClient(discord.Client):
 			huntbot_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and (await self.get_messages(message, "Please include your password") or await self.get_messages(message, "Here is") or await self.get_messages(message, "BACK IN") or await self.get_messages(message, "BACK WITH")):
+				if message.author.id == self.owo['id'] and ("Please include your password" in message.content or "Here is" in message.content or "BACK IN" in message.content or "BACK WITH" in message.content):
 					huntbot_message = message
 					break
 			if huntbot_message:
@@ -922,7 +971,7 @@ class MyClient(discord.Client):
 				#Solve Huntbot Captcha
 				if "Here is" in huntbot_message.content:
 					await self.send_webhooks(
-						title = "HUNTBOT CAPTCHA APPEARS 🚨",
+						title = "🤖 HUNTBOT CAPTCHA APPEARS 🤖",
 						description = f"{self.arrow}https://discord.com/channels/{huntbot_message.guild.id}/{huntbot_message.channel.id}/{huntbot_message.id}",
 						color = discord.Colour.random(),
 						image = message.attachments[0]
@@ -956,7 +1005,7 @@ class MyClient(discord.Client):
 					huntbot_verification_message = None
 					await asyncio.sleep(random.randint(3, 5))
 					async for message in self.discord['channel'].history(limit = 10):
-						if message.author.id == self.owo['id'] and (await self.get_messages(message, "YOU SPENT") or await self.get_messages(message, "Wrong password")):
+						if message.author.id == self.owo['id'] and ("YOU SPENT" in message.content or "Wrong password" in message.content):
 							huntbot_verification_message = message
 							break
 					if huntbot_verification_message:
@@ -964,7 +1013,7 @@ class MyClient(discord.Client):
 						if "YOU SPENT" in huntbot_verification_message.content:
 							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Submitted Huntbot{c.reset} {c.green}Successfully{c.reset}")
 							await self.send_webhooks(
-								title = "CORRECT SOLUTION 🎉",
+								title = "🎉 CORRECT SOLUTION 🎉",
 								description = f"{self.arrow}**Answer:** {answer}",
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
@@ -973,7 +1022,7 @@ class MyClient(discord.Client):
 						if "Wrong password" in huntbot_verification_message.content:
 							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Submitted Huntbot{c.reset} {c.green}Failed{c.reset}")
 							await self.send_webhooks(
-								title = "INCORRECT SOLUTION ⛔",
+								title = "⛔ INCORRECT SOLUTION ⛔",
 								description = f"{self.arrow}**Answer:** {answer}",
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
@@ -990,7 +1039,7 @@ class MyClient(discord.Client):
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Huntbot\'ll Be Back In{c.reset} {c.yellow}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
 					await self.send_webhooks(
-						title = "SUBMIT HUNTBOT 📌",
+						title = "📌 SUBMITTED HUNTBOT 📌",
 						description = huntbot_message.content,
 						color = discord.Colour.random()
 						)
@@ -998,7 +1047,7 @@ class MyClient(discord.Client):
 				elif "BACK WITH" in huntbot_message.content:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Claimed{c.reset} {c.bold}Your Huntbot{c.reset}")
 					await self.send_webhooks(
-						title = "CLAIMED HUNTBOT 📦",
+						title = "📦 CLAIMED HUNTBOT 📦",
 						description = huntbot_message.content,
 						color = discord.Colour.random()
 						)
@@ -1021,7 +1070,7 @@ class MyClient(discord.Client):
 			glitch_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and (await self.get_messages(message, "are available") or await self.get_messages(message, "not available")):
+				if message.author.id == self.owo['id'] and ("are available" in message.content or "not available" in message.content):
 					glitch_message = message
 					break
 			if glitch_message:
@@ -1059,7 +1108,7 @@ class MyClient(discord.Client):
 			cash_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and await self.get_messages(message, "you currently have"):
+				if message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and "you currently have" in message.content:
 					cash_message = message
 					break
 			if cash_message:
@@ -1097,7 +1146,7 @@ class MyClient(discord.Client):
 			daily_message = None
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and (await self.get_messages(message, "next daily") or await self.get_messages(message, "Nu")):
+				if message.author.id == self.owo['id'] and "next daily" in message.content or "Nu" in message.content:
 					daily_message = message
 					break
 			if daily_message:
@@ -1118,7 +1167,7 @@ class MyClient(discord.Client):
 			self.selfbot['sleep_time'] = int(random.randint(300, 600))
 			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I'm Taking A Break For{c.reset} {c.cyan}{self.selfbot['sleep_time']} Seconds{c.reset}")
 			await self.send_webhooks(
-				title = "TAKE A BREAK 🛌",
+				title = "🛌 TAKE A BREAK 🛌",
 				description = f"{self.arrow}I'm Taking A Break For **__{self.selfbot['sleep_time']}__ Seconds**",
 				color = discord.Colour.random()
 				)
@@ -1127,7 +1176,7 @@ class MyClient(discord.Client):
 			self.selfbot['work_time'] = random.randint(600, 1200)
 			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Done! I'll Work For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}")
 			await self.send_webhooks(
-				title = "WAKE UP 🌄",
+				title = "🌄 WOKE UP 🌄",
 				description = f"{self.arrow}I'll Work For **__{self.selfbot['work_time']}__ Seconds**",
 				color = discord.Colour.random()
 			)
@@ -1242,7 +1291,7 @@ class MyClient(discord.Client):
 				run_message = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for message in self.discord['channel'].history(limit=10):
-					if message.author.id == self.owo['id'] and await self.get_messages(message, "tired to run"):
+					if message.author.id == self.owo['id'] and "tired to run" in message.content:
 						run_message = message
 						break
 				if run_message:
@@ -1257,7 +1306,7 @@ class MyClient(discord.Client):
 				pup_message = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for message in self.discord['channel'].history(limit=10):
-					if message.author.id == self.owo['id'] and await self.get_messages(message, "no puppies"):
+					if message.author.id == self.owo['id'] and "no puppies" in message.content:
 						pup_message = message
 						break
 				if pup_message:
@@ -1272,7 +1321,7 @@ class MyClient(discord.Client):
 				piku_message = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for message in self.discord['channel'].history(limit=10):
-					if message.author.id == self.owo['id'] and await self.get_messages(message, "out of carrots"):
+					if message.author.id == self.owo['id'] and "out of carrots" in message.content:
 						piku_message = message
 						break
 				if piku_message:
