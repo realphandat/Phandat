@@ -3,4 +3,3 @@ numpy
 Pillow
 brotli
 2captcha-python
-capmonster-python
