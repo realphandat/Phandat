@@ -174,7 +174,7 @@ class MyClient(discord.Client):
 			if self.selfbot['work_time']:
 				webhook = f"{self.arrow}I\'ll Work For **__{self.selfbot['work_time']}__ Seconds**\n" + webhook
 			if self.command['mode']:
-				webhook = f"{self.arrow}**Send `help`**\n" + webhook
+				webhook = f"{self.arrow}**Send `help`** or **`<@user_id> help`**\n" + webhook
 			cmd = f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Start At Channel{c.reset} {c.purple}{self.discord['channel']}{c.reset}"
 			if self.selfbot['work_time']:
 				cmd = cmd + f" {c.bold}For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}"
@@ -636,7 +636,7 @@ class MyClient(discord.Client):
 		#Commands
 		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id == self.discord['user_id']):
 			#Help
-			if message.content.lower() == "help":
+			if message.content.lower() == "help" or message.content.lower() == f"<@{self.discord['user_id']}> help":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Command Menu{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
 					title = f"📋 COMMAND MENU 📋",
@@ -644,20 +644,17 @@ class MyClient(discord.Client):
 					color = discord.Colour.random()
 				)
 			#Say
-			if message.content.lower().startswith("say"):
-				text = message.content[4:]
-				await message.channel.typing()
-				await message.channel.send(text)
-				print(f"{await self.intro()}{c.yellow}[SEND] {text}{c.reset}")
-			#Mention
-			if message.content.lower().startswith(f"<@{self.discord['user_id']}>"):
-				text = message.content.replace(f"<@{self.discord['user_id']}>", "", 1)
-				if text[0] == " ": text.replace(" ", "", 1)
+			if message.content.lower().startswith("say") or message.content.lower().startswith(f"<@{self.discord['user_id']}> say"):
+				if message.content.lower().startswith(f"<@{self.discord['user_id']}>"):
+					text = message.content.replace(f"<@{self.discord['user_id']}> ", "", 1)
+				else:
+					text = message.content
+				text = text[4:]
 				await message.channel.typing()
 				await message.channel.send(text)
 				print(f"{await self.intro()}{c.yellow}[SEND] {text}{c.reset}")
 			#Start
-			if message.content.lower() == "start":
+			if message.content.lower() == "start" or message.content.lower() == f"<@{self.discord['user_id']}> start":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Start{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
 					title = f"🌤️ START SELFBOT 🌤️",
@@ -665,7 +662,7 @@ class MyClient(discord.Client):
 				)
 				self.selfbot['work_status'] = True
 			#Pause
-			if message.content.lower() == "pause":
+			if message.content.lower() == "pause" or message.content.lower() == f"<@{self.discord['user_id']}> pause":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Pause{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
 					title = f"🌙 PAUSE SELFBOT 🌙",
@@ -673,14 +670,15 @@ class MyClient(discord.Client):
 				)
 				self.selfbot['work_status'] = False
 			#Stat
-			if message.content.lower() == "stat":
+			if message.content.lower() == "stat" or message.content.lower() == f"<@{self.discord['user_id']}> stat":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Stat{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
 					title = f"📊 STAT 📊",
 					description = f"I Worked **<t:{int(self.selfbot['turn_on_time'])}:R>** With:\n{self.arrow}Sent **__{self.amount['command']}__ Commands**\n{self.arrow}Solved **__{self.amount['captcha']}__ Captchas**\n{self.arrow}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.arrow}Used Gem **__{self.amount['gem']}__ Times**\n{self.arrow}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.arrow}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.arrow}Slept **__{self.amount['sleep']}__ Times**",
 					color = discord.Colour.random()
 				)
-			if message.content.lower() == "setting":
+			#Setting
+			if message.content.lower() == "setting" or message.content.lower() == f"<@{self.discord['user_id']}> setting":
 				await self.send_webhooks(
 					title = f"🔥 CONFIRM `YES` IN 10S 🔥",
 					description = "**Send setting via webhook including __token__, __TwoCaptcha API__, __webhook url__, ...**",
@@ -766,9 +764,14 @@ class MyClient(discord.Client):
 				choice = random.choice([1, 2])
 				await asyncio.sleep(random.randint(3, 5))
 				if choice == 1:
-					await message.channel.typing()
-					await message.channel.send(f"{self.owo['prefix']}ab")
-					self.amount['command'] += 1
+					if message.channel.id == self.discord['channel_id']:
+						await message.channel.typing()
+						await message.channel.send(f"{self.owo['prefix']}ab")
+						self.amount['command'] += 1
+					else:
+						await message.channel.typing()
+						await message.channel.send(f"owoab")
+						self.amount['command'] += 1
 				if choice == 2:
 					components = message.components
 					firstButton = components[0].children[0]
