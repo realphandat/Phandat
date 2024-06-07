@@ -101,7 +101,7 @@ class MyClient(discord.Client):
 		self.selfbot = {
 			"on_ready": True,
 			"work_status": True,
-			"turn_on_time": int(time.time()),
+			"turn_on_time": time.time(),
 			"work_time": random.randint(600, 1200),
 			"sleep_time": None,
 			"huntbot_time": 0,
@@ -180,7 +180,7 @@ class MyClient(discord.Client):
 				cmd = cmd + f" {c.bold}For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}"
 			print(cmd)
 			await self.send_webhooks(
-				title = f"🚀 STARTED <t:{self.selfbot['turn_on_time']}:R> 🚀",
+				title = f"🚀 STARTED <t:{int(self.selfbot['turn_on_time'])}:R> 🚀",
 				description = webhook,
 				color = discord.Colour.random()
 				)
@@ -649,6 +649,13 @@ class MyClient(discord.Client):
 				await message.channel.typing()
 				await message.channel.send(text)
 				print(f"{await self.intro()}{c.yellow}[SEND] {text}{c.reset}")
+			#Mention
+			if message.content.lower().startswith(f"<@{self.discord['user_id']}>"):
+				text = message.content.replace(f"<@{self.discord['user_id']}>", "", 1)
+				if text[0] == " ": text.replace(" ", "", 1)
+				await message.channel.typing()
+				await message.channel.send(text)
+				print(f"{await self.intro()}{c.yellow}[SEND] {text}{c.reset}")
 			#Start
 			if message.content.lower() == "start":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Start{c.reset} {c.gray}Selfbot{c.reset}")
@@ -670,7 +677,7 @@ class MyClient(discord.Client):
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Stat{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
 					title = f"📊 STAT 📊",
-					description = f"I Worked **<t:{self.selfbot['turn_on_time']}:R>** With:\n{self.arrow}Sent **__{self.amount['command']}__ Commands**\n{self.arrow}Solved **__{self.amount['captcha']}__ Captchas**\n{self.arrow}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.arrow}Used Gem **__{self.amount['gem']}__ Times**\n{self.arrow}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.arrow}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.arrow}Slept **__{self.amount['sleep']}__ Times**",
+					description = f"I Worked **<t:{int(self.selfbot['turn_on_time'])}:R>** With:\n{self.arrow}Sent **__{self.amount['command']}__ Commands**\n{self.arrow}Solved **__{self.amount['captcha']}__ Captchas**\n{self.arrow}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.arrow}Used Gem **__{self.amount['gem']}__ Times**\n{self.arrow}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.arrow}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.arrow}Slept **__{self.amount['sleep']}__ Times**",
 					color = discord.Colour.random()
 				)
 			if message.content.lower() == "setting":
@@ -848,16 +855,16 @@ class MyClient(discord.Client):
 					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}OwO Doesn\'t Respond{c.reset} {c.red}!!!{c.reset}")
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Wait For{c.reset} {c.gray}30 Minutes{c.reset}")
+					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Wait For{c.reset} {c.gray}10 Minutes{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "**💀 OWO\'S OFFLINE 💀**",
-						description = f"{self.arrow}I\'ll Wait For **30 Minutes**",
+						description = f"{self.arrow}I\'ll Wait For **10 Minutes**",
 						color = discord.Colour.random()
 					)
 					self.owo['status'] = False
 					self.selfbot['work_status'] = False
-					await asyncio.sleep(1800)
+					await asyncio.sleep(600)
 					self.owo['status'] = True
 					self.selfbot['work_status'] = True
 
