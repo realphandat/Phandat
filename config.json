@@ -1,37 +1,32 @@
 {
-	"MTE5MTcwMzY4MTtyuMDA4Ng.G6xZgu.raT0FyKQ67_pqpNvkDs3Q0": {
+	"MTE5MTcwMzY4MTYzNzI5MDA4Ng.G6xZgu.oPij_pqpNvktLDs3Q0": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "w"
 		},
 
 		"channel_id": [
-			96724513244831825, 
-			90712946345140255,
-			90712150632943628,
-			96722520476401664,
-			90858841455201320,
-			90858961760408586,
-			90859391328197663,
-			90859445896804127,
-			90859525106891773
+			9086031675188841,
+			9086032368675368,
+			9901846692899203,
+			9086033546475522
 		],
 
-		"change_channel_when_someone_mentions": true,
+		"someone_meantions_you": true,
 
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9867c49087702"]
+			"twocaptcha": ["618458dff81bbd477b9d867c497702"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9d67c49087702"]
+			"twocaptcha": ["618458dff81bbd477b9d867c490877"]
 		},
 
-		"stop_when_not_enough_2captcha_balance": {
+		"twocaptcha_balance": {
 			"mode": true,
 			"amount": 0.01
 		},
@@ -59,7 +54,7 @@
 			"open_crate": false
 		},
 
-		"use_gem_when_glitch_are_available": true,
+		"distorted_animals": true,
 
 		"animals": {
 			"mode": false,
@@ -71,7 +66,7 @@
 			"mode": false,
 			"percent": 50,
 			"amount": 1000000,
-			"user_id": 119170368163720086
+			"user_id": 11917036837290086
 		},
 
 		"daily": true,
@@ -113,54 +108,49 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [119170681637290086, 119174403463737456]
+			"owner_id": [11917031637290086, 11917444463737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [119170368163720086, 119174440343737456],
-			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHyeerSw965LMC9_zCiDB949WsPgrV"
+			"mentioner_id": [11917036837290086, 11744403463737456],
+			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0fe_DByeerSw965LMC9_zCiDB49WsPgrV"
 		},
 
 		"join_owo_giveaway": true,
 
-		"accept_challenge_invitation": true,
+		"someone_challenges_you": true,
 
-		"music_notification": true
+		"music_notification": false
 	},
 
-	"MTAyNjhjkhj2NDcwMjk1MTQyNA.GwTpmB.AN3nxMZ6W-xzqlZZ8675UblAIp8": {
+	"MTAyNjQzNDY2NDcwMjk1MTQyNA.GwTpmB.AN3nctaiBX95UblAIp8": {
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "h"
 		},
 
 		"channel_id": [
-			120480060847007795,
-			113781421194410636,
-			120263255630315550,
-			114211619950384533,
-			117507619495844566,
-			104896382146688840,
-			118518258431415794,
-			119537925668933837
+			1204800608840095,
+			1137814222140636,
+			1202632575633550
 		],
 
-		"change_channel_when_someone_mentions": true,
+		"someone_meantions_you": true,
 
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9d87c49087702"]
+			"twocaptcha": ["618458dff81bbd477b9d867c087702"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477bd867c49087702"]
+			"twocaptcha": ["618458dff81bbd477b967c49087702"]
 		},
 
-		"stop_when_not_enough_2captcha_balance": {
+		"twocaptcha_balance": {
 			"mode": true,
 			"amount": 0.01
 		},
@@ -188,7 +178,7 @@
 			"open_crate": false
 		},
 
-		"use_gem_when_glitch_are_available": true,
+		"distorted_animals": true,
 
 		"animals": {
 			"mode": false,
@@ -200,7 +190,7 @@
 			"mode": false,
 			"percent": 50,
 			"amount": 1000000,
-			"user_id": 119170368163290086
+			"user_id": 11917036837290086
 		},
 
 		"daily": true,
@@ -242,18 +232,18 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [119170368163790086, 119174440463737456]
+			"owner_id": [11917036817290086, 11917444063737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [119170368167290086, 119174440463737456],
-			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtEvKlZUYlok_SzcggKVha4I88i-mTdSrO2NYiqlbjxVQmh2"
+			"mentioner_id": [11917036837290086, 11917444034737456],
+			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtEvKlcggKVha4I9TZG88i-mTdSrO2NYiqlbjxVQmh2"
 		},
 
 		"join_owo_giveaway": true,
 
-		"accept_challenge_invitation": true,
+		"someone_challenges_you": true,
 
 		"music_notification": false
 	}
