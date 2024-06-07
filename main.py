@@ -883,7 +883,7 @@ class MyClient(discord.Client):
 						description = f"{self.arrow}Your Image Captcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
 						color = discord.Colour.random()
 					)
-					await self.worker(False)
+					self.selfbot['work_status'] = False
 					return
 			if self.hcaptcha['mode']:
 				for api_key in self.hcaptcha['twocaptcha']:
@@ -910,7 +910,7 @@ class MyClient(discord.Client):
 						description = f"{self.arrow}Your HCaptcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
 						color = discord.Colour.random()
 					)
-					await self.worker(False)
+					self.selfbot['work_status'] = False
 					return
 
 	@tasks.loop(seconds = random.randint(18, 25))
