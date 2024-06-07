@@ -174,7 +174,7 @@ class MyClient(discord.Client):
 			if self.selfbot['work_time']:
 				webhook = f"{self.arrow}I\'ll Work For **__{self.selfbot['work_time']}__ Seconds**\n" + webhook
 			if self.command['mode']:
-				webhook = f"{self.arrow}**Send `help`** or **`<@user_id> help`**\n" + webhook
+				webhook = f"{self.arrow}**Send `help`** or **`<@{self.discord['user_id']}> help`**\n" + webhook
 			cmd = f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Start At Channel{c.reset} {c.purple}{self.discord['channel']}{c.reset}"
 			if self.selfbot['work_time']:
 				cmd = cmd + f" {c.bold}For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}"
