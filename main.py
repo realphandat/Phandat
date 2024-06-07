@@ -41,14 +41,14 @@ class MyClient(discord.Client):
 			data = json.load(file)
 			self.get_owo_prefix = data[token]['get_owo_prefix']
 			self.channel_id = data[token]['channel_id']
-			self.change_channel_when_someone_mentions = data[token]['change_channel_when_someone_mentions']
+			self.someone_meantions_you = data[token]['someone_meantions_you']
 			self.image_captcha = data[token]['image_captcha']
 			self.hcaptcha = data[token]['hcaptcha']
-			self.stop_when_not_enough_2captcha_balance = data[token]['stop_when_not_enough_2captcha_balance']
+			self.twocaptcha_balance = data[token]['twocaptcha_balance']
 			self.grind = data[token]['grind']
 			self.huntbot = data[token]['huntbot']
 			self.gem = data[token]['gem']
-			self.use_gem_when_glitch_are_available = data[token]['use_gem_when_glitch_are_available']
+			self.distorted_animals = data[token]['distorted_animals']
 			self.animals = data[token]['animals']
 			self.give_cowoncy = data[token]['give_cowoncy']
 			self.daily = data[token]['daily']
@@ -59,7 +59,7 @@ class MyClient(discord.Client):
 			self.command = data[token]['command']
 			self.webhook = data[token]['webhook']
 			self.join_owo_giveaway = data[token]['join_owo_giveaway']
-			self.accept_challenge_invitation = data[token]['accept_challenge_invitation']
+			self.someone_challenges_you = data[token]['someone_challenges_you']
 			self.music_notification = data[token]['music_notification']
 
 		self.tasks = [
@@ -271,7 +271,6 @@ class MyClient(discord.Client):
 						"defaultTimeout": 300,
 						"pollingInterval": 5
 			})
-			if result: break
 			retry_times = 0
 			while retry_times <= 10:
 				try:
@@ -297,6 +296,8 @@ class MyClient(discord.Client):
 					else:
 						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
+						await asyncio.sleep(random.randint(3, 5))
+			if result: break
 		else:
 			await self.notify()
 		if result:
@@ -348,14 +349,15 @@ class MyClient(discord.Client):
 				if res2.status in (302, 307):
 					return session
 				else:
-					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Failed To Add Token To Oauth{c.reset} {c.red}!!!{c.reset} | {res2.status}")
+					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Failed To Add Token To HCaptcha Oauth{c.reset} {c.red}!!!{c.reset} | {res2.status}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
-						title = "⚙️ SUMBIT OAUTH ⚙️",
+						title = "⚙️ SUMBIT HCAPTCHA OAUTH ⚙️",
 						description = f"{self.arrow}Error: {res2.status}",
 						color = discord.Colour.random()
 					)
 			retry_times += 1
+			await asyncio.sleep(random.randint(3, 5))
 		else:
 			await self.notify()
 
@@ -388,14 +390,15 @@ class MyClient(discord.Client):
 						result_session = await self.submit_oauth(res)
 						return result_session
 					else:
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
+						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting HCaptcha Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
-							title = "⚙️ GET OAUTH ⚙️",
+							title = "⚙️ GET HCAPTCHA OAUTH ⚙️",
 							description = f"{self.arrow}Error: {await res.text()}",
 							color = discord.Colour.random()
 						)
 			retry_times += 1
+			await asyncio.sleep(random.randint(3, 5))
 		else:
 			await self.notify()
 
@@ -420,7 +423,6 @@ class MyClient(discord.Client):
 						"defaultTimeout": 300,
 						"pollingInterval": 5
 			})
-			if result: break
 			retry_times = 0
 			while retry_times <= 10:
 				try:
@@ -444,38 +446,42 @@ class MyClient(discord.Client):
 					else:
 						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
+						await asyncio.sleep(random.randint(3, 5))
+			if result: break
 		else:
 			await self.notify()
 		if result:
-			async with (await self.get_oauth()) as session:
-				cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
-				async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
-					if res.status == 200:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.green}Successfully{c.reset}")
-						await self.send_webhooks(
-							title = "🎉 CORRECT SOLUTION 🎉",
-							description = f"{self.arrow}**Continue To Work**",
-							color = discord.Colour.random()
-						)
-						twocaptcha.report(result['captchaId'], True)
-					else:
-						await self.notify()
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
-						await self.send_webhooks(
-							content = self.selfbot['mentioner'],
-							title = "⛔ INCORRECT SOLUTION ⛔",
-							description = f"{self.arrow}I\'ll Try To **Solve It Again**",
-							color = discord.Colour.random()
-						)
-						twocaptcha.report(result['captchaId'], False)
-						self.checking['captcha_attempts'] += 1
-						if self.checking['captcha_attempts'] <= int(self.hcaptcha['attempts']):
-							await self.solve_hcaptcha()
+			result_session = await self.get_oauth()
+			if result_session:
+				async with result_session as session:
+					cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
+					async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
+						if res.status == 200:
+							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.green}Successfully{c.reset}")
+							await self.send_webhooks(
+								title = "🎉 CORRECT SOLUTION 🎉",
+								description = f"{self.arrow}**Continue To Work**",
+								color = discord.Colour.random()
+							)
+							twocaptcha.report(result['captchaId'], True)
+						else:
+							await self.notify()
+							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
+							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
+							await self.send_webhooks(
+								content = self.selfbot['mentioner'],
+								title = "⛔ INCORRECT SOLUTION ⛔",
+								description = f"{self.arrow}I\'ll Try To **Solve It Again**",
+								color = discord.Colour.random()
+							)
+							twocaptcha.report(result['captchaId'], False)
+							self.checking['captcha_attempts'] += 1
+							if self.checking['captcha_attempts'] <= int(self.hcaptcha['attempts']):
+								await self.solve_hcaptcha()
 
 	async def on_message(self, message):
 		#Change Channel When Someone Meations
-		if self.change_channel_when_someone_mentions and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
+		if self.someone_meantions_you and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			if message.mentions[0].id == int(self.discord['user_id']) or f"<@{self.discord['user_id']}>" in message.content:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Meations{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
@@ -564,7 +570,7 @@ class MyClient(discord.Client):
 				await self.worker(False)
 
 		#Check And Use Gem
-		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.use_gem_when_glitch_are_available and not self.selfbot['glitch_time'] - time.time() <= 0 and self.checking['check_glitch_times'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.selfbot['daily_time'] - time.time() <= 0 and self.checking['daily_times'] > 0)) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.checking['check_glitch_times'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.checking['daily_times'] > 0)) and "🌱" in message.content and "gained" in message.content and str(self.discord['user_nickname']) in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
@@ -655,7 +661,7 @@ class MyClient(discord.Client):
 			if message.content.lower() == "pause":
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Pause{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
-					title = f"🌑 PAUSE SELFBOT 🌑",
+					title = f"🌙 PAUSE SELFBOT 🌙",
 					color = discord.Colour.random()
 				)
 				self.selfbot['work_status'] = False
@@ -741,12 +747,12 @@ class MyClient(discord.Client):
 					)
 					break
 
-		#Someone Challenge You
-		if self.accept_challenge_invitation and self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+		#Someone Challenges You
+		if self.someone_challenges_you and self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
 			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.red}Challenges{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
-					title = "🥊 SOMEONE CHALLENGE YOU 🥊",
+					title = "🥊 SOMEONE CHALLENGES YOU 🥊",
 					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
 					color = discord.Colour.random()
 				)
@@ -809,7 +815,7 @@ class MyClient(discord.Client):
 
 		#Join OwO's Giveaway
 		if self.join_owo_giveaway and after.embeds and after.id not in self.discord['giveaway_entered'] and after.author.id == self.owo['id']:
-			if "New Giveaway" in str(after.embeds[0].author.name):
+			if "New Giveaway" in str(after.embeds[0].author.name) and len(after.components) > 0:
 				try:
 					components = after.components
 					firstButton = components[0].children[0]
@@ -857,57 +863,75 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def check_2captcha_balance(self):
-		if self.selfbot['work_status'] and self.stop_when_not_enough_2captcha_balance['mode']:
+		if self.selfbot['work_status'] and self.twocaptcha_balance['mode']:
 			if self.image_captcha['mode']:
+				enoguh_balance = False
 				for api_key in self.image_captcha['twocaptcha']:
-					try:
-						twocaptcha = TwoCaptcha(**{
-							"server": "2captcha.com",
-							"apiKey": str(api_key),
-							"defaultTimeout": 300,
-							"pollingInterval": 5
-						})
-						balance = twocaptcha.balance()
-						if balance >= self.stop_when_not_enough_2captcha_balance['amount']:
-							break
-						else:
-							continue
-					except:
-						pass
+					twocaptcha = TwoCaptcha(**{
+								"server": "2captcha.com",
+								"apiKey": str(api_key),
+								"defaultTimeout": 300,
+								"pollingInterval": 5
+					})
+					retry_times = 0
+					while retry_times <= 10:
+						try:
+							balance = twocaptcha.balance()
+							if balance >= self.twocaptcha_balance['amount']:
+								enoguh_balance = True
+								break
+							else:
+								break
+						except Exception as e:
+							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+								break
+							else:
+								retry_times += 1
+								await asyncio.sleep(random.randint(3, 5))
+					if enoguh_balance: break
 				else:
 					await self.notify()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your Image Captcha\'s TwoCaptcha API Has Under {self.stop_when_not_enough_2captcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your Image Captcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
-						description = f"{self.arrow}Your Image Captcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
+						description = f"{self.arrow}Your Image Captcha\'s TwoCaptcha API Has **Under {self.twocaptcha_balance['amount']}$**",
 						color = discord.Colour.random()
 					)
 					self.selfbot['work_status'] = False
 					return
 			if self.hcaptcha['mode']:
+				enoguh_balance = False
 				for api_key in self.hcaptcha['twocaptcha']:
-					try:
-						twocaptcha = TwoCaptcha(**{
-							"server": "2captcha.com",
-							"apiKey": str(api_key),
-							"defaultTimeout": 300,
-							"pollingInterval": 5
-						})
-						balance = twocaptcha.balance()
-						if balance >= self.stop_when_not_enough_2captcha_balance['amount']:
-							break
-						else:
-							continue
-					except:
-						pass
+					twocaptcha = TwoCaptcha(**{
+								"server": "2captcha.com",
+								"apiKey": str(api_key),
+								"defaultTimeout": 300,
+								"pollingInterval": 5
+					})
+					retry_times = 0
+					while retry_times <= 10:
+						try:
+							balance = twocaptcha.balance()
+							if balance >= self.twocaptcha_balance['amount']:
+								enoguh_balance = True
+								break
+							else:
+								continue
+						except Exception as e:
+							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+								break
+							else:
+								retry_times += 1
+								await asyncio.sleep(random.randint(3, 5))
+					if enoguh_balance: break
 				else:
 					await self.notify()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your HCaptcha\'s TwoCaptcha API Has Under {self.stop_when_not_enough_2captcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your HCaptcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
-						description = f"{self.arrow}Your HCaptcha\'s TwoCaptcha API Has **Under {self.stop_when_not_enough_2captcha_balance['amount']}$**",
+						description = f"{self.arrow}Your HCaptcha\'s TwoCaptcha API Has **Under {self.twocaptcha_balance['amount']}$**",
 						color = discord.Colour.random()
 					)
 					self.selfbot['work_status'] = False
@@ -1062,7 +1086,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(600, 1200))
 	async def check_distorted_animal(self):
-		if self.use_gem_when_glitch_are_available and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
+		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
 			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
 			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}dt{c.reset}")
@@ -1278,7 +1302,7 @@ class MyClient(discord.Client):
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def start_entertainment(self):
 		if self.selfbot['work_status'] and self.owo['status']:
-			if int(self.selfbot['daily_time']) - time.time() <= 0:
+			if self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.checking['daily_times'] > 0:
 				self.checking['run_limit'] = False
 				self.checking['pup_limit'] = False
 				self.checking['piku_limit'] = False
