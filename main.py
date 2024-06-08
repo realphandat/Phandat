@@ -845,7 +845,7 @@ class MyClient(discord.Client):
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
 		if self.selfbot['work_status'] and self.owo['status'] and self.check_owo_status.current_loop != 0:
-			async for message in self.discord['channel'].history(limit = 5):
+			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id']:
 					break
 			else:
