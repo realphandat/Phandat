@@ -492,7 +492,7 @@ class MyClient(discord.Client):
 				await self.change_channel()
 
 		#Startup After Solve Captcha Successfully
-		if self.checking['captcha_appear'] and not self.selfbot['work_status'] and "I have verified that you are human!" in message.content and message.channel.id == self.owo['dm_channel_id']:
+		if self.checking['captcha_appear'] and not self.selfbot['work_status'] and "👍" in message.content and message.channel.id == self.owo['dm_channel_id']:
 			self.amount['captcha'] += 1
 			self.checking['captcha_appear'] = False
 			self.checking['captcha_attempts'] = 0
