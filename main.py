@@ -18,6 +18,8 @@ from PIL import Image
 from requests import get
 from base64 import b64encode
 from twocaptcha import TwoCaptcha
+from selenium_driverless import webdriver
+from selenium.webdriver.common.by import By
 
 class c:
 	mark = '\033[104m'
@@ -45,6 +47,7 @@ class MyClient(discord.Client):
 			self.image_captcha = data[token]['image_captcha']
 			self.hcaptcha = data[token]['hcaptcha']
 			self.twocaptcha_balance = data[token]['twocaptcha_balance']
+			self.top_gg = data[token]['top_gg']
 			self.grind = data[token]['grind']
 			self.huntbot = data[token]['huntbot']
 			self.gem = data[token]['gem']
@@ -65,6 +68,7 @@ class MyClient(discord.Client):
 		self.tasks = [
 			self.check_owo_status,
 			self.check_2captcha_balance,
+			self.vote_top_gg,
 			self.change_channel,
 			self.start_grind,
 			self.claim_submit_huntbot,
@@ -946,6 +950,69 @@ class MyClient(discord.Client):
 					)
 					self.selfbot['work_status'] = False
 					return
+
+	async def oauth_top_gg(self, oauth, oauth_req):
+		retry_times = 0
+		while retry_times <= 10:
+			async with ClientSession() as session:
+				payload = {"permissions": "0", "authorize": True}
+				headers = {
+					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+					"Accept": "*/*",
+					"Accept-Language": "en-US,en;q=0.5",
+					"Accept-Encoding": "gzip, deflate, br",
+					"Content-Type": "application/json",
+					"Authorization": self.token,
+					"X-Super-Properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRmlyZWZveCIsImRldmljZSI6IiIsInN5c3RlbV9sb2NhbGUiOiJlbi1VUyIsImJyb3dzZXJfdXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQ7IHJ2OjEwOS4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzExMS4wIiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTExLjAiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTg3NTk5LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==",
+					"X-Debug-Options": "bugReporterEnabled",
+					"Origin": "https://discord.com",
+					"Connection": "keep-alive",
+					"Referer": oauth,
+					"Sec-Fetch-Dest": "empty",
+					"Sec-Fetch-Mode": "cors",
+					"Sec-Fetch-Site": "same-origin",
+					"TE": "trailers",
+				}
+				async with session.post(oauth_req, headers = headers, json = payload) as res:
+					if res.status == 200:
+						response = await res.json()
+						result_session = response.get("location")
+						return result_session
+					else:
+						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting Top.gg Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
+						await self.send_webhooks(
+							content = self.selfbot['mentioner'],
+							title = "⚙️ TOP.GG OAUTH ⚙️",
+							description = f"{self.arrow}Error: {await res.text()}",
+							color = discord.Colour.random()
+						)
+			retry_times += 1
+			await asyncio.sleep(random.randint(3, 5))
+		else:
+			await self.notify()
+
+	@tasks.loop(hours = 12)
+	async def vote_top_gg(self):
+		if self.top_gg and self.selfbot['work_status'] and self.owo['status']:
+			options = webdriver.ChromeOptions()
+			options.headless = True
+			options.add_argument("--start-maximized")
+			oauth = "https://discord.com/oauth2/authorize?scope=identify%20guilds%20email&redirect_uri=https%3A%2F%2Ftop.gg%2Flogin%2Fcallback&response_type=code&client_id=422087909634736160&state=Lw=="
+			oauth_req = (oauth.split("/oauth2")[0] + "/api/v9/oauth2" + oauth.split("/oauth2")[1])
+			top_gg = await self.oauth_top_gg(oauth, oauth_req)
+			print(top_gg)
+			async with webdriver.Chrome(options=options) as driver:
+				await driver.get(top_gg, wait_load = True, timeout = 10)
+				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}Top.gg Homepage{c.reset}")
+				await asyncio.sleep(20)
+				button = await driver.find_element(by = By.XPATH, value = '//a[@href="/bot/408785106942164992/vote"]')
+				await button.click()
+				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}OwO's Vote Page On Top.gg{c.reset}")
+				await asyncio.sleep(20)
+				button = await driver.find_element(by=By.XPATH, value=".//button[contains(text(),'Vote')]")
+				await button.click()
+				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Voted{c.reset} {c.bold}OwO On Top.gg{c.reset}")
+				await asyncio.sleep(20)
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
