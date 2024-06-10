@@ -1000,7 +1000,6 @@ class MyClient(discord.Client):
 			oauth = "https://discord.com/oauth2/authorize?scope=identify%20guilds%20email&redirect_uri=https%3A%2F%2Ftop.gg%2Flogin%2Fcallback&response_type=code&client_id=422087909634736160&state=Lw=="
 			oauth_req = (oauth.split("/oauth2")[0] + "/api/v9/oauth2" + oauth.split("/oauth2")[1])
 			top_gg = await self.oauth_top_gg(oauth, oauth_req)
-			print(top_gg)
 			async with webdriver.Chrome(options=options) as driver:
 				await driver.get(top_gg, wait_load = True, timeout = 10)
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}Top.gg Homepage{c.reset}")
