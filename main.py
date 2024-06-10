@@ -484,13 +484,13 @@ class MyClient(discord.Client):
 								await self.solve_hcaptcha()
 
 	async def on_message(self, message):
-		#Change Channel When Someone Meations
+		#Someone Meations You
 		if self.someone_meantions_you and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			if message.mentions[0].id == int(self.discord['user_id']) or f"<@{self.discord['user_id']}>" in message.content:
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Meations{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
 					title = "🏷️ SOMEONE MEATIONS YOU 🏷️",
-					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
 				await self.change_channel()
@@ -510,7 +510,7 @@ class MyClient(discord.Client):
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🚨 IMAGE CAPTCHA APPEARS 🚨",
-				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+				description = f"{self.arrow}{message.jump_url}",
 				color = discord.Colour.random(),
 				image = message.attachments[0]
 			)
@@ -529,7 +529,7 @@ class MyClient(discord.Client):
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🚨 HCAPTCHA APPEARS 🚨",
-				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+				description = f"{self.arrow}{message.jump_url}",
 				color = discord.Colour.random()
 			)
 			if self.hcaptcha['mode']:
@@ -546,7 +546,7 @@ class MyClient(discord.Client):
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🔒 UNKNOWN CAPTCHA APPEARS 🔒",
-				description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+				description = f"{self.arrow}{message.jump_url}",
 				color = discord.Colour.random()
 			)
 
@@ -558,7 +558,7 @@ class MyClient(discord.Client):
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "🔨 YOU\'VE BEEN BANNED 🔨",
-					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
 				await self.worker(False)
@@ -568,7 +568,7 @@ class MyClient(discord.Client):
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "💸 RUN OUT OF COWONCY 💸",
-					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
 				await self.worker(False)
@@ -711,7 +711,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.orange}The Legendary Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:legendary:417955061801680909> LEGENDARY PET <a:legendary:417955061801680909>",
-						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+						description = f"{self.arrow}{message.jump_url}",
 						color = discord.Colour.random()
 					)
 					break
@@ -721,7 +721,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.green}The Gem Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:gem:510023576489951232> GEM PET <a:gem:510023576489951232>",
-						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+						description = f"{self.arrow}{message.jump_url}",
 						color = discord.Colour.random()
 					)
 					break
@@ -731,7 +731,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.cyan}The Fabled Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:fabled:438857004493307907> FABLED PET <a:fabled:438857004493307907>",
-						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+						description = f"{self.arrow}{message.jump_url}",
 						color = discord.Colour.random()
 					)
 					break
@@ -741,7 +741,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.red}The Distorted Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:distorted:728812986147274835> DISTORTED PET <a:distorted:728812986147274835>",
-						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+						description = f"{self.arrow}{message.jump_url}",
 						color = discord.Colour.random()
 					)
 					break
@@ -751,7 +751,7 @@ class MyClient(discord.Client):
 					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.purple}The Hidden Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:hidden:459203677438083074> HIDDEN PET <a:hidden:459203677438083074>",
-						description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+						description = f"{self.arrow}{message.jump_url}",
 						color = discord.Colour.random()
 					)
 					break
@@ -762,7 +762,7 @@ class MyClient(discord.Client):
 				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.red}Challenges{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
 					title = "🥊 SOMEONE CHALLENGES YOU 🥊",
-					description = f"{self.arrow}https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}",
+					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
 				choice = random.choice([1, 2])
@@ -1430,7 +1430,7 @@ class MyClient(discord.Client):
 					self.checking['piku_limit'] = True
 
 print()
-print(f"{c.bold}You Are Using{c.reset} {c.red}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset} {c.bold}| https://github.com/realphandat/discord-owo-selfbot{c.reset}")
+print(f"{c.bold}You Are Using{c.reset} {c.red}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset}")
 print(f"{c.bold}Created With{c.reset} {c.yellow}Great Contributions{c.reset} {c.bold}From{c.reset} {c.green}aduck (ahihiyou20){c.reset} {c.bold}And{c.reset} {c.green}Cex (cesxos){c.reset}")
 print()
 
