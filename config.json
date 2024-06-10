@@ -1,15 +1,14 @@
 {
-	"MTE5MTcwMzY4MTYzNzI5MDA4Ng.G6xZgu.oPij_pqpNvktLDs3Q0": {
+	"MTE5MTcwM4MTYzNzI5MDAfdsfsd,.aT0FyKQQlTwobdtazoPij_pqpNvktLDs3Q0": {
 		"get_owo_prefix": {
 			"mode": false,
-			"default": "w"
+			"default": "o"
 		},
 
 		"channel_id": [
-			9086031675188841,
-			9086032368675368,
-			9901846692899203,
-			9086033546475522
+			96722451324431825, 
+			90712294634540255,
+			90712315063243628
 		],
 
 		"someone_meantions_you": true,
@@ -17,19 +16,21 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9d867c497702"]
+			"twocaptcha": ["618458dff81bbd477b9d7c49087702"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9d867c490877"]
+			"twocaptcha": ["618458dff81bbd7b9d867c49087702"]
 		},
 
 		"twocaptcha_balance": {
 			"mode": true,
 			"amount": 0.01
 		},
+
+		"top_gg": true,
 
 		"grind": {
 			"owo": true,
@@ -66,7 +67,7 @@
 			"mode": false,
 			"percent": 50,
 			"amount": 1000000,
-			"user_id": 11917036837290086
+			"user_id": 11917081637290086
 		},
 
 		"daily": true,
@@ -108,137 +109,13 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [11917031637290086, 11917444463737456]
+			"owner_id": [11917036637290086, 11917444063737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [11917036837290086, 11744403463737456],
-			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0fe_DByeerSw965LMC9_zCiDB49WsPgrV"
-		},
-
-		"join_owo_giveaway": true,
-
-		"someone_challenges_you": true,
-
-		"music_notification": false
-	},
-
-	"MTAyNjQzNDY2NDcwMjk1MTQyNA.GwTpmB.AN3nctaiBX95UblAIp8": {
-		"get_owo_prefix": {
-			"mode": false,
-			"default": "h"
-		},
-
-		"channel_id": [
-			1204800608840095,
-			1137814222140636,
-			1202632575633550
-		],
-
-		"someone_meantions_you": true,
-
-		"image_captcha": {
-			"mode": true,
-			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b9d867c087702"]
-		},
-
-		"hcaptcha": {
-			"mode": true,
-			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd477b967c49087702"]
-		},
-
-		"twocaptcha_balance": {
-			"mode": true,
-			"amount": 0.01
-		},
-
-		"grind": {
-			"owo": true,
-			"hunt": true,
-			"battle": true,
-			"quote": false
-		},
-
-		"huntbot": {
-			"claim_submit": true,
-			"upgrade": {
-				"mode": false,
-				"type": "experience"
-			}
-		},
-
-		"gem": {
-			"mode": false,
-			"sort": "max",
-			"star": false,
-			"open_box": false,
-			"open_crate": false
-		},
-
-		"distorted_animals": true,
-
-		"animals": {
-			"mode": false,
-			"type": "sac",
-			"rank": "all"
-		},
-
-		"give_cowoncy": {
-			"mode": false,
-			"percent": 50,
-			"amount": 1000000,
-			"user_id": 11917036837290086
-		},
-
-		"daily": true,
-
-		"sleep": true,
-
-		"gamble": {
-			"slot": {
-				"mode": false,
-				"bet": 1,
-				"rate": 2,
-				"max": 250000
-			},
-			"coinflip": {
-				"mode": false,
-				"bet": 1,
-				"rate": 2,
-				"max": 250000
-			},
-			"blackjack": {
-				"mode": false,
-				"bet": 1,
-				"rate": 2,
-				"max": 250000
-			}
-		},
-
-		"pray_curse": {
-			"mode": false,
-			"type": "pray",
-			"user_id": ""
-		},
-
-		"entertainment": {
-			"run": false,
-			"pup": false,
-			"piku": false
-		},
-
-		"command": {
-			"mode": true,
-			"owner_id": [11917036817290086, 11917444063737456]
-		},
-
-		"webhook": {
-			"mode": true,
-			"mentioner_id": [11917036837290086, 11917444034737456],
-			"url": "https://discord.com/api/webhooks/1247140914489458781/IFLrYZl1IWlXlMjtEvKlcggKVha4I9TZG88i-mTdSrO2NYiqlbjxVQmh2"
+			"mentioner_id": [119170368337290086, 119174440363737456],
+			"url": "https://discord.com/api/webhooks/1204628649576366120/mPdbvtSlW54bMFe0HfOe3bsHvLKuXgrUge_DByeerSw965LMC9_zCiDB949WsPgrV"
 		},
 
 		"join_owo_giveaway": true,
