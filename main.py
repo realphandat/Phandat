@@ -43,7 +43,7 @@ class MyClient(discord.Client):
 			data = json.load(file)
 			self.get_owo_prefix = data[token]['get_owo_prefix']
 			self.channel_id = data[token]['channel_id']
-			self.someone_meantions_you = data[token]['someone_meantions_you']
+			self.someone_mentions_you = data[token]['someone_mentions_you']
 			self.image_captcha = data[token]['image_captcha']
 			self.hcaptcha = data[token]['hcaptcha']
 			self.twocaptcha_balance = data[token]['twocaptcha_balance']
@@ -484,12 +484,12 @@ class MyClient(discord.Client):
 								await self.solve_hcaptcha()
 
 	async def on_message(self, message):
-		#Someone Meations You
-		if self.someone_meantions_you and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
+		#Someone Mentions You
+		if self.someone_mentions_you and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			if message.mentions[0].id == int(self.discord['user_id']) or f"<@{self.discord['user_id']}>" in message.content:
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Meations{c.reset} {c.bold}You{c.reset}")
+				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Mentions{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
-					title = "🏷️ SOMEONE MEATIONS YOU 🏷️",
+					title = "🏷️ SOMEONE MENTIONS YOU 🏷️",
 					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
