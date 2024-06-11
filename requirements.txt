@@ -3,3 +3,4 @@ numpy
 Pillow
 brotli
 2captcha-python
+selenium_driverless

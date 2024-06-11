@@ -993,9 +993,8 @@ class MyClient(discord.Client):
 
 	@tasks.loop(hours = 12)
 	async def vote_top_gg(self):
-		if self.top_gg and self.selfbot['work_status'] and self.owo['status']:
+		if self.top_gg:
 			options = webdriver.ChromeOptions()
-			options.headless = True
 			options.add_argument("--start-maximized")
 			oauth = "https://discord.com/oauth2/authorize?scope=identify%20guilds%20email&redirect_uri=https%3A%2F%2Ftop.gg%2Flogin%2Fcallback&response_type=code&client_id=422087909634736160&state=Lw=="
 			oauth_req = (oauth.split("/oauth2")[0] + "/api/v9/oauth2" + oauth.split("/oauth2")[1])
