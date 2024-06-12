@@ -25,13 +25,13 @@ class c:
 	mark = '\033[104m'
 	bold = '\033[1m'
 	gray = '\033[90m'
-	cyan = '\033[36m'
 	blue = '\033[94m'
-	orange = '\033[33m'
 	yellow = '\033[93m'
 	red = '\033[91m'
 	green = '\033[92m'
 	purple = '\033[95m'
+	cyan = '\033[36m'
+	orange = '\033[33m'
 	reset = '\033[0m'
 
 class MyClient(discord.Client):
@@ -152,8 +152,14 @@ class MyClient(discord.Client):
 			"sleep": 0
 		}
 
-	async def intro(self):
-		return f"{c.mark}{time.strftime('%H:%M:%S', time.localtime())}{c.reset} - {c.red}{self.discord['user_nickname']}{c.reset} - "
+	async def info(self):
+		return f"{c.mark}{time.strftime('%H:%M:%S', time.localtime())}{c.reset} - {c.red}{self.discord['user_nickname']}{c.reset} - {c.blue}[INFO]{c.reset} "
+
+	async def send(self):
+		return f"{c.mark}{time.strftime('%H:%M:%S', time.localtime())}{c.reset} - {c.red}{self.discord['user_nickname']}{c.reset} - {c.yellow}[SEND] "
+	
+	async def error(self):
+		return f"{c.mark}{time.strftime('%H:%M:%S', time.localtime())}{c.reset} - {c.red}{self.discord['user_nickname']}{c.reset} - {c.red}[ERROR]{c.reset} "
 
 	async def notify(self):
 		if self.music_notification:
@@ -179,7 +185,7 @@ class MyClient(discord.Client):
 				webhook = f"{self.arrow}I\'ll Work For **__{self.selfbot['work_time']}__ Seconds**\n" + webhook
 			if self.command['mode']:
 				webhook = f"{self.arrow}**Send `help`** or **`<@{self.discord['user_id']}> help`**\n" + webhook
-			cmd = f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Start At Channel{c.reset} {c.purple}{self.discord['channel']}{c.reset}"
+			cmd = f"{await self.info()}{c.bold}I\'ll Start At Channel{c.reset} {c.purple}{self.discord['channel']}{c.reset}"
 			if self.selfbot['work_time']:
 				cmd = cmd + f" {c.bold}For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}"
 			print(cmd)
@@ -235,9 +241,8 @@ class MyClient(discord.Client):
 		elif not member.nick:
 			self.discord['user_nickname'] = str(member.display_name)
 		if self.get_owo_prefix['mode']:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}prefix{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}prefix{c.reset}")
 			self.amount['command'] += 1
 			owo_prefix_message = None
 			await asyncio.sleep(random.randint(3, 5))
@@ -247,9 +252,9 @@ class MyClient(discord.Client):
 					break
 			if owo_prefix_message:
 				self.owo['prefix'] = re.findall(r"`(.*?)`", owo_prefix_message.content)[0]
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}OwO\'s Prefix Is Currently{c.reset} {c.gray}{self.owo['prefix']}{c.reset}")
+				print(f"{await self.info()}{c.bold}OwO\'s Prefix Is Currently{c.reset} {c.gray}{self.owo['prefix']}{c.reset}")
 			else:
-				print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}OwO\'s Prefix ({self.owo['prefix']}){c.reset}")
+				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}OwO\'s Prefix ({self.owo['prefix']}){c.reset}")
 		else:
 			self.owo['prefix'] = self.get_owo_prefix['default']
 
@@ -262,7 +267,7 @@ class MyClient(discord.Client):
 				description = f"{self.arrow}<#{self.discord['channel_id']}>",
 				color = discord.Colour.random()
 			)
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Changed Channel To{c.reset} {c.purple}{self.discord['channel']}{c.reset}")
+			print(f"{await self.info()}{c.bold}I Changed Channel To{c.reset} {c.purple}{self.discord['channel']}{c.reset}")
 			self.amount['change_channel'] += 1
 		self.checking['change_channel_times'] += 1
 
@@ -279,7 +284,7 @@ class MyClient(discord.Client):
 			while retry_times <= 10:
 				try:
 					balance = twocaptcha.balance()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
+					print(f"{await self.info()}{c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
 					result = twocaptcha.normal(captcha, numeric = 2, minLen = lenghth, maxLen = lenghth, phrase = 0, caseSensitive = 0, calc = 0, lang = "en")
 					if result['code'] == wrong_answer:
 						await self.solve_image_captcha(image, captcha, lenghth, result['code'])
@@ -292,51 +297,52 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 					if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Is{c.reset} {c.red}Invalid{c.reset}")
+						print(f"{await self.error()}{c.bold}Your TwoCaptcha API ({api_key}) Is{c.reset} {c.red}Invalid{c.reset}")
 						break
 					elif str(e) == "ERROR_ZERO_BALANCE":
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}){c.reset} {c.red}Run Out Of Money{c.reset}")
+						print(f"{await self.error()}{c.bold}Your TwoCaptcha API ({api_key}){c.reset} {c.red}Run Out Of Money{c.reset}")
 						break
 					else:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
+						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
 						await asyncio.sleep(random.randint(3, 5))
 			if result: break
 		else:
 			await self.notify()
 		if result:
-			await self.owo['name'].typing()
 			await self.owo['name'].send(result['code'])
-			print(f"{await self.intro()}{c.yellow}[SEND] {result['code']}{c.reset}")
+			print(f"{await self.send()}{result['code']}{c.reset}")
 			self.amount['command'] += 1
-			verification = None
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
 						if message.author.id == self.owo['id'] and ("verified" in message.content or "Wrong" in message.content):
-							verification = message
-			if "verified" in verification.content:
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved Image Captcha{c.reset} {c.green}Successfully{c.reset}")
-				await self.send_webhooks(
-					title = "🎉 CORRECT SOLUTION 🎉",
-					description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
-					color = discord.Colour.random(),
-					thumnail = image
-				)
-				twocaptcha.report(result['captchaId'], True)
-			elif "Wrong" in verification.content:
-				await self.notify()
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
-				await self.send_webhooks(
-					content = self.selfbot['mentioner'],
-					title = "⛔ INCORRECT SOLUTION ⛔",
-					description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}I\'ll Try To **Solve It Again**",
-					color = discord.Colour.random(),
-					thumnail = image
-				)
-				twocaptcha.report(result['captchaId'], False)
-				self.checking['captcha_attempts'] += 1
-				if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
-					await self.solve_image_captcha(image, captcha, lenghth, result['code'])
+							if "verified" in message.content:
+								print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.green}Successfully{c.reset}")
+								await self.send_webhooks(
+									title = "🎉 CORRECT SOLUTION 🎉",
+									description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
+									color = discord.Colour.random(),
+									thumnail = image
+								)
+								twocaptcha.report(result['captchaId'], True)
+							elif "Wrong" in message.content:
+								await self.notify()
+								print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
+								print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
+								await self.send_webhooks(
+									content = self.selfbot['mentioner'],
+									title = "⛔ INCORRECT SOLUTION ⛔",
+									description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}I\'ll Try To **Solve It Again**",
+									color = discord.Colour.random(),
+									thumnail = image
+								)
+								twocaptcha.report(result['captchaId'], False)
+								self.checking['captcha_attempts'] += 1
+								if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
+									await self.solve_image_captcha(image, captcha, lenghth, result['code'])
+						else:
+							self.checking['captcha_appear'] = False
+							self.checking['captcha_attempts'] = 0
+							await self.worker(True)
 
 	async def submit_oauth(self, res):
 		retry_times = 0
@@ -353,7 +359,7 @@ class MyClient(discord.Client):
 				if res2.status in (302, 307):
 					return session
 				else:
-					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Failed To Add Token To HCaptcha Oauth{c.reset} {c.red}!!!{c.reset} | {res2.status}")
+					print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Failed To Add Token To HCaptcha Oauth{c.reset} {c.red}!!!{c.reset} | {res2.status}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "⚙️ SUMBIT HCAPTCHA OAUTH ⚙️",
@@ -394,7 +400,7 @@ class MyClient(discord.Client):
 						result_session = await self.submit_oauth(res)
 						return result_session
 					else:
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting HCaptcha Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
+						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Getting HCaptcha Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
 							title = "⚙️ GET HCAPTCHA OAUTH ⚙️",
@@ -431,7 +437,7 @@ class MyClient(discord.Client):
 			while retry_times <= 10:
 				try:
 					balance = twocaptcha.balance()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
+					print(f"{await self.info()}{c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
 					result = twocaptcha.hcaptcha(sitekey = "a6a1d5ce-612d-472d-8e37-7601408fbc09", url = "https://owobot.com/captcha")
 					break
 				except Exception as e:
@@ -442,13 +448,13 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 					if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Is{c.reset} {c.red}Invalid{c.reset}")
+						print(f"{await self.error()}{c.bold}Your TwoCaptcha API ({api_key}) Is{c.reset} {c.red}Invalid{c.reset}")
 						break
 					elif str(e) == "ERROR_ZERO_BALANCE":
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}Your TwoCaptcha API ({api_key}){c.reset} {c.red}Run Out Of Money{c.reset}")
+						print(f"{await self.error()}{c.bold}Your TwoCaptcha API ({api_key}){c.reset} {c.red}Run Out Of Money{c.reset}")
 						break
 					else:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
+						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
 						await asyncio.sleep(random.randint(3, 5))
 			if result: break
@@ -461,7 +467,7 @@ class MyClient(discord.Client):
 					cookies = {cookie.key: cookie.value for cookie in session.cookie_jar}
 					async with session.post("https://owobot.com/api/captcha/verify", headers=headers, json={"token": result['code']}, cookies=cookies) as res:
 						if res.status == 200:
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.green}Successfully{c.reset}")
+							print(f"{await self.info()}{c.bold}I Solved HCaptcha{c.reset} {c.green}Successfully{c.reset}")
 							await self.send_webhooks(
 								title = "🎉 CORRECT SOLUTION 🎉",
 								description = f"{self.arrow}**Continue To Work**",
@@ -470,8 +476,8 @@ class MyClient(discord.Client):
 							twocaptcha.report(result['captchaId'], True)
 						else:
 							await self.notify()
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
+							print(f"{await self.info()}{c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
+							print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 							await self.send_webhooks(
 								content = self.selfbot['mentioner'],
 								title = "⛔ INCORRECT SOLUTION ⛔",
@@ -487,7 +493,7 @@ class MyClient(discord.Client):
 		#Someone Mentions You
 		if self.someone_mentions_you and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			if message.mentions[0].id == int(self.discord['user_id']) or f"<@{self.discord['user_id']}>" in message.content:
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.yellow}Mentions{c.reset} {c.bold}You{c.reset}")
+				print(f"{await self.info()}{c.bold}Someone{c.reset} {c.yellow}Mentions{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
 					title = "🏷️ SOMEONE MENTIONS YOU 🏷️",
 					description = f"{self.arrow}{message.jump_url}",
@@ -506,7 +512,7 @@ class MyClient(discord.Client):
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Image Captcha Appears{c.reset} {c.red}!!!{c.reset}")
+			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Image Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🚨 IMAGE CAPTCHA APPEARS 🚨",
@@ -525,7 +531,7 @@ class MyClient(discord.Client):
 		if not self.checking['captcha_appear'] and self.selfbot['work_status'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}HCaptcha Appears{c.reset} {c.red}!!!{c.reset}")
+			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}HCaptcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🚨 HCAPTCHA APPEARS 🚨",
@@ -542,7 +548,7 @@ class MyClient(discord.Client):
 			await self.notify()
 			self.checking['captcha_appear'] = True
 			await self.worker(False)
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Unknown Captcha Appears{c.reset} {c.red}!!!{c.reset}")
+			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Unknown Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
 				title = "🔒 UNKNOWN CAPTCHA APPEARS 🔒",
@@ -554,7 +560,7 @@ class MyClient(discord.Client):
 		if (str(self.discord['user']) in message.content or str(self.discord['user_nickname']) in message.content) and (message.channel.id == self.owo['dm_channel_id'] or message.author.id == self.owo['id']):
 			if "You have been banned" in message.content:
 				await self.notify()
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}You Have Been Banned{c.reset} {c.red}!!!{c.reset}")
+				print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}You Have Been Banned{c.reset} {c.red}!!!{c.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "🔨 YOU\'VE BEEN BANNED 🔨",
@@ -564,7 +570,7 @@ class MyClient(discord.Client):
 				await self.worker(False)
 			if "don\'t have enough cowoncy!" in message.content:
 				await self.notify()
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}You\'ve Run Out Of Cowoncy{c.reset} {c.red}!!!{c.reset}")
+				print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}You\'ve Run Out Of Cowoncy{c.reset} {c.red}!!!{c.reset}")
 				await self.send_webhooks(
 					content = self.selfbot['mentioner'],
 					title = "💸 RUN OUT OF COWONCY 💸",
@@ -585,9 +591,8 @@ class MyClient(discord.Client):
 			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star']:
 				empty.append("star")
 			if empty:
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}inv")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}inv{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}inv{c.reset}")
 				self.amount['command'] += 1
 				inv = None
 				await asyncio.sleep(random.randint(3, 5))
@@ -599,15 +604,13 @@ class MyClient(discord.Client):
 				if inv:
 					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
 					if self.gem['open_box'] and 50 in inv:
-						await self.discord['channel'].typing()
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
-						print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}lb all{c.reset}")
+						print(f"{await self.send()}{self.owo['prefix']}lb all{c.reset}")
 						self.amount['command'] += 1
 						await asyncio.sleep(random.randint(3, 5))
 					if self.gem['open_crate'] and 100 in inv:
-						await self.discord['channel'].typing()
 						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
-						print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}wc all{c.reset}")
+						print(f"{await self.send()}{self.owo['prefix']}wc all{c.reset}")
 						self.amount['command'] += 1
 						await asyncio.sleep(random.randint(3, 5))
 					gems_in_inv = None
@@ -625,23 +628,22 @@ class MyClient(discord.Client):
 							use_gem = use_gem + str(gems_in_inv[2][0]) + " "
 						if "star" in empty and gems_in_inv[3] != []:
 							use_gem = use_gem + str(gems_in_inv[3][0]) + " "
-						await self.discord['channel'].typing()
 						await self.discord['channel'].send(f"{self.owo['prefix']}use {use_gem}")
-						print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}use {use_gem}{c.reset}")
+						print(f"{await self.send()}{self.owo['prefix']}use {use_gem}{c.reset}")
 						self.amount['command'] += 1
 						self.amount['gem'] += 1
 						self.checking['no_gem'] = False
 					else:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Inventory{c.reset} {c.red}Doesn't Have Enough Gems{c.reset}")
+						print(f"{await self.info()}{c.bold}Your Inventory{c.reset} {c.red}Doesn't Have Enough Gems{c.reset}")
 						self.checking['no_gem'] = True
 				else:
-					print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Your Inventory{c.reset}")
+					print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Your Inventory{c.reset}")
 
 		#Commands
 		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id == self.discord['user_id']):
 			#Help
 			if message.content.lower() == "help" or message.content.lower() == f"<@{self.discord['user_id']}> help":
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Command Menu{c.reset} {c.gray}Via Webhook{c.reset}")
+				print(f"{await self.info()}{c.bold}Send Command Menu{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
 					title = f"📋 COMMAND MENU 📋",
 					description = "**`help`\n`say` + `text`\n`start`\n`pause`\n`stat`\n`setting`**",
@@ -654,12 +656,11 @@ class MyClient(discord.Client):
 				else:
 					text = message.content
 				text = text[4:]
-				await message.channel.typing()
 				await message.channel.send(text)
-				print(f"{await self.intro()}{c.yellow}[SEND] {text}{c.reset}")
+				print(f"{await self.send()}{text}{c.reset}")
 			#Start
 			if message.content.lower() == "start" or message.content.lower() == f"<@{self.discord['user_id']}> start":
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Start{c.reset} {c.gray}Selfbot{c.reset}")
+				print(f"{await self.info()}{c.bold}Start{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
 					title = f"🌤️ START SELFBOT 🌤️",
 					color = discord.Colour.random()
@@ -667,7 +668,7 @@ class MyClient(discord.Client):
 				self.selfbot['work_status'] = True
 			#Pause
 			if message.content.lower() == "pause" or message.content.lower() == f"<@{self.discord['user_id']}> pause":
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Pause{c.reset} {c.gray}Selfbot{c.reset}")
+				print(f"{await self.info()}{c.bold}Pause{c.reset} {c.gray}Selfbot{c.reset}")
 				await self.send_webhooks(
 					title = f"🌙 PAUSE SELFBOT 🌙",
 					color = discord.Colour.random()
@@ -675,7 +676,7 @@ class MyClient(discord.Client):
 				self.selfbot['work_status'] = False
 			#Stat
 			if message.content.lower() == "stat" or message.content.lower() == f"<@{self.discord['user_id']}> stat":
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Stat{c.reset} {c.gray}Via Webhook{c.reset}")
+				print(f"{await self.info()}{c.bold}Send Stat{c.reset} {c.gray}Via Webhook{c.reset}")
 				await self.send_webhooks(
 					title = f"📊 STAT 📊",
 					description = f"I Worked **<t:{int(self.selfbot['turn_on_time'])}:R>** With:\n{self.arrow}Sent **__{self.amount['command']}__ Commands**\n{self.arrow}Solved **__{self.amount['captcha']}__ Captchas**\n{self.arrow}Claimed Huntbot **__{self.amount['huntbot']}__ Times**\n{self.arrow}Used Gem **__{self.amount['gem']}__ Times**\n{self.arrow}Gambled **__{self.amount['gamble']}__ Cowoncy**\n{self.arrow}Changed Channel **__{self.amount['change_channel']}__ Times**\n{self.arrow}Slept **__{self.amount['sleep']}__ Times**",
@@ -693,7 +694,7 @@ class MyClient(discord.Client):
 				except asyncio.TimeoutError:
 					pass
 				else:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Send Setting{c.reset} {c.gray}Via Webhook{c.reset}")
+					print(f"{await self.info()}{c.bold}Send Setting{c.reset} {c.gray}Via Webhook{c.reset}")
 					config = json.load(open("config.json"))
 					await self.send_webhooks(
 						title = f"💾 SETTING 💾",
@@ -708,7 +709,7 @@ class MyClient(discord.Client):
 			#Legendary
 			for i in range(len(self.animals_list['legendary'])):
 				if self.animals_list['legendary'][i] in pet:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.orange}The Legendary Pet{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ve Just Found{c.reset} {c.orange}The Legendary Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:legendary:417955061801680909> LEGENDARY PET <a:legendary:417955061801680909>",
 						description = f"{self.arrow}{message.jump_url}",
@@ -718,7 +719,7 @@ class MyClient(discord.Client):
 			#Gem
 			for i in range(len(self.animals_list['gem'])):
 				if self.animals_list['gem'][i] in pet:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.green}The Gem Pet{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ve Just Found{c.reset} {c.green}The Gem Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:gem:510023576489951232> GEM PET <a:gem:510023576489951232>",
 						description = f"{self.arrow}{message.jump_url}",
@@ -728,7 +729,7 @@ class MyClient(discord.Client):
 			#Fabled
 			for i in range(len(self.animals_list['fabled'])):
 				if self.animals_list['fabled'][i] in pet:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.cyan}The Fabled Pet{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ve Just Found{c.reset} {c.cyan}The Fabled Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:fabled:438857004493307907> FABLED PET <a:fabled:438857004493307907>",
 						description = f"{self.arrow}{message.jump_url}",
@@ -738,7 +739,7 @@ class MyClient(discord.Client):
 			#Distorted
 			for i in range(len(self.animals_list['distorted'])):
 				if self.animals_list['distorted'][i] in pet:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.red}The Distorted Pet{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ve Just Found{c.reset} {c.red}The Distorted Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:distorted:728812986147274835> DISTORTED PET <a:distorted:728812986147274835>",
 						description = f"{self.arrow}{message.jump_url}",
@@ -748,7 +749,7 @@ class MyClient(discord.Client):
 			#Hidden
 			for i in range(len(self.animals_list['hidden'])):
 				if self.animals_list['hidden'][i] in pet:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ve Just Found{c.reset} {c.purple}The Hidden Pet{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ve Just Found{c.reset} {c.purple}The Hidden Pet{c.reset}")
 					await self.send_webhooks(
 						title = "<a:hidden:459203677438083074> HIDDEN PET <a:hidden:459203677438083074>",
 						description = f"{self.arrow}{message.jump_url}",
@@ -759,7 +760,7 @@ class MyClient(discord.Client):
 		#Someone Challenges You
 		if self.someone_challenges_you and self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
 			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Someone{c.reset} {c.red}Challenges{c.reset} {c.bold}You{c.reset}")
+				print(f"{await self.info()}{c.bold}Someone{c.reset} {c.red}Challenges{c.reset} {c.bold}You{c.reset}")
 				await self.send_webhooks(
 					title = "🥊 SOMEONE CHALLENGES YOU 🥊",
 					description = f"{self.arrow}{message.jump_url}",
@@ -769,11 +770,9 @@ class MyClient(discord.Client):
 				await asyncio.sleep(random.randint(3, 5))
 				if choice == 1:
 					if message.channel.id == self.discord['channel_id']:
-						await message.channel.typing()
 						await message.channel.send(f"{self.owo['prefix']}ab")
 						self.amount['command'] += 1
 					else:
-						await message.channel.typing()
 						await message.channel.send(f"owoab")
 						self.amount['command'] += 1
 				if choice == 2:
@@ -787,30 +786,30 @@ class MyClient(discord.Client):
 			if self.gamble['slot']['mode'] and str(self.discord['user_nickname']) in after.content:
 				#Lost
 				if "won nothing" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.red}Lost {self.current_gamble_bet['slot']} Cowoncy{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.red}Lost {self.current_gamble_bet['slot']} Cowoncy{c.reset}")
 					self.amount['gamble'] -= self.current_gamble_bet['slot']
 					self.current_gamble_bet['slot'] *= int(self.gamble['slot']['rate'])
 				#Draw
 				if "<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.gray}Draw {self.current_gamble_bet['slot']} Cowoncy{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.gray}Draw {self.current_gamble_bet['slot']} Cowoncy{c.reset}")
 				#Won x2
 				if "<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot']} Cowoncy (x2){c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot']} Cowoncy (x2){c.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot']
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x3
 				if "<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 2} Cowoncy (x3){c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 2} Cowoncy (x3){c.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 2
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x4
 				if "<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 3} Cowoncy (x4){c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 3} Cowoncy (x4){c.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 3
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x10
 				if "<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 9} Cowoncy (x10){c.reset}")
+					print(f"{await self.info()}{c.bold}Your Slot Turn{c.reset} {c.green}Won {self.current_gamble_bet['slot'] * 9} Cowoncy (x10){c.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['slot'] * 9
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 
@@ -818,12 +817,12 @@ class MyClient(discord.Client):
 			if self.gamble['coinflip']['mode'] and str(self.discord['user_nickname']) in after.content:
 				#Lost
 				if "you lost" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Coinflip Turn{c.reset} {c.red}Lost {self.current_gamble_bet['coinflip']} Cowoncy{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Coinflip Turn{c.reset} {c.red}Lost {self.current_gamble_bet['coinflip']} Cowoncy{c.reset}")
 					self.amount['gamble'] -= self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] *= int(self.gamble['coinflip']['rate'])
 				#Won
 				if "you won" in after.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Coinflip Turn{c.reset} {c.green}Won {self.current_gamble_bet['coinflip']} Cowoncy{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Coinflip Turn{c.reset} {c.green}Won {self.current_gamble_bet['coinflip']} Cowoncy{c.reset}")
 					self.amount['gamble'] += self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 
@@ -840,7 +839,7 @@ class MyClient(discord.Client):
 						description = f"{self.arrow}https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id}",
 						color = discord.Colour.random()
 					)
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.red}Joined{c.reset} {c.bold}A New OwO\'s Giveaway{c.reset}")
+					print(f"{await self.info()}{c.bold}I{c.reset} {c.red}Joined{c.reset} {c.bold}A New OwO\'s Giveaway{c.reset}")
 				except Exception as e:
 					if "COMPONENT_VALIDATION_FAILED" in str(e):
 						self.discord['giveaway_entered'].append(after.id)
@@ -854,15 +853,14 @@ class MyClient(discord.Client):
 					break
 			else:
 				command = random.choice(['h', 'b'])
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}{command}")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}{command}{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}{command}{c.reset}")
 				self.amount['command'] += 1
 				try:
 					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}OwO Doesn\'t Respond{c.reset} {c.red}!!!{c.reset}")
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I\'ll Wait For{c.reset} {c.gray}10 Minutes{c.reset}")
+					print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}OwO Doesn\'t Respond{c.reset} {c.red}!!!{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ll Wait For{c.reset} {c.gray}10 Minutes{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "**💀 OWO\'S OFFLINE 💀**",
@@ -905,7 +903,7 @@ class MyClient(discord.Client):
 					if enoguh_balance: break
 				else:
 					await self.notify()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your Image Captcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Your Image Captcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
@@ -941,7 +939,7 @@ class MyClient(discord.Client):
 					if enoguh_balance: break
 				else:
 					await self.notify()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.red}!!!{c.reset} {c.bold}Your HCaptcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
+					print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Your HCaptcha\'s TwoCaptcha API Has Under {self.twocaptcha_balance['amount']}${c.reset} {c.red}!!!{c.reset}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
@@ -979,7 +977,7 @@ class MyClient(discord.Client):
 						result_session = response.get("location")
 						return result_session
 					else:
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.red}!!!{c.reset} {c.bold}Getting Top.gg Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
+						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Getting Top.gg Oauth Has The Problem{c.reset} {c.red}!!!{c.reset} | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
 							title = "⚙️ TOP.GG OAUTH ⚙️",
@@ -1001,36 +999,33 @@ class MyClient(discord.Client):
 			top_gg = await self.oauth_top_gg(oauth, oauth_req)
 			async with webdriver.Chrome(options=options) as driver:
 				await driver.get(top_gg, wait_load = True, timeout = 10)
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}Top.gg Homepage{c.reset}")
+				print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}Top.gg Homepage{c.reset}")
 				await asyncio.sleep(20)
 				button = await driver.find_element(by = By.XPATH, value = '//a[@href="/bot/408785106942164992/vote"]')
 				await button.click()
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}OwO's Vote Page On Top.gg{c.reset}")
+				print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Loaded{c.reset} {c.bold}OwO's Vote Page On Top.gg{c.reset}")
 				await asyncio.sleep(20)
 				button = await driver.find_element(by=By.XPATH, value=".//button[contains(text(),'Vote')]")
 				await button.click()
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Voted{c.reset} {c.bold}OwO On Top.gg{c.reset}")
+				print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Voted{c.reset} {c.bold}OwO On Top.gg{c.reset}")
 				await asyncio.sleep(20)
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
 		if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
 			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(say)
-			print(f"{await self.intro()}{c.yellow}[SEND] {say}{c.reset}")
+			print(f"{await self.send()}{say}{c.reset}")
 			self.amount['command'] += 1
 			await asyncio.sleep(random.randint(6, 10))
 		if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}h")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}h{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}h{c.reset}")
 			self.amount['command'] += 1
 			await asyncio.sleep(random.randint(6, 10))
 		if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}b")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}b{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}b{c.reset}")
 			self.amount['command'] += 1
 			await asyncio.sleep(random.randint(6, 10))
 		if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
@@ -1040,9 +1035,8 @@ class MyClient(discord.Client):
 					json_data = response.json()
 					data = json_data[0]
 					quote = data['q']
-					await self.discord['channel'].typing()
 					await self.discord['channel'].send(quote)
-					print(f"{await self.intro()}{c.yellow}[SEND] {quote[0:30]}...{c.reset}")
+					print(f"{await self.send()}{quote[0:30]}...{c.reset}")
 					self.amount['command'] += 1
 			except:
 				pass
@@ -1050,9 +1044,8 @@ class MyClient(discord.Client):
 	@tasks.loop(minutes = 1)
 	async def claim_submit_huntbot(self):
 		if self.huntbot['claim_submit'] and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['huntbot_time']) - time.time() <= 0:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}hb 1d{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}hb 1d{c.reset}")
 			self.amount['command'] += 1
 			huntbot_message = None
 			await asyncio.sleep(random.randint(3, 5))
@@ -1066,7 +1059,7 @@ class MyClient(discord.Client):
 					next_huntbot = re.findall(r"(?<=Password will reset in )(\d+)", huntbot_message.content)
 					next_huntbot = int(int(next_huntbot[0]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Lost Huntbot Message, Retry After{c.reset} {c.yellow}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
+					print(f"{await self.info()}{c.bold}I Lost Huntbot Message, Retry After{c.reset} {c.orange}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
 				#Solve Huntbot Captcha
 				if "Here is" in huntbot_message.content:
 					await self.send_webhooks(
@@ -1097,20 +1090,19 @@ class MyClient(discord.Client):
 										matches.append((x, y, letter))
 					matches = sorted(matches, key=lambda tup: tup[0])
 					answer = "".join([i[2] for i in matches])
-					await self.discord['channel'].typing()
 					await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d {answer}")
-					print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}hb 1d {answer}{c.reset}")
+					print(f"{await self.send()}{self.owo['prefix']}hb 1d {answer}{c.reset}")
 					self.amount['command'] += 1
-					huntbot_verification_message = None
+					verification = None
 					await asyncio.sleep(random.randint(3, 5))
 					async for message in self.discord['channel'].history(limit = 10):
 						if message.author.id == self.owo['id'] and ("YOU SPENT" in message.content or "Wrong password" in message.content):
-							huntbot_verification_message = message
+							verification = message
 							break
-					if huntbot_verification_message:
+					if verification:
 						#Correct
-						if "YOU SPENT" in huntbot_verification_message.content:
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Submitted Huntbot{c.reset} {c.green}Successfully{c.reset}")
+						if "YOU SPENT" in verification.content:
+							print(f"{await self.info()}{c.bold}I Submitted Huntbot{c.reset} {c.green}Successfully{c.reset}")
 							await self.send_webhooks(
 								title = "🎉 CORRECT SOLUTION 🎉",
 								description = f"{self.arrow}**Answer:** {answer}",
@@ -1118,8 +1110,8 @@ class MyClient(discord.Client):
 								thumnail = huntbot_message.attachments[0]
 							)
 						#Incorrect
-						if "Wrong password" in huntbot_verification_message.content:
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I Submitted Huntbot{c.reset} {c.green}Failed{c.reset}")
+						if "Wrong password" in verification.content:
+							print(f"{await self.info()}{c.bold}I Submitted Huntbot{c.reset} {c.green}Failed{c.reset}")
 							await self.send_webhooks(
 								title = "⛔ INCORRECT SOLUTION ⛔",
 								description = f"{self.arrow}**Answer:** {answer}",
@@ -1127,7 +1119,7 @@ class MyClient(discord.Client):
 								thumnail = huntbot_message.attachments[0]
 							)
 					else:
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Huntbot Verification Message{c.reset}")
+						print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Huntbot Verification Message{c.reset}")
 				#Sumbit Huntbot
 				elif "STILL HUNTING" in huntbot_message.content:
 					next_huntbot = re.findall("[0-9]+", re.findall("`(.*?)`", huntbot_message.content)[0])
@@ -1136,7 +1128,7 @@ class MyClient(discord.Client):
 					else:
 						next_huntbot = int(int(next_huntbot[0]) * 3600 + int(next_huntbot[1]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Huntbot\'ll Be Back In{c.reset} {c.yellow}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Huntbot\'ll Be Back In{c.reset} {c.orange}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
 					await self.send_webhooks(
 						title = "📌 SUBMITTED HUNTBOT 📌",
 						description = huntbot_message.content,
@@ -1144,7 +1136,7 @@ class MyClient(discord.Client):
 						)
 				#Claim Huntbot
 				elif "BACK WITH" in huntbot_message.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Claimed{c.reset} {c.bold}Your Huntbot{c.reset}")
+					print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Claimed{c.reset} {c.bold}Your Huntbot{c.reset}")
 					await self.send_webhooks(
 						title = "📦 CLAIMED HUNTBOT 📦",
 						description = huntbot_message.content,
@@ -1152,19 +1144,17 @@ class MyClient(discord.Client):
 						)
 					self.amount['huntbot'] += 1
 					if self.huntbot['upgrade']['mode']:
-						await self.discord['channel'].typing()
 						await self.discord['channel'].send(f"{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
-						print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all{c.reset}")
+						print(f"{await self.send()}{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all{c.reset}")
 						self.amount['command'] += 1
 			else:
-				print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Huntbot Message{c.reset}")
+				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Huntbot Message{c.reset}")
 
-	@tasks.loop(seconds = random.randint(600, 1200))
+	@tasks.loop(seconds = random.randint(1200, 3600))
 	async def check_distorted_animal(self):
 		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}dt{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}dt{c.reset}")
 			self.amount['command'] += 1
 			glitch_message = None
 			await asyncio.sleep(random.randint(3, 5))
@@ -1182,27 +1172,25 @@ class MyClient(discord.Client):
 					elif len(glitch_end) == 3:
 						glitch_end = int(int(glitch_end[0]) * 3600 + int(glitch_end[1]) * 60 + int(glitch_end[2]))
 					self.selfbot['glitch_time'] = glitch_end + time.time()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Distorted Animals Are Available For{c.reset} {c.green}{str(datetime.timedelta(seconds = int(glitch_end)))} Seconds{c.reset}")
+					print(f"{await self.info()}{c.bold}Distorted Animals Are Available For{c.reset} {c.green}{str(datetime.timedelta(seconds = int(glitch_end)))} Seconds{c.reset}")
 				elif "not available" in glitch_message.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Distorted Animals{c.reset} {c.red}Aren\'t Available{c.reset}")
+					print(f"{await self.info()}{c.bold}Distorted Animals{c.reset} {c.red}Aren\'t Available{c.reset}")
 			else:
-				print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Distorted Animals Message{c.reset}")
+				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Distorted Animals Message{c.reset}")
 		self.checking['check_glitch_times'] += 1
 
-	@tasks.loop(seconds = random.randint(600, 1200))
+	@tasks.loop(seconds = random.randint(1200, 3600))
 	async def sell_sac_animal(self):
 		if self.animals['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}{self.animals['type']} {self.animals['rank']}")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}{self.animals['type']} {self.animals['rank']}{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}{self.animals['type']} {self.animals['rank']}{c.reset}")
 			self.amount['command'] += 1
 
-	@tasks.loop(seconds = random.randint(1200, 1800))
+	@tasks.loop(seconds = random.randint(1200, 3600))
 	async def send_cowoncy(self):
 		if self.give_cowoncy['mode'] and self.selfbot['work_status'] and self.owo['status'] and self.give_cowoncy['user_id'] != self.discord['user_id']:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}cash")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}cash{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}cash{c.reset}")
 			self.amount['command'] += 1
 			cash_message = None
 			await asyncio.sleep(random.randint(3, 5))
@@ -1212,12 +1200,11 @@ class MyClient(discord.Client):
 					break
 			if cash_message:
 				cash = int(re.findall(r"__(.*?)__", cash_message.content)[0].replace(",", ""))
-				print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}You Currently Have{c.reset} {c.green}{cash} Cowoncy{c.reset}")
+				print(f"{await self.info()}{c.bold}You Currently Have{c.reset} {c.green}{cash} Cowoncy{c.reset}")
 				if cash >= int(self.give_cowoncy['amount']):
 					send = int(cash * int(self.give_cowoncy['percent']) / 100)
-					await self.discord['channel'].typing()
 					await self.discord['channel'].send(f"{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}")
-					print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}{c.reset}")
+					print(f"{await self.send()}{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}{c.reset}")
 					self.amount['command'] += 1
 					send_message = None
 					await asyncio.sleep(random.randint(3, 5))
@@ -1231,16 +1218,15 @@ class MyClient(discord.Client):
 						firstButton = components[0].children[0]
 						await firstButton.click()
 					else:
-						print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Send Message{c.reset}")
+						print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Send Cowoncy Message{c.reset}")
 			else:
-				print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Cash Message{c.reset}")
+				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Cash Message{c.reset}")
 
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self):
 		if self.daily and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['daily_time']) - time.time() <= 0:
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}daily")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}daily{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}daily{c.reset}")
 			self.amount['command'] += 1
 			daily_message = None
 			await asyncio.sleep(random.randint(3, 5))
@@ -1253,18 +1239,18 @@ class MyClient(discord.Client):
 					next_daily = re.findall("[0-9]+", daily_message.content)
 					next_daily = int(int(next_daily[0]) * 3600 + int(next_daily[1]) * 60 + int(next_daily[2]))
 					self.selfbot['daily_time'] = next_daily + time.time()
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}You Can Claim Daily After{c.reset} {c.orange}{str(datetime.timedelta(seconds = int(next_daily)))} Seconds{c.reset}")
+					print(f"{await self.info()}{c.bold}You Can Claim Daily After{c.reset} {c.orange}{str(datetime.timedelta(seconds = int(next_daily)))} Seconds{c.reset}")
 				elif "Your next daily" in daily_message.content:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I{c.reset} {c.green}Claimed{c.reset} {c.bold}Daily{c.reset}")
+					print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Claimed{c.reset} {c.bold}Daily{c.reset}")
 			else:
-				print(f"{await self.intro()}{c.red}[ERROR]{c.reset} {c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Daily Message{c.reset}")
+				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Daily Message{c.reset}")
 		self.checking['daily_times'] += 1
 
 	@tasks.loop(minutes = 1)
 	async def go_to_sleep(self):
 		if self.sleep and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['work_time']) - time.time() <= 0:
 			self.selfbot['sleep_time'] = int(random.randint(300, 600))
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}I'm Taking A Break For{c.reset} {c.cyan}{self.selfbot['sleep_time']} Seconds{c.reset}")
+			print(f"{await self.info()}{c.bold}I'm Taking A Break For{c.reset} {c.cyan}{self.selfbot['sleep_time']} Seconds{c.reset}")
 			await self.send_webhooks(
 				title = "🛌 TAKE A BREAK 🛌",
 				description = f"{self.arrow}I'm Taking A Break For **__{self.selfbot['sleep_time']}__ Seconds**",
@@ -1273,7 +1259,7 @@ class MyClient(discord.Client):
 			self.selfbot['work_status'] = False
 			await asyncio.sleep(self.selfbot['sleep_time'])
 			self.selfbot['work_time'] = random.randint(600, 1200)
-			print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Done! I'll Work For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}")
+			print(f"{await self.info()}{c.bold}Done! I'll Work For{c.reset} {c.cyan}{self.selfbot['work_time']} Seconds{c.reset}")
 			await self.send_webhooks(
 				title = "🌄 WOKE UP 🌄",
 				description = f"{self.arrow}I'll Work For **__{self.selfbot['work_time']}__ Seconds**",
@@ -1289,9 +1275,8 @@ class MyClient(discord.Client):
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			if self.current_gamble_bet['slot'] >= int(self.gamble['slot']['max']):
 				self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}s {self.current_gamble_bet['slot']}{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}s {self.current_gamble_bet['slot']}{c.reset}")
 			self.amount['command'] += 1
 			await asyncio.sleep(random.randint(3, 5))
 		#Coinflip
@@ -1299,18 +1284,16 @@ class MyClient(discord.Client):
 			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']):
 				self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 			side = random.choice(['h', 't'])
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}{c.reset}")
 			self.amount['command'] += 1
 			await asyncio.sleep(random.randint(3, 5))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']):
 				self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
-			await self.discord['channel'].typing()
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
-			print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}{c.reset}")
+			print(f"{await self.send()}{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}{c.reset}")
 			self.amount['command'] += 1
 			self.checking['blackjack_end'] = False
 			while not self.checking['blackjack_end']:
@@ -1336,24 +1319,24 @@ class MyClient(discord.Client):
 										await message.remove_reaction('👊', self.discord['user'])
 									else:
 										await message.add_reaction('👊')
-								print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Blackjack Turn Has{c.reset} {c.blue}{my_blackjack_point} Points (Hit){c.reset}")
+								print(f"{await self.info()}{c.bold}Your Blackjack Turn Has{c.reset} {c.blue}{my_blackjack_point} Points (Hit){c.reset}")
 							except IndexError:
 								pass
 						else:
 							await message.add_reaction('🛑')
-							print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Blackjack Turn Has{c.reset} {c.blue}{my_blackjack_point} Points (Stand){c.reset}")
+							print(f"{await self.info()}{c.bold}Your Blackjack Turn Has{c.reset} {c.blue}{my_blackjack_point} Points (Stand){c.reset}")
 					elif "You won" in message.embeds[0].footer.text:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Blackjack Turn{c.reset} {c.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
+						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
 						self.amount['gamble'] += self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 						self.checking['blackjack_end'] = True
 					elif "You lost" in message.embeds[0].footer.text:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Blackjack Turn{c.reset} {c.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
+						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
 						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] *= int(self.gamble['blackjack']['rate'])
 						self.checking['blackjack_end'] = True
 					elif "You tied" in message.embeds[0].footer.text or "You both bust" in message.embeds[0].footer.text:
-						print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Blackjack Turn{c.reset} {c.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
+						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
 						self.checking['blackjack_end'] = True
 				else:
 					break
@@ -1363,15 +1346,13 @@ class MyClient(discord.Client):
 		if self.pray_curse['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			#Pray
 			if self.pray_curse['type'].lower() == "pray":
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}pray {self.pray_curse['user_id']}")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}pray {self.pray_curse['user_id']}{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}pray {self.pray_curse['user_id']}{c.reset}")
 				self.amount['command'] += 1
 			#Curse
 			else:
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}curse <@{self.pray_curse['user_id']}>")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}curse <@{self.pray_curse['user_id']}>{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}curse <@{self.pray_curse['user_id']}>{c.reset}")
 				self.amount['command'] += 1
 
 	@tasks.loop(seconds = random.randint(60, 120))
@@ -1383,9 +1364,8 @@ class MyClient(discord.Client):
 				self.checking['piku_limit'] = False
 			#Run
 			if self.entertainment['run'] and not self.checking['run_limit']:
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}run")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}run{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}run{c.reset}")
 				self.amount['command'] += 1
 				run_message = None
 				await asyncio.sleep(random.randint(3, 5))
@@ -1394,13 +1374,12 @@ class MyClient(discord.Client):
 						run_message = message
 						break
 				if run_message:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Run For Today Is{c.reset} {c.red}Over{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Run For Today Is{c.reset} {c.red}Over{c.reset}")
 					self.checking['run_limit'] = True
 			#Pup
 			if self.entertainment['pup'] and not self.checking['pup_limit']:
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}pup")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}pup{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}pup{c.reset}")
 				self.amount['command'] += 1
 				pup_message = None
 				await asyncio.sleep(random.randint(3, 5))
@@ -1409,13 +1388,12 @@ class MyClient(discord.Client):
 						pup_message = message
 						break
 				if pup_message:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Pup For Today Is{c.reset} {c.red}Over{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Pup For Today Is{c.reset} {c.red}Over{c.reset}")
 					self.checking['pup_limit'] = True
 			#Piku
 			if self.entertainment['piku'] and not self.checking['piku_limit']:
-				await self.discord['channel'].typing()
 				await self.discord['channel'].send(f"{self.owo['prefix']}piku")
-				print(f"{await self.intro()}{c.yellow}[SEND] {self.owo['prefix']}piku{c.reset}")
+				print(f"{await self.send()}{self.owo['prefix']}piku{c.reset}")
 				self.amount['command'] += 1
 				piku_message = None
 				await asyncio.sleep(random.randint(3, 5))
@@ -1424,12 +1402,12 @@ class MyClient(discord.Client):
 						piku_message = message
 						break
 				if piku_message:
-					print(f"{await self.intro()}{c.blue}[INFO]{c.reset} {c.bold}Your Piku For Today Is{c.reset} {c.red}Over{c.reset}")
+					print(f"{await self.info()}{c.bold}Your Piku For Today Is{c.reset} {c.red}Over{c.reset}")
 					self.checking['piku_limit'] = True
 
 print()
-print(f"{c.bold}You Are Using{c.reset} {c.red}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset}")
-print(f"{c.bold}Created With{c.reset} {c.yellow}Great Contributions{c.reset} {c.bold}From{c.reset} {c.green}aduck (ahihiyou20){c.reset} {c.bold}And{c.reset} {c.green}Cex (cesxos){c.reset}")
+print(f"{c.bold}You Are Using{c.reset} {c.gray}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset}")
+print(f"{c.bold}Created With{c.reset} {c.blue}Great Contributions{c.reset} {c.bold}From{c.reset} {c.green}aduck (ahihiyou20){c.reset} {c.bold}And{c.reset} {c.green}Cex (cesxos){c.reset} {c.bold}And{c.reset} {c.green}Nouzanlong - 努赞龙 (tcb_nouzanlong){c.reset}")
 print()
 
 config = json.load(open("config.json"))
