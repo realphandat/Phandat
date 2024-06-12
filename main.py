@@ -245,7 +245,7 @@ class MyClient(discord.Client):
 			print(f"{await self.send()}{self.owo['prefix']}prefix{c.reset}")
 			self.amount['command'] += 1
 			owo_prefix_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "the current prefix is set to" in message.content:
 					owo_prefix_message = message
@@ -286,7 +286,7 @@ class MyClient(discord.Client):
 					balance = twocaptcha.balance()
 					print(f"{await self.info()}{c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
 					result = twocaptcha.normal(captcha, numeric = 2, minLen = lenghth, maxLen = lenghth, phrase = 0, caseSensitive = 0, calc = 0, lang = "en")
-					if result['code'] in wrong_answer:
+					if result['code'].lower() in wrong_answer:
 						twocaptcha.report(result['captchaId'], False)
 						await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
 					break
@@ -306,7 +306,7 @@ class MyClient(discord.Client):
 					else:
 						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(5, 10))
 			if result: break
 		else:
 			await self.notify()
@@ -314,38 +314,38 @@ class MyClient(discord.Client):
 			await self.owo['name'].send(result['code'])
 			print(f"{await self.send()}{result['code']}{c.reset}")
 			self.amount['command'] += 1
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
-						if message.author.id == self.owo['id'] and ("verified" in message.content or "Wrong" in message.content):
-							if "verified" in message.content:
-								print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.green}Successfully{c.reset}")
-								await self.send_webhooks(
-									title = "🎉 CORRECT SOLUTION 🎉",
-									description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
-									color = discord.Colour.random(),
-									thumnail = image
-								)
-								twocaptcha.report(result['captchaId'], True)
-							elif "Wrong" in message.content:
-								print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
-								print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
-								await self.send_webhooks(
-									content = self.selfbot['mentioner'],
-									title = "⛔ INCORRECT SOLUTION ⛔",
-									description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}I\'ll Try To **Solve It Again**",
-									color = discord.Colour.random(),
-									thumnail = image
-								)
-								twocaptcha.report(result['captchaId'], False)
-								self.checking['captcha_attempts'] += 1
-								if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
-									wrong_answer.append(result['code'].lower())
-									await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
-								else:
-									await self.notify()
-						else:
-							self.checking['captcha_appear'] = False
-							self.checking['captcha_attempts'] = 0
-							await self.worker(True)
+				if message.author.id == self.discord['user_id']:
+					self.checking['captcha_appear'] = False
+					self.checking['captcha_attempts'] = 0
+					await self.worker(True)
+				elif "👍" in message.content:
+					print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.green}Successfully{c.reset}")
+					await self.send_webhooks(
+						title = "🎉 CORRECT SOLUTION 🎉",
+						description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
+						color = discord.Colour.random(),
+						thumnail = image
+					)
+					twocaptcha.report(result['captchaId'], True)
+				elif "🚫" in message.content:
+					print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
+					print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
+					await self.send_webhooks(
+						content = self.selfbot['mentioner'],
+						title = "🚫 INCORRECT SOLUTION 🚫",
+						description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}I\'ll Try To **Solve It Again**",
+						color = discord.Colour.random(),
+						thumnail = image
+					)
+					twocaptcha.report(result['captchaId'], False)
+					self.checking['captcha_attempts'] += 1
+					if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
+						wrong_answer.append(result['code'].lower())
+						await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
+					else:
+						await self.notify()
 
 	async def submit_oauth(self, res):
 		retry_times = 0
@@ -370,7 +370,7 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 		else:
 			await self.notify()
 
@@ -411,7 +411,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 		else:
 			await self.notify()
 
@@ -459,7 +459,7 @@ class MyClient(discord.Client):
 					else:
 						print(f"{await self.error()}{c.red}!!!{c.reset} {c.bold}Your TwoCaptcha API ({api_key}) Has The Problem{c.reset} {c.red}!!!{c.reset} | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(5, 10))
 			if result: break
 		else:
 			await self.notify()
@@ -482,7 +482,7 @@ class MyClient(discord.Client):
 							print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 							await self.send_webhooks(
 								content = self.selfbot['mentioner'],
-								title = "⛔ INCORRECT SOLUTION ⛔",
+								title = "🚫 INCORRECT SOLUTION 🚫",
 								description = f"{self.arrow}I\'ll Try To **Solve It Again**",
 								color = discord.Colour.random()
 							)
@@ -599,7 +599,7 @@ class MyClient(discord.Client):
 				print(f"{await self.send()}{self.owo['prefix']}inv{c.reset}")
 				self.amount['command'] += 1
 				inv = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				async for message in self.discord['channel'].history(limit = 10):
 					if message.author.id == self.owo['id'] and f"{self.discord['user_nickname']}'s Inventory" in message.content:
 						inv = message
@@ -611,12 +611,12 @@ class MyClient(discord.Client):
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
 						print(f"{await self.send()}{self.owo['prefix']}lb all{c.reset}")
 						self.amount['command'] += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(5, 10))
 					if self.gem['open_crate'] and 100 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
 						print(f"{await self.send()}{self.owo['prefix']}wc all{c.reset}")
 						self.amount['command'] += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(5, 10))
 					gems_in_inv = None
 					if self.gem['sort'].lower() == "min":
 						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
@@ -771,7 +771,7 @@ class MyClient(discord.Client):
 					color = discord.Colour.random()
 				)
 				choice = random.choice([1, 2])
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				if choice == 1:
 					if message.channel.id == self.discord['channel_id']:
 						await message.channel.send(f"{self.owo['prefix']}ab")
@@ -903,7 +903,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(3, 5))
+								await asyncio.sleep(random.randint(5, 10))
 					if enoguh_balance: break
 				else:
 					await self.notify()
@@ -939,7 +939,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(3, 5))
+								await asyncio.sleep(random.randint(5, 10))
 					if enoguh_balance: break
 				else:
 					await self.notify()
@@ -989,7 +989,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 		else:
 			await self.notify()
 
@@ -1021,17 +1021,17 @@ class MyClient(discord.Client):
 			await self.discord['channel'].send(say)
 			print(f"{await self.send()}{say}{c.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(6, 10))
+			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}h")
 			print(f"{await self.send()}{self.owo['prefix']}h{c.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(6, 10))
+			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}b")
 			print(f"{await self.send()}{self.owo['prefix']}b{c.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(6, 10))
+			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
 			try:
 				response = get("https://zenquotes.io/api/random")
@@ -1052,7 +1052,7 @@ class MyClient(discord.Client):
 			print(f"{await self.send()}{self.owo['prefix']}hb 1d{c.reset}")
 			self.amount['command'] += 1
 			huntbot_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and ("Please include your password" in message.content or "Here is" in message.content or "BACK IN" in message.content or "BACK WITH" in message.content):
 					huntbot_message = message
@@ -1098,7 +1098,7 @@ class MyClient(discord.Client):
 					print(f"{await self.send()}{self.owo['prefix']}hb 1d {answer}{c.reset}")
 					self.amount['command'] += 1
 					verification = None
-					await asyncio.sleep(random.randint(3, 5))
+					await asyncio.sleep(random.randint(5, 10))
 					async for message in self.discord['channel'].history(limit = 10):
 						if message.author.id == self.owo['id'] and ("YOU SPENT" in message.content or "Wrong password" in message.content):
 							verification = message
@@ -1117,7 +1117,7 @@ class MyClient(discord.Client):
 						if "Wrong password" in verification.content:
 							print(f"{await self.info()}{c.bold}I Submitted Huntbot{c.reset} {c.green}Failed{c.reset}")
 							await self.send_webhooks(
-								title = "⛔ INCORRECT SOLUTION ⛔",
+								title = "🚫 INCORRECT SOLUTION 🚫",
 								description = f"{self.arrow}**Answer:** {answer}",
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
@@ -1161,7 +1161,7 @@ class MyClient(discord.Client):
 			print(f"{await self.send()}{self.owo['prefix']}dt{c.reset}")
 			self.amount['command'] += 1
 			glitch_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and ("are available" in message.content or "not available" in message.content):
 					glitch_message = message
@@ -1197,7 +1197,7 @@ class MyClient(discord.Client):
 			print(f"{await self.send()}{self.owo['prefix']}cash{c.reset}")
 			self.amount['command'] += 1
 			cash_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and "you currently have" in message.content:
 					cash_message = message
@@ -1211,7 +1211,7 @@ class MyClient(discord.Client):
 					print(f"{await self.send()}{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}{c.reset}")
 					self.amount['command'] += 1
 					send_message = None
-					await asyncio.sleep(random.randint(3, 5))
+					await asyncio.sleep(random.randint(5, 10))
 					async for message in self.discord['channel'].history(limit = 10):
 						if message.author.id == self.owo['id'] and message.embeds:
 							if str(self.discord['user_nickname']) in message.embeds[0].author.name and "you are about to give cowoncy" in message.embeds[0].author.name:
@@ -1233,7 +1233,7 @@ class MyClient(discord.Client):
 			print(f"{await self.send()}{self.owo['prefix']}daily{c.reset}")
 			self.amount['command'] += 1
 			daily_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "next daily" in message.content or "Nu" in message.content:
 					daily_message = message
@@ -1282,7 +1282,7 @@ class MyClient(discord.Client):
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
 			print(f"{await self.send()}{self.owo['prefix']}s {self.current_gamble_bet['slot']}{c.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 		#Coinflip
 		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']):
@@ -1291,7 +1291,7 @@ class MyClient(discord.Client):
 			await self.discord['channel'].send(f"{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
 			print(f"{await self.send()}{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}{c.reset}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(5, 10))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']):
@@ -1302,7 +1302,7 @@ class MyClient(discord.Client):
 			self.checking['blackjack_end'] = False
 			while not self.checking['blackjack_end']:
 				message = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				async for m in self.discord['channel'].history(limit=10):
 					if m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'] and m.embeds:
 						if str(self.discord['user']) in m.embeds[0].author.name and "play blackjack" in m.embeds[0].author.name:
@@ -1372,7 +1372,7 @@ class MyClient(discord.Client):
 				print(f"{await self.send()}{self.owo['prefix']}run{c.reset}")
 				self.amount['command'] += 1
 				run_message = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				async for message in self.discord['channel'].history(limit=10):
 					if message.author.id == self.owo['id'] and "tired to run" in message.content:
 						run_message = message
@@ -1386,7 +1386,7 @@ class MyClient(discord.Client):
 				print(f"{await self.send()}{self.owo['prefix']}pup{c.reset}")
 				self.amount['command'] += 1
 				pup_message = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				async for message in self.discord['channel'].history(limit=10):
 					if message.author.id == self.owo['id'] and "no puppies" in message.content:
 						pup_message = message
@@ -1400,7 +1400,7 @@ class MyClient(discord.Client):
 				print(f"{await self.send()}{self.owo['prefix']}piku{c.reset}")
 				self.amount['command'] += 1
 				piku_message = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(5, 10))
 				async for message in self.discord['channel'].history(limit=10):
 					if message.author.id == self.owo['id'] and "out of carrots" in message.content:
 						piku_message = message
