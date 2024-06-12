@@ -271,7 +271,7 @@ class MyClient(discord.Client):
 			self.amount['change_channel'] += 1
 		self.checking['change_channel_times'] += 1
 
-	async def solve_image_captcha(self, image, captcha, lenghth, wrong_answer = ""):
+	async def solve_image_captcha(self, image, captcha, lenghth, wrong_answer = []):
 		result = None
 		for api_key in self.image_captcha['twocaptcha']:
 			twocaptcha = TwoCaptcha(**{
@@ -286,8 +286,9 @@ class MyClient(discord.Client):
 					balance = twocaptcha.balance()
 					print(f"{await self.info()}{c.bold}Your TwoCaptcha API ({api_key}) Currently Have{c.reset} {c.green}{balance}${c.reset}")
 					result = twocaptcha.normal(captcha, numeric = 2, minLen = lenghth, maxLen = lenghth, phrase = 0, caseSensitive = 0, calc = 0, lang = "en")
-					if result['code'] == wrong_answer:
-						await self.solve_image_captcha(image, captcha, lenghth, result['code'])
+					if result['code'] in wrong_answer:
+						twocaptcha.report(result['captchaId'], False)
+						await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
 					break
 				except Exception as e:
 					await self.send_webhooks(
@@ -325,7 +326,6 @@ class MyClient(discord.Client):
 								)
 								twocaptcha.report(result['captchaId'], True)
 							elif "Wrong" in message.content:
-								await self.notify()
 								print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
 								print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 								await self.send_webhooks(
@@ -338,7 +338,10 @@ class MyClient(discord.Client):
 								twocaptcha.report(result['captchaId'], False)
 								self.checking['captcha_attempts'] += 1
 								if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
-									await self.solve_image_captcha(image, captcha, lenghth, result['code'])
+									wrong_answer.append(result['code'].lower())
+									await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
+								else:
+									await self.notify()
 						else:
 							self.checking['captcha_appear'] = False
 							self.checking['captcha_attempts'] = 0
@@ -475,7 +478,6 @@ class MyClient(discord.Client):
 							)
 							twocaptcha.report(result['captchaId'], True)
 						else:
-							await self.notify()
 							print(f"{await self.info()}{c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
 							print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
 							await self.send_webhooks(
@@ -488,6 +490,8 @@ class MyClient(discord.Client):
 							self.checking['captcha_attempts'] += 1
 							if self.checking['captcha_attempts'] <= int(self.hcaptcha['attempts']):
 								await self.solve_hcaptcha()
+							else:
+								await self.notify()
 
 	async def on_message(self, message):
 		#Someone Mentions You
