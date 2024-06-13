@@ -1410,8 +1410,8 @@ class MyClient(discord.Client):
 					self.checking['piku_limit'] = True
 
 print()
-print(f"{c.bold}You Are Using{c.reset} {c.gray}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset}")
-print(f"{c.bold}Created With{c.reset} {c.blue}Great Contributions{c.reset} {c.bold}From{c.reset} {c.green}aduck (ahihiyou20){c.reset} {c.bold}And{c.reset} {c.green}Cex (cesxos){c.reset} {c.bold}And{c.reset} {c.green}Nouzanlong - 努赞龙 (tcb_nouzanlong){c.reset}")
+print(f"{c.bold}You Are Using{c.reset} {c.red}OwO's Selfbot{c.reset} {c.bold}By{c.reset} {c.blue}Phandat (realphandat){c.reset}")
+print(f"{c.bold}Created With{c.reset} {c.yellow}Great Contributions{c.reset} {c.bold}From{c.reset} {c.green}aduck (ahihiyou20){c.reset} {c.bold}And{c.reset} {c.green}Cex (cesxos){c.reset} {c.bold}And{c.reset} {c.green}Nouzanlong - 努赞龙 (tcb_nouzanlong){c.reset}")
 print()
 
 config = json.load(open("config.json"))
