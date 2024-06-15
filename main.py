@@ -1,21 +1,10 @@
-import discord
+
+import discord, asyncio, re, os, io, glob, json, random, aiohttp, time, datetime, threading, numpy as np
 from discord import Webhook
 from discord.ext import tasks
-import asyncio
 from aiohttp import ClientSession, CookieJar
-import re
-import os
-import io
-import glob
-import json
-import random
-import aiohttp
-import time
-import datetime
-import threading
-import numpy as np
-from PIL import Image
 from requests import get
+from PIL import Image
 from base64 import b64encode
 from twocaptcha import TwoCaptcha
 from selenium_driverless import webdriver
@@ -116,9 +105,9 @@ class MyClient(discord.Client):
 
 		self.checking = {
 			"captcha_attempts": 0,
-			"captcha_appear": False,
+			"is_captcha": False,
 			"no_gem": False,
-			"blackjack_end": False,
+			"is_blackjack": False,
 			"run_limit": False,
 			"pup_limit": False,
 			"piku_limit": False
@@ -320,7 +309,7 @@ class MyClient(discord.Client):
 			await asyncio.sleep(random.randint(3, 5))
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
 				if message.author.id == self.discord['user_id']:
-					self.checking['captcha_appear'] = False
+					self.checking['is_captcha'] = False
 					self.checking['captcha_attempts'] = 0
 					await self.worker(True)
 				elif "👍" in message.content:
@@ -517,13 +506,13 @@ class MyClient(discord.Client):
 				color = discord.Colour.random()
 			)
 			self.amount['captcha'] += 1
-			self.checking['captcha_appear'] = False
+			self.checking['is_captcha'] = False
 			self.checking['captcha_attempts'] = 0
 			await self.worker(True)
 
 		#Detect Image Captcha
-		if not self.checking['captcha_appear'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
-			self.checking['captcha_appear'] = True
+		if not self.checking['is_captcha'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
+			self.checking['is_captcha'] = True
 			await self.worker(False)
 			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Image Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
@@ -541,8 +530,8 @@ class MyClient(discord.Client):
 				await self.notify()
 
 		#Detect HCaptcha
-		if not self.checking['captcha_appear'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
-			self.checking['captcha_appear'] = True
+		if not self.checking['is_captcha'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+			self.checking['is_captcha'] = True
 			await self.worker(False)
 			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}HCaptcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
@@ -557,9 +546,9 @@ class MyClient(discord.Client):
 				await self.notify()
 
 		#Detect Unknown Captcha
-		if not self.checking['captcha_appear'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
+		if not self.checking['is_captcha'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.discord['user_id']}>" in message.content and message.author.id == self.owo['id']:
 			await self.notify()
-			self.checking['captcha_appear'] = True
+			self.checking['is_captcha'] = True
 			await self.worker(False)
 			print(f"{await self.info()}{c.red}!!!{c.reset} {c.bold}Unknown Captcha Appears{c.reset} {c.red}!!!{c.reset}")
 			await self.send_webhooks(
@@ -1313,8 +1302,8 @@ class MyClient(discord.Client):
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			print(f"{await self.send()}{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}{c.reset}")
 			self.amount['command'] += 1
-			self.checking['blackjack_end'] = False
-			while not self.checking['blackjack_end']:
+			self.checking['is_blackjack'] = False
+			while not self.checking['is_blackjack']:
 				message = None
 				await asyncio.sleep(random.randint(3, 5))
 				async for m in self.discord['channel'].history(limit = 10):
@@ -1347,15 +1336,15 @@ class MyClient(discord.Client):
 						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.green}Won {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
 						self.amount['gamble'] += self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
-						self.checking['blackjack_end'] = True
+						self.checking['is_blackjack'] = True
 					elif "You lost" in message.embeds[0].footer.text:
 						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.red}Lost {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
 						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] *= int(self.gamble['blackjack']['rate'])
-						self.checking['blackjack_end'] = True
+						self.checking['is_blackjack'] = True
 					elif "You tied" in message.embeds[0].footer.text or "You both bust" in message.embeds[0].footer.text:
 						print(f"{await self.info()}{c.bold}Your Blackjack Turn{c.reset} {c.gray}Draw {self.current_gamble_bet['blackjack']} Cowoncy{c.reset}")
-						self.checking['blackjack_end'] = True
+						self.checking['is_blackjack'] = True
 				else:
 					break
 
