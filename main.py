@@ -1155,7 +1155,7 @@ class MyClient(discord.Client):
 			else:
 				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Huntbot Message{c.reset}")
 
-	@tasks.loop(minutes = 1)
+	@tasks.loop(seconds = random.randint(600, 1200))
 	async def check_distorted_animal(self):
 		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
@@ -1180,8 +1180,6 @@ class MyClient(discord.Client):
 					print(f"{await self.info()}{c.bold}Distorted Animals Are Available For{c.reset} {c.green}{str(datetime.timedelta(seconds = int(glitch_end)))} Seconds{c.reset}")
 				elif "not available" in glitch_message.content:
 					print(f"{await self.info()}{c.bold}Distorted Animals{c.reset} {c.red}Aren\'t Available{c.reset}")
-					glitch_check_again = random.randint(600, 1200)
-					self.selfbot['glitch_time'] = glitch_check_again + time.time()
 			else:
 				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Distorted Animals Message{c.reset}")
 		self.current_loop['check_distorted_animal'] += 1
