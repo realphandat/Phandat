@@ -1,4 +1,3 @@
-
 import discord, asyncio, re, os, io, glob, json, random, aiohttp, time, datetime, threading, numpy as np
 from discord import Webhook
 from discord.ext import tasks
@@ -321,6 +320,10 @@ class MyClient(discord.Client):
 						thumnail = image
 					)
 					twocaptcha.report(result['captchaId'], True)
+					self.amount['captcha'] += 1
+					self.checking['is_captcha'] = False
+					self.checking['captcha_attempts'] = 0
+					await self.worker(True)
 				elif "🚫" in message.content:
 					print(f"{await self.info()}{c.bold}I Solved Image Captcha{c.reset} {c.red}Failed{c.reset}")
 					print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
@@ -469,6 +472,10 @@ class MyClient(discord.Client):
 								color = discord.Colour.random()
 							)
 							twocaptcha.report(result['captchaId'], True)
+							self.amount['captcha'] += 1
+							self.checking['is_captcha'] = False
+							self.checking['captcha_attempts'] = 0
+							await self.worker(True)
 						else:
 							print(f"{await self.info()}{c.bold}I Solved HCaptcha{c.reset} {c.red}Failed{c.reset}")
 							print(f"{await self.info()}{c.bold}I\'ll Try To{c.reset} {c.red}Solve It Again{c.reset}")
@@ -496,19 +503,6 @@ class MyClient(discord.Client):
 					color = discord.Colour.random()
 				)
 				await self.change_channel()
-
-		#Startup After Solve Captcha Successfully
-		if "👍" in message.content and message.channel.id == self.owo['dm_channel_id']:
-			print(f"{await self.info()}{c.bold}I{c.reset} {c.yellow}Resume{c.reset} {c.bold}Selfbot{c.reset}")
-			await self.send_webhooks(
-				title = "🗿 RESUME SELFBOT 🗿",
-				description = f"{self.arrow}{message.jump_url}",
-				color = discord.Colour.random()
-			)
-			self.amount['captcha'] += 1
-			self.checking['is_captcha'] = False
-			self.checking['captcha_attempts'] = 0
-			await self.worker(True)
 
 		#Detect Image Captcha
 		if not self.checking['is_captcha'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.discord['user']) in message.content) and message.author.id == self.owo['id']:
