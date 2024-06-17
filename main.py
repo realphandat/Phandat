@@ -106,6 +106,7 @@ class MyClient(discord.Client):
 			"captcha_attempts": 0,
 			"is_captcha": False,
 			"no_gem": False,
+			"cowoncy_limit": False,
 			"is_blackjack": False,
 			"run_limit": False,
 			"pup_limit": False,
@@ -832,7 +833,7 @@ class MyClient(discord.Client):
 					self.discord['giveaway_entered'].append(after.id)
 					await self.send_webhooks(
 						title = "🎁 JOINED OWO\'S GIVEAWAY 🎁",
-						description = f"{self.arrow}https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id}",
+						description = f"{self.arrow}{after.jump_url}",
 						color = discord.Colour.random()
 					)
 					print(f"{await self.info()}{c.bold}I{c.reset} {c.red}Joined{c.reset} {c.bold}A New OwO\'s Giveaway{c.reset}")
@@ -1054,18 +1055,18 @@ class MyClient(discord.Client):
 					break
 			if huntbot_message:
 				#Lost Huntbot Captcha
-				if "Please include your password" in huntbot_message.content:
+				if str(self.discord['user_nickname']) in message.content and "Please include your password" in huntbot_message.content:
 					next_huntbot = re.findall(r"(?<=Password will reset in )(\d+)", huntbot_message.content)
 					next_huntbot = int(int(next_huntbot[0]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
 					print(f"{await self.info()}{c.bold}I Lost Huntbot Message, Retry After{c.reset} {c.orange}{str(datetime.timedelta(seconds = int(next_huntbot)))} Seconds{c.reset}")
 				#Solve Huntbot Captcha
-				if "Here is" in huntbot_message.content:
+				if str(self.discord['user_nickname']) in message.content and "Here is" in huntbot_message.content:
 					await self.send_webhooks(
 						title = "🤖 HUNTBOT CAPTCHA APPEARS 🤖",
-						description = f"{self.arrow}https://discord.com/channels/{huntbot_message.guild.id}/{huntbot_message.channel.id}/{huntbot_message.id}",
+						description = f"{self.arrow}{huntbot_message.jump_url}",
 						color = discord.Colour.random(),
-						image = message.attachments[0]
+						image = huntbot_message.attachments[0]
 					)
 					checks = []
 					check_images = glob.glob("huntbot/**/*.png")
@@ -1100,7 +1101,7 @@ class MyClient(discord.Client):
 							break
 					if huntbot_verification_message:
 						#Correct
-						if "YOU SPENT" in huntbot_verification_message.content:
+						if str(self.discord['user_nickname']) in message.content and "YOU SPENT" in huntbot_verification_message.content:
 							print(f"{await self.info()}{c.bold}I Submitted Huntbot{c.reset} {c.green}Successfully{c.reset}")
 							await self.send_webhooks(
 								title = "🎉 CORRECT SOLUTION 🎉",
@@ -1109,7 +1110,7 @@ class MyClient(discord.Client):
 								thumnail = huntbot_message.attachments[0]
 							)
 						#Incorrect
-						if "Wrong password" in huntbot_verification_message.content:
+						if str(self.discord['user_nickname']) in message.content and "Wrong password" in huntbot_verification_message.content:
 							print(f"{await self.info()}{c.bold}I Submitted Huntbot{c.reset} {c.green}Failed{c.reset}")
 							await self.send_webhooks(
 								title = "🚫 INCORRECT SOLUTION 🚫",
@@ -1187,39 +1188,45 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(1200, 3600))
 	async def send_cowoncy(self):
-		if self.give_cowoncy['mode'] and self.selfbot['work_status'] and self.owo['status'] and self.give_cowoncy['user_id'] != self.discord['user_id']:
-			await self.discord['channel'].send(f"{self.owo['prefix']}cash")
-			print(f"{await self.send()}{self.owo['prefix']}cash{c.reset}")
-			self.amount['command'] += 1
-			cash_message = None
-			await asyncio.sleep(random.randint(3, 5))
-			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and "you currently have" in message.content:
-					cash_message = message
-					break
-			if cash_message:
-				cash = int(re.findall(r"__(.*?)__", cash_message.content)[0].replace(",", ""))
-				print(f"{await self.info()}{c.bold}You Currently Have{c.reset} {c.green}{cash} Cowoncy{c.reset}")
-				if cash >= int(self.give_cowoncy['amount']):
-					send = int(cash * int(self.give_cowoncy['percent']) / 100)
-					await self.discord['channel'].send(f"{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}")
-					print(f"{await self.send()}{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}{c.reset}")
-					self.amount['command'] += 1
-					send_message = None
-					await asyncio.sleep(random.randint(3, 5))
-					async for message in self.discord['channel'].history(limit = 10):
-						if message.author.id == self.owo['id'] and message.embeds:
-							if str(self.discord['user_nickname']) in message.embeds[0].author.name and "you are about to give cowoncy" in message.embeds[0].author.name:
-								send_message = message
+		if self.selfbot['work_status'] and self.owo['status']:
+			if self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0:
+				self.checking['cowoncy_limit'] = False
+			if self.give_cowoncy['mode'] and self.give_cowoncy['user_id'] != self.discord['user_id'] and not self.checking['cowoncy_limit']:
+				await self.discord['channel'].send(f"{self.owo['prefix']}cash")
+				print(f"{await self.send()}{self.owo['prefix']}cash{c.reset}")
+				self.amount['command'] += 1
+				cash_message = None
+				await asyncio.sleep(random.randint(3, 5))
+				async for message in self.discord['channel'].history(limit = 10):
+					if message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and "you currently have" in message.content:
+						cash_message = message
+						break
+				if cash_message:
+					cash = int(re.findall(r"__(.*?)__", cash_message.content)[0].replace(",", ""))
+					print(f"{await self.info()}{c.bold}You Currently Have{c.reset} {c.green}{cash} Cowoncy{c.reset}")
+					if cash >= int(self.give_cowoncy['amount']):
+						send = int(cash * int(self.give_cowoncy['percent']) / 100)
+						await self.discord['channel'].send(f"{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}")
+						print(f"{await self.send()}{self.owo['prefix']}give <@{self.give_cowoncy['user_id']}> {send}{c.reset}")
+						self.amount['command'] += 1
+						send_message = None
+						await asyncio.sleep(random.randint(3, 5))
+						async for message in self.discord['channel'].history(limit = 10):
+							if message.author.id == self.owo['id'] and message.embeds:
+								if str(self.discord['user_nickname']) in message.embeds[0].author.name and "you are about to give cowoncy" in message.embeds[0].author.name:
+									components = send_message.components
+									firstButton = components[0].children[0]
+									await firstButton.click()
+									print(f"{await self.info()}{c.bold}I{c.reset} {c.green}Gived{c.reset} {c.bold}Cowoncy Successfully{c.reset}")
+									break
+							elif message.author.id == self.owo['id'] and str(self.discord['user_nickname']) in message.content and "you can only send" in message.content:
+								print(f"{await self.info()}{c.bold}Your Giving Cowoncy For Today Is{c.reset} {c.red}Over{c.reset}")
+								self.checking['cowoncy_limit'] = True
 								break
-					if send_message:
-						components = send_message.components
-						firstButton = components[0].children[0]
-						await firstButton.click()
-					else:
-						print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Send Cowoncy Message{c.reset}")
-			else:
-				print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Cash Message{c.reset}")
+						else:
+							print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Send Cowoncy Message{c.reset}")
+				else:
+					print(f"{await self.error()}{c.bold}I{c.reset} {c.red}Couldn't Get{c.reset} {c.bold}Cash Message{c.reset}")
 
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self):
