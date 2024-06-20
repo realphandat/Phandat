@@ -832,6 +832,7 @@ class MyClient(discord.Client):
 					assert isinstance(button, Button)
 					assert button.label == 'Accept' and button.style == ButtonStyle.green
 					await button.click()
+					self.logger.info(f"Click accept button")
 
 	async def on_message_edit(self, before, after):
 		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
