@@ -22,7 +22,7 @@ class color:
 	reset = "\x1b[0m"
 
 class CustomFormatter(logging.Formatter):
-	template = "\x1b[0;43m%(asctime)s\x1b[0m - \x1b[38;5;212m%(name)s\x1b[0m - {}[%(levelname)s]{} %(message)s"
+	template = "\x1b[43m%(asctime)s\x1b[0m - \x1b[38;5;212m%(name)s\x1b[0m - {}[%(levelname)s]{} %(message)s"
 
 	formats = {
 		logging.DEBUG: template.format(color.gray, color.reset) + " (%(filename)s:%(lineno)d)",
@@ -160,16 +160,6 @@ class MyClient(discord.Client):
 			"change_channel": 0,
 			"sleep": 0
 		}
-
-	async def log(self):
-		self.logger = logging.getLogger(str(self.user))
-		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)} {time.strftime('%d %b %Y', time.localtime())}.log", encoding='utf-8', mode='a+')
-		file_log.setFormatter(FileFormatter())
-		print_log = logging.StreamHandler()
-		print_log.setFormatter(CustomFormatter())
-		self.logger.addHandler(file_log)
-		self.logger.addHandler(print_log)
-		self.logger.setLevel(logging.DEBUG)
 
 	async def notify(self):
 		if self.music_notification:
@@ -832,7 +822,7 @@ class MyClient(discord.Client):
 					assert isinstance(button, Button)
 					assert button.label == 'Accept' and button.style == ButtonStyle.green
 					await button.click()
-					self.logger.info(f"Click accept button")
+					self.logger.info(f"Clicked accept button")
 
 	async def on_message_edit(self, before, after):
 		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
@@ -882,7 +872,7 @@ class MyClient(discord.Client):
 
 		#Join giveaway
 		if self.join_giveaway and after.embeds and after.id not in self.discord['giveaway_entered'] and after.author.id == self.owo['id']:
-			if "New Giveaway" in str(after.embeds[0].author.name) and len(after.components) > 0:
+			if "New Giveaway" in after.embeds[0].author.name and len(after.components) > 0:
 				try:
 					button = after.components[0].children[0]
 					assert isinstance(button, Button)
@@ -899,6 +889,17 @@ class MyClient(discord.Client):
 					if "COMPONENT_VALIDATION_FAILED" in str(e):
 						self.discord['giveaway_entered'].append(after.id)
 					pass
+
+	@tasks.loop(hours = 1)
+	async def log(self):
+		self.logger = logging.getLogger(str(self.user))
+		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)} {time.strftime('%d %b %Y', time.localtime())}.log", encoding='utf-8', mode='a+')
+		file_log.setFormatter(FileFormatter())
+		print_log = logging.StreamHandler()
+		print_log.setFormatter(CustomFormatter())
+		self.logger.addHandler(file_log)
+		self.logger.addHandler(print_log)
+		self.logger.setLevel(logging.DEBUG)
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
