@@ -906,8 +906,6 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def change_log(self):
-		print(time.strftime('%d %b %Y', time.localtime()))
-		print(self.selfbot['calendar'])
 		if time.strftime('%d %b %Y', time.localtime()) != self.selfbot['calendar']:
 			await self.log()
 
