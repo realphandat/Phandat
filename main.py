@@ -586,7 +586,7 @@ class MyClient(discord.Client):
 					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
-				self.selfbot['work_status'] = False
+				await self.worker(False)
 			if "don't have enough cowoncy!" in message.content and not "you silly hooman" in message.content:
 				await self.notify()
 				self.logger.warning(f"!!! Out of cowoncy !!!")
@@ -596,7 +596,7 @@ class MyClient(discord.Client):
 					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
-				self.selfbot['work_status'] = False
+				await self.worker(False)
 
 		#Check and use gem
 		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
