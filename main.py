@@ -688,7 +688,6 @@ class MyClient(discord.Client):
 				)
 			#Pause
 			if message.content.lower() == "pause" or message.content.lower() == f"<@{self.user.id}> pause":
-				self.checking['is_captcha'] = True
 				self.worker(False)
 				self.logger.info(f"Pause selfbot")
 				await self.send_webhooks(
@@ -743,8 +742,6 @@ class MyClient(discord.Client):
 							nickname = str(member.display_name)
 						if nickname in m.embeds[0].author.name and "you are about to give cowoncy" in m.embeds[0].author.name:
 							button = m.components[0].children[0]
-							assert isinstance(button, Button)
-							assert button.label == "Confirm" and button.style == ButtonStyle.green
 							await button.click()
 							self.logger.info(f"Gived cowoncy successfully")
 							break
@@ -833,8 +830,6 @@ class MyClient(discord.Client):
 					self.amount['command'] += 1
 				if choice == 2:
 					button = message.components[0].children[0]
-					assert isinstance(button, Button)
-					assert button.label == 'Accept' and button.style == ButtonStyle.green
 					await button.click()
 					self.logger.info(f"Clicked accept button")
 
@@ -889,8 +884,6 @@ class MyClient(discord.Client):
 			if "New Giveaway" in str(after.embeds[0].author.name) and len(after.components) > 0:
 				try:
 					button = after.components[0].children[0]
-					assert isinstance(button, Button)
-					assert button.label == "Join Giveaway!"
 					await button.click()
 					self.discord['giveaway_entered'].append(after.id)
 					await self.send_webhooks(
