@@ -1,5 +1,5 @@
 import discord, logging, logging.handlers, logging.config, asyncio, re, os, io, glob, json, random, aiohttp, time, datetime, threading, numpy as np
-from discord import Webhook, ButtonStyle, Button
+from discord import Webhook
 from discord.ext import tasks
 from aiohttp import ClientSession, CookieJar
 from requests import get
@@ -330,8 +330,8 @@ class MyClient(discord.Client):
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
 				if message.author.id == self.user.id:
 					self.checking['is_captcha'] = False
+					self.selfbot['work_status'] = True
 					self.checking['captcha_attempts'] = 0
-					await self.worker(True)
 				elif "👍" in message.content:
 					self.logger.info(f"Solved Image Captcha successfully")
 					await self.send_webhooks(
@@ -343,8 +343,8 @@ class MyClient(discord.Client):
 					twocaptcha.report(result['captchaId'], True)
 					self.amount['captcha'] += 1
 					self.checking['is_captcha'] = False
+					self.selfbot['work_status'] = True
 					self.checking['captcha_attempts'] = 0
-					await self.worker(True)
 				elif "🚫" in message.content:
 					self.logger.info(f"Solved Image Captcha failed")
 					await self.send_webhooks(
@@ -494,8 +494,8 @@ class MyClient(discord.Client):
 							twocaptcha.report(result['captchaId'], True)
 							self.amount['captcha'] += 1
 							self.checking['is_captcha'] = False
+							self.selfbot['work_status'] = True
 							self.checking['captcha_attempts'] = 0
-							await self.worker(True)
 						else:
 							self.logger.info(f"Solved HCaptcha failed")
 							await self.send_webhooks(
@@ -526,7 +526,7 @@ class MyClient(discord.Client):
 		#Detect Image Captcha
 		if not self.checking['is_captcha'] and "⚠️" in message.content and "letter word" in message.content and message.attachments and (message.channel.id == self.owo['dm_channel_id'] or str(self.user) in message.content) and message.author.id == self.owo['id']:
 			self.checking['is_captcha'] = True
-			await self.worker(False)
+			self.selfbot['work_status'] = False
 			self.logger.warning(f"!!! Image Captcha appears !!!")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
@@ -545,7 +545,7 @@ class MyClient(discord.Client):
 		#Detect HCaptcha
 		if not self.checking['is_captcha'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
 			self.checking['is_captcha'] = True
-			await self.worker(False)
+			self.selfbot['work_status'] = False
 			self.logger.warning(f"!!! HCaptcha appears !!!")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
@@ -562,7 +562,7 @@ class MyClient(discord.Client):
 		if not self.checking['is_captcha'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
 			await self.notify()
 			self.checking['is_captcha'] = True
-			await self.worker(False)
+			self.selfbot['work_status'] = False
 			self.logger.warning(f"!!! Unknown Captcha appears !!!")
 			await self.send_webhooks(
 				content = self.selfbot['mentioner'],
@@ -582,7 +582,7 @@ class MyClient(discord.Client):
 					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
-				await self.worker(False)
+				self.selfbot['work_status'] = False
 			if "don't have enough cowoncy!" in message.content and not "you silly hooman" in message.content:
 				await self.notify()
 				self.logger.warning(f"!!! Out of cowoncy !!!")
@@ -592,7 +592,7 @@ class MyClient(discord.Client):
 					description = f"{self.arrow}{message.jump_url}",
 					color = discord.Colour.random()
 				)
-				await self.worker(False)
+				self.selfbot['work_status'] = False
 
 		#Check and use gem
 		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
@@ -676,7 +676,7 @@ class MyClient(discord.Client):
 			#Start
 			if message.content.lower() == "start" or message.content.lower() == f"<@{self.user.id}> start":
 				self.checking['is_captcha'] = False
-				await self.worker(True)
+				self.selfbot['work_status'] = True
 				self.logger.info(f"Start selfbot")
 				await self.send_webhooks(
 					title = f"🌤️ START SELFBOT 🌤️",
@@ -684,7 +684,7 @@ class MyClient(discord.Client):
 				)
 			#Pause
 			if message.content.lower() == "pause" or message.content.lower() == f"<@{self.user.id}> pause":
-				await self.worker(False)
+				self.selfbot['work_status'] = False
 				self.logger.info(f"Pause selfbot")
 				await self.send_webhooks(
 					title = f"🌙 PAUSE SELFBOT 🌙",
@@ -912,7 +912,7 @@ class MyClient(discord.Client):
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "**💀 OWO'S OFFLINE 💀**",
-						description = f"{self.arrow}**Wait for 1 Hour**",
+						description = f"{self.arrow}**Wait for 1 hour**",
 						color = discord.Colour.random()
 					)
 					self.owo['status'] = False
@@ -1112,7 +1112,7 @@ class MyClient(discord.Client):
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
 					self.logger.info(f"Lost huntbot message, retry after {str(datetime.timedelta(seconds = int(next_huntbot)))} seconds")
 				#Solve huntbot captcha
-				if self.discord['user_nickname'] in message.content and "Here is your password!" in huntbot_message.content:
+				if self.selfbot['work_status'] and self.discord['user_nickname'] in message.content and "Here is your password!" in huntbot_message.content:
 					await self.send_webhooks(
 						title = "🤖 HUNTBOT CAPTCHA APPEARS 🤖",
 						description = f"{self.arrow}{huntbot_message.jump_url}",
@@ -1194,7 +1194,7 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 						)
 					self.amount['huntbot'] += 1
-					if self.huntbot['upgrade']['mode']:
+					if self.selfbot['work_status'] and self.huntbot['upgrade']['mode']:
 						await self.discord['channel'].send(f"{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
 						self.logger.info(f"Sent {self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
 						self.amount['command'] += 1
@@ -1372,53 +1372,52 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def start_entertainment(self):
-		if self.selfbot['work_status'] and self.owo['status']:
-			if self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0:
-				self.checking['run_limit'] = False
-				self.checking['pup_limit'] = False
-				self.checking['piku_limit'] = False
-			#Run
-			if self.entertainment['run'] and not self.checking['run_limit']:
-				await self.discord['channel'].send(f"{self.owo['prefix']}run")
-				self.logger.info(f"Sent {self.owo['prefix']}run")
-				self.amount['command'] += 1
-				run_message = None
-				await asyncio.sleep(random.randint(3, 5))
-				async for message in self.discord['channel'].history(limit = 10):
-					if message.author.id == self.owo['id'] and "tired to run" in message.content:
-						run_message = message
-						break
-				if run_message:
-					self.logger.info(f"Run for today is over")
-					self.checking['run_limit'] = True
-			#Pup
-			if self.entertainment['pup'] and not self.checking['pup_limit']:
-				await self.discord['channel'].send(f"{self.owo['prefix']}pup")
-				self.logger.info(f"Sent {self.owo['prefix']}pup")
-				self.amount['command'] += 1
-				pup_message = None
-				await asyncio.sleep(random.randint(3, 5))
-				async for message in self.discord['channel'].history(limit = 10):
-					if message.author.id == self.owo['id'] and "no puppies" in message.content:
-						pup_message = message
-						break
-				if pup_message:
-					self.logger.info(f"Pup for today is over")
-					self.checking['pup_limit'] = True
-			#Piku
-			if self.entertainment['piku'] and not self.checking['piku_limit']:
-				await self.discord['channel'].send(f"{self.owo['prefix']}piku")
-				self.logger.info(f"Sent {self.owo['prefix']}piku")
-				self.amount['command'] += 1
-				piku_message = None
-				await asyncio.sleep(random.randint(3, 5))
-				async for message in self.discord['channel'].history(limit = 10):
-					if message.author.id == self.owo['id'] and "out of carrots" in message.content:
-						piku_message = message
-						break
-				if piku_message:
-					self.logger.info(f"Piku for today is over")
-					self.checking['piku_limit'] = True
+		if self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0:
+			self.checking['run_limit'] = False
+			self.checking['pup_limit'] = False
+			self.checking['piku_limit'] = False
+		#Run
+		if self.selfbot['work_status'] and self.entertainment['run'] and not self.checking['run_limit']:
+			await self.discord['channel'].send(f"{self.owo['prefix']}run")
+			self.logger.info(f"Sent {self.owo['prefix']}run")
+			self.amount['command'] += 1
+			run_message = None
+			await asyncio.sleep(random.randint(3, 5))
+			async for message in self.discord['channel'].history(limit = 10):
+				if message.author.id == self.owo['id'] and "tired to run" in message.content:
+					run_message = message
+					break
+			if run_message:
+				self.logger.info(f"Run for today is over")
+				self.checking['run_limit'] = True
+		#Pup
+		if self.selfbot['work_status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
+			await self.discord['channel'].send(f"{self.owo['prefix']}pup")
+			self.logger.info(f"Sent {self.owo['prefix']}pup")
+			self.amount['command'] += 1
+			pup_message = None
+			await asyncio.sleep(random.randint(3, 5))
+			async for message in self.discord['channel'].history(limit = 10):
+				if message.author.id == self.owo['id'] and "no puppies" in message.content:
+					pup_message = message
+					break
+			if pup_message:
+				self.logger.info(f"Pup for today is over")
+				self.checking['pup_limit'] = True
+		#Piku
+		if self.selfbot['work_status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
+			await self.discord['channel'].send(f"{self.owo['prefix']}piku")
+			self.logger.info(f"Sent {self.owo['prefix']}piku")
+			self.amount['command'] += 1
+			piku_message = None
+			await asyncio.sleep(random.randint(3, 5))
+			async for message in self.discord['channel'].history(limit = 10):
+				if message.author.id == self.owo['id'] and "out of carrots" in message.content:
+					piku_message = message
+					break
+			if piku_message:
+				self.logger.info(f"Piku for today is over")
+				self.checking['piku_limit'] = True
 
 print()
 print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.reset} {color.bold}By{color.reset} {color.blue}Phandat (realphandat){color.reset} {color.bold}And{color.reset} {color.pink}His Love (selena){color.reset}")
