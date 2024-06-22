@@ -336,7 +336,7 @@ class MyClient(discord.Client):
 					self.logger.info(f"Solved Image Captcha successfully")
 					await self.send_webhooks(
 						title = "🎉 CORRECT SOLUTION 🎉",
-						description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}**Continue To Work**",
+						description = f"{self.arrow}**Answer: {result['code']}**",
 						color = discord.Colour.random(),
 						thumnail = image
 					)
@@ -350,7 +350,7 @@ class MyClient(discord.Client):
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "🚫 INCORRECT SOLUTION 🚫",
-						description = f"{self.arrow}**Answer:** {result['code']}\n{self.arrow}Try To **Solve It Again**",
+						description = f"{self.arrow}**Answer: {result['code']}**",
 						color = discord.Colour.random(),
 						thumnail = image
 					)
@@ -488,7 +488,7 @@ class MyClient(discord.Client):
 							self.logger.info(f"Solved HCaptcha successfully")
 							await self.send_webhooks(
 								title = "🎉 CORRECT SOLUTION 🎉",
-								description = f"**{self.arrow}Continue To Work**",
+								description = f"**{self.arrow}Solved successfully**",
 								color = discord.Colour.random()
 							)
 							twocaptcha.report(result['captchaId'], True)
@@ -501,7 +501,7 @@ class MyClient(discord.Client):
 							await self.send_webhooks(
 								content = self.selfbot['mentioner'],
 								title = "🚫 INCORRECT SOLUTION 🚫",
-								description = f"{self.arrow}Try To **Solve It Again**",
+								description = f"{self.arrow}Solved failed**",
 								color = discord.Colour.random()
 							)
 							twocaptcha.report(result['captchaId'], False)
@@ -908,16 +908,16 @@ class MyClient(discord.Client):
 					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					self.logger.warning(f"!!! OwO doesn't respond !!!")
-					self.logger.info(f"Wait for 10 minutes")
+					self.logger.info(f"Wait for 1 hour")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "**💀 OWO'S OFFLINE 💀**",
-						description = f"{self.arrow}Wait For **10 Minutes**",
+						description = f"{self.arrow}**Wait for 1 Hour**",
 						color = discord.Colour.random()
 					)
 					self.owo['status'] = False
 					self.selfbot['work_status'] = False
-					await asyncio.sleep(600)
+					await asyncio.sleep(3600)
 					self.owo['status'] = True
 					self.selfbot['work_status'] = True
 
@@ -1156,7 +1156,7 @@ class MyClient(discord.Client):
 							self.logger.info(f"Submitted huntbot successfully")
 							await self.send_webhooks(
 								title = "🎉 CORRECT SOLUTION 🎉",
-								description = f"{self.arrow}**Answer:** {answer}",
+								description = f"{self.arrow}**Answer: {answer}**",
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
 							)
@@ -1165,7 +1165,7 @@ class MyClient(discord.Client):
 							self.logger.info(f"Submitted huntbot failed")
 							await self.send_webhooks(
 								title = "🚫 INCORRECT SOLUTION 🚫",
-								description = f"{self.arrow}**Answer:** {answer}",
+								description = f"{self.arrow}**Answer: {answer}**",
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
 							)
