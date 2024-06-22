@@ -75,7 +75,6 @@ class MyClient(discord.Client):
 			self.music_notification = data[token]['music_notification']
 
 		self.tasks = [
-			self.change_log,
 			self.check_owo_status,
 			self.check_2captcha_balance,
 			self.vote_top_gg,
@@ -110,7 +109,6 @@ class MyClient(discord.Client):
 		}
 
 		self.selfbot = {
-			"self.calendar": None,
 			"on_ready": True,
 			"work_status": True,
 			"turn_on_time": time.time(),
@@ -164,16 +162,14 @@ class MyClient(discord.Client):
 		}
 
 	async def log(self):
-		self.selfbot['calendar'] = time.strftime('%d %b %Y', time.localtime())
 		self.logger = logging.getLogger(str(self.user))
-		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)} {self.selfbot['calendar']}.log", encoding='utf-8', mode='a+')
+		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)} {time.strftime('%d %b %Y %H:%M:%S', time.localtime())}.log", encoding='utf-8', mode='a+')
 		file_log.setFormatter(FileFormatter())
 		print_log = logging.StreamHandler()
 		print_log.setFormatter(CustomFormatter())
 		self.logger.addHandler(file_log)
 		self.logger.addHandler(print_log)
 		self.logger.setLevel(logging.DEBUG)
-		self.logger.info(f"Created logs/{str(self.user)} {self.selfbot['calendar']}.log")
 
 	async def notify(self):
 		if self.music_notification:
@@ -896,11 +892,6 @@ class MyClient(discord.Client):
 					if "COMPONENT_VALIDATION_FAILED" in str(e):
 						self.discord['giveaway_entered'].append(after.id)
 					pass
-
-	@tasks.loop(minutes = 1)
-	async def change_log(self):
-		if time.strftime('%d %b %Y', time.localtime()) != self.selfbot['calendar']:
-			await self.log()
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
