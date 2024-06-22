@@ -676,7 +676,7 @@ class MyClient(discord.Client):
 			#Start
 			if message.content.lower() == "start" or message.content.lower() == f"<@{self.user.id}> start":
 				self.checking['is_captcha'] = False
-				self.worker(True)
+				await self.worker(True)
 				self.logger.info(f"Start selfbot")
 				await self.send_webhooks(
 					title = f"🌤️ START SELFBOT 🌤️",
@@ -684,7 +684,7 @@ class MyClient(discord.Client):
 				)
 			#Pause
 			if message.content.lower() == "pause" or message.content.lower() == f"<@{self.user.id}> pause":
-				self.worker(False)
+				await self.worker(False)
 				self.logger.info(f"Pause selfbot")
 				await self.send_webhooks(
 					title = f"🌙 PAUSE SELFBOT 🌙",
