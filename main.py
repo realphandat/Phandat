@@ -163,7 +163,7 @@ class MyClient(discord.Client):
 
 	async def log(self):
 		self.logger = logging.getLogger(str(self.user))
-		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)} {time.strftime('%d %b %Y %H:%M:%S', time.localtime())}.log", encoding='utf-8', mode='a+')
+		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)}.log", encoding='utf-8', mode='a+')
 		file_log.setFormatter(FileFormatter())
 		print_log = logging.StreamHandler()
 		print_log.setFormatter(CustomFormatter())
