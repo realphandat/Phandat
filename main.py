@@ -719,7 +719,11 @@ class MyClient(discord.Client):
 					)
 			#Give
 			if message.author.id != self.user.id and message.content.lower().startswith("give") or message.content.lower().startswith(f"<@{self.user.id}> give"):
-				amount = int(re.findall("[0-9]+", message.content)[0])
+				if message.content.lower().startswith(f"<@{self.user.id}>"):
+					amount = message.content.replace(f"<@{self.user.id}> ", "")
+				else:
+					amount = message.content
+				amount = int(re.findall("[0-9]+", amount)[0])
 				if message.channel.id == self.discord['channel_id']:
 					await message.channel.send(f"{self.owo['prefix']}give <@{message.author.id}> {amount}")
 					self.logger.info(f"Sent {self.owo['prefix']}give <@{message.author.id}> {amount}")
