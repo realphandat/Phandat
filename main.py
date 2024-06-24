@@ -171,14 +171,16 @@ class MyClient(discord.Client):
 		file_log.setFormatter(FileFormatter())
 		print_log = logging.StreamHandler()
 		print_log.setFormatter(CustomFormatter())
+		self.logger.addHandler(file_log)
+		self.logger.addHandler(print_log)
 		self.logger.setLevel(logging.DEBUG)
-		discord.utils.setup_logging(handler = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)}.log", encoding='utf-8', mode='a+'), formatter = FileFormatter(), level = logging.DEBUG, root = True)
-		discord.utils.setup_logging(handler = logging.StreamHandler(), formatter = CustomFormatter(), level = logging.DEBUG, root = True)
 
 	async def notify(self):
 		if self.music_notification:
-			try: os.startfile('music.mp3')
-			except: pass
+			try:
+				os.startfile('music.mp3')
+			except:
+				pass
 
 	async def on_ready(self):
 		if self.selfbot['on_ready']:
@@ -187,14 +189,18 @@ class MyClient(discord.Client):
 			self.owo['dm_channel_id'] = self.owo['name'].dm_channel.id
 			for i in self.webhook['mentioner_id']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{i}>"
-			if str(self.user.id) not in self.selfbot['mentioner']: self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{self.user.id}>"
+			if str(self.user.id) not in self.selfbot['mentioner']:
+				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{self.user.id}>"
 			await self.startup_channel()
 			await self.log()
 			webhook = f"{self.arrow}<#{self.discord['channel_id']}>"
-			if self.sleep: webhook = f"{self.arrow}Work for **__{self.selfbot['work_time']}__ seconds**\n" + webhook
-			if self.command['mode']: webhook = f"{self.arrow}**Send `help`** or **`<@{self.user.id}> help`**\n" + webhook
+			if self.sleep:
+				webhook = f"{self.arrow}Work for **__{self.selfbot['work_time']}__ seconds**\n" + webhook
+			if self.command['mode']:
+				webhook = f"{self.arrow}**Send `help`** or **`<@{self.user.id}> help`**\n" + webhook
 			cmd = f"Start at channel {self.discord['channel']}"
-			if self.sleep: cmd = cmd + f" for {self.selfbot['work_time']} seconds"
+			if self.sleep:
+				cmd = cmd + f" for {self.selfbot['work_time']} seconds"
 			self.logger.info(cmd)
 			await self.send_webhooks(
 				title = f"🚀 STARTED <t:{int(self.selfbot['turn_on_time'])}:R> 🚀",
@@ -208,18 +214,22 @@ class MyClient(discord.Client):
 		if mode:
 			self.selfbot['work_status'] = True
 			for task in self.tasks:
-				if task in skip: continue
+				if task in skip:
+					continue
 				try:
 					task.start()
 					await asyncio.sleep(10)
-				except RuntimeError: pass
+				except RuntimeError:
+					pass
 		else:
 			self.selfbot['work_status'] = False
 			for task in self.tasks:
 				if task in skip:
 					continue
-				try: task.cancel()
-				except RuntimeError: pass
+				try:
+					task.cancel()
+				except RuntimeError:
+					pass
 
 	async def send_webhooks(self, content = None, title = None, description = None, color = None, image = None, thumnail = None):
 		if self.webhook['mode']:
@@ -228,25 +238,30 @@ class MyClient(discord.Client):
 				if title:
 					embed = discord.Embed(title = title, description = description, color = color)
 					embed.set_author(name = self.user, icon_url = self.user.avatar)
-					if image: embed.set_image(url = image)
-					if thumnail: embed.set_thumbnail(url = thumnail)
+					if image:
+						embed.set_image(url = image)
+					if thumnail:
+						embed.set_thumbnail(url = thumnail)
 					embed.timestamp = datetime.datetime.now()
 					embed.set_footer(text = self.owo['name'], icon_url = self.owo['name'].avatar)
 					await webhook.send(content = content, embed = embed)
-				else: await webhook.send(content = content)
+				else:
+					await webhook.send(content = content)
 
 	async def startup_channel(self):
 		self.discord['channel_id'] = int(random.choice(self.channel_id))
 		self.discord['channel'] = self.get_channel(self.discord['channel_id'])
 		member = await self.discord['channel'].guild.fetch_member(self.user.id)
-		if member.nick: self.discord['user_nickname'] = str(member.nick)
-		elif not member.nick: self.discord['user_nickname'] = str(member.display_name)
+		if member.nick:
+			self.discord['user_nickname'] = str(member.nick)
+		elif not member.nick:
+			self.discord['user_nickname'] = str(member.display_name)
 		if self.get_owo_prefix['mode']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
 			self.logger.info(f"Sent {self.owo['prefix']}prefix")
 			self.amount['command'] += 1
 			owo_prefix_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "the current prefix is set to" in message.content:
 					owo_prefix_message = message
@@ -254,8 +269,10 @@ class MyClient(discord.Client):
 			if owo_prefix_message:
 				self.owo['prefix'] = re.findall(r"`(.*?)`", owo_prefix_message.content)[0]
 				self.logger.info(f"OwO prefix is currently {self.owo['prefix']}")
-			else: self.logger.error(f"Couldn't get OwO prefix ({self.owo['prefix']})")
-		else: self.owo['prefix'] = self.get_owo_prefix['default']
+			else:
+				self.logger.error(f"Couldn't get OwO prefix ({self.owo['prefix']})")
+		else:
+			self.owo['prefix'] = self.get_owo_prefix['default']
 
 	@tasks.loop(seconds = random.randint(600, 1200))
 	async def change_channel(self):
@@ -280,7 +297,7 @@ class MyClient(discord.Client):
 						"pollingInterval": 5
 			})
 			retry_times = 0
-			while retry_times << int(self.error_retry_times):
+			while retry_times < int(self.error_retry_times):
 				try:
 					balance = twocaptcha.balance()
 					self.logger.info(f"TwoCaptcha API ({api_key}) currently have {balance}$")
@@ -305,14 +322,16 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(3, 5))
-			if result: break
-		else: await self.notify()
+						await asyncio.sleep(random.randint(1, 2))
+			if result:
+				break
+		else:
+			await self.notify()
 		if result:
 			await self.owo['name'].send(result['code'])
 			self.logger.info(f"Sent {result['code']}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
 				if message.author.id == self.user.id:
 					self.checking['is_captcha'] = False
@@ -345,11 +364,12 @@ class MyClient(discord.Client):
 					if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
 						wrong_answer.append(result['code'].lower())
 						await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
-					else: await self.notify()
+					else:
+						await self.notify()
 
 	async def submit_oauth(self, res):
 		retry_times = 0
-		while retry_times << int(self.error_retry_times):
+		while retry_times < int(self.error_retry_times):
 			response = await res.json()
 			locauri = response.get("location")
 			headers = {
@@ -359,7 +379,8 @@ class MyClient(discord.Client):
 			}
 			session = ClientSession(cookie_jar=CookieJar())
 			async with session.get(locauri, headers=headers, allow_redirects=False) as res2:
-				if res2.status in (302, 307): return session
+				if res2.status in (302, 307):
+					return session
 				else:
 					self.logger.error(f"!!! Failed to add token to HCaptcha oauth !!! | {res2.status}")
 					await self.send_webhooks(
@@ -369,13 +390,14 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
-		else: await self.notify()
+			await asyncio.sleep(random.randint(1, 2))
+		else:
+			await self.notify()
 
 
 	async def get_oauth(self):
 		retry_times = 0
-		while retry_times << int(self.error_retry_times):
+		while retry_times < int(self.error_retry_times):
 			async with ClientSession() as session:
 				oauth = "https://discord.com/api/v9/oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds%20email%20guilds.members.read&client_id=408785106942164992"
 				payload = {"permissions": "0", "authorize": True}
@@ -409,8 +431,9 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
-		else: await self.notify()
+			await asyncio.sleep(random.randint(1, 2))
+		else:
+			await self.notify()
 
 	async def solve_hcaptcha(self):
 		headers = {
@@ -434,7 +457,7 @@ class MyClient(discord.Client):
 						"pollingInterval": 5
 			})
 			retry_times = 0
-			while retry_times << int(self.error_retry_times):
+			while retry_times < int(self.error_retry_times):
 				try:
 					balance = twocaptcha.balance()
 					self.logger.info(f"TwoCaptcha API ({api_key}) currently have {balance}$")
@@ -456,9 +479,11 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(3, 5))
-			if result: break
-		else: await self.notify()
+						await asyncio.sleep(random.randint(1, 2))
+			if result:
+				break
+		else:
+			await self.notify()
 		if result:
 			result_session = await self.get_oauth()
 			if result_session:
@@ -489,7 +514,8 @@ class MyClient(discord.Client):
 							self.checking['captcha_attempts'] += 1
 							if self.checking['captcha_attempts'] <= int(self.hcaptcha['attempts']):
 								await self.solve_hcaptcha()
-							else: await self.notify()
+							else:
+								await self.notify()
 
 	async def on_message(self, message):
 		#Someone mentions
@@ -519,7 +545,8 @@ class MyClient(discord.Client):
 				captcha = b64encode(await message.attachments[0].read()).decode("utf-8")
 				lenghth = message.content[message.content.find("letter word") - 2]
 				await self.solve_image_captcha(message.attachments[0], captcha, lenghth)
-			else: await self.notify()
+			else:
+				await self.notify()
 
 		#Detect HCaptcha
 		if not self.checking['is_captcha'] and "⚠️" in message.content and "https://owobot.com/captcha" in message.content and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
@@ -532,8 +559,10 @@ class MyClient(discord.Client):
 				description = f"{self.arrow}{message.jump_url}",
 				color = discord.Colour.random()
 			)
-			if self.hcaptcha['mode']: await self.solve_hcaptcha()
-			else: await self.notify()
+			if self.hcaptcha['mode']:
+				await self.solve_hcaptcha()
+			else:
+				await self.notify()
 
 		#Detect Unknown Captcha
 		if not self.checking['is_captcha'] and "Please complete your captcha to verify that you are human!" in message.content and not message.attachments and not "https://owobot.com/captcha" in message.content and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
@@ -574,16 +603,20 @@ class MyClient(discord.Client):
 		#Check and use gem
 		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
-			if not "gem1" in message.content and "gem1" in self.discord['inventory']: empty.append("gem1")
-			if not "gem3" in message.content and "gem3" in self.discord['inventory']: empty.append("gem3")
-			if not "gem4" in message.content and "gem4" in self.discord['inventory']: empty.append("gem4")
-			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star']: empty.append("star")
+			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
+				empty.append("gem1")
+			if not "gem3" in message.content and "gem3" in self.discord['inventory']:
+				empty.append("gem3")
+			if not "gem4" in message.content and "gem4" in self.discord['inventory']:
+				empty.append("gem4")
+			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star']:
+				empty.append("star")
 			if empty:
 				await self.discord['channel'].send(f"{self.owo['prefix']}inv")
 				self.logger.info(f"Sent {self.owo['prefix']}inv")
 				self.amount['command'] += 1
 				inv = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(1, 2))
 				async for message in self.discord['channel'].history(limit = 10):
 					if message.author.id == self.owo['id'] and f"{self.discord['user_nickname']}'s Inventory" in message.content:
 						inv = message
@@ -595,26 +628,27 @@ class MyClient(discord.Client):
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
 						self.logger.info(f"Sent {self.owo['prefix']}lb all")
 						self.amount['command'] += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(1, 2))
 					if self.gem['open_crate'] and 100 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
 						self.logger.info(f"Sent {self.owo['prefix']}wc all")
 						self.amount['command'] += 1
-						await asyncio.sleep(random.randint(3, 5))
-					if self.gem['open_flootbox'] and 49 in inv:
-						await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
-						self.logger.info(f"Sent {self.owo['prefix']}lb f")
-						self.amount['command'] += 1
-						await asyncio.sleep(random.randint(3, 5))
+						await asyncio.sleep(random.randint(1, 2))
 					gems_in_inv = None
-					if self.gem['sort'].lower() == "min": gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
-					else: gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse=True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+					if self.gem['sort'].lower() == "min":
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+					else:
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse=True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
 					if gems_in_inv != [[], [], [], []]:
 						use_gem = ""
-						if "gem1" in empty and gems_in_inv[0] != []: use_gem = use_gem + str(gems_in_inv[0][0]) + " "
-						if "gem3" in empty and gems_in_inv[1] != []: use_gem = use_gem + str(gems_in_inv[1][0]) + " "
-						if "gem4" in empty and gems_in_inv[2] != []: use_gem = use_gem + str(gems_in_inv[2][0]) + " "
-						if "star" in empty and gems_in_inv[3] != []: use_gem = use_gem + str(gems_in_inv[3][0]) + " "
+						if "gem1" in empty and gems_in_inv[0] != []:
+							use_gem = use_gem + str(gems_in_inv[0][0]) + " "
+						if "gem3" in empty and gems_in_inv[1] != []:
+							use_gem = use_gem + str(gems_in_inv[1][0]) + " "
+						if "gem4" in empty and gems_in_inv[2] != []:
+							use_gem = use_gem + str(gems_in_inv[2][0]) + " "
+						if "star" in empty and gems_in_inv[3] != []:
+							use_gem = use_gem + str(gems_in_inv[3][0]) + " "
 						await self.discord['channel'].send(f"{self.owo['prefix']}use {use_gem}")
 						self.logger.info(f"Sent {self.owo['prefix']}use {use_gem}")
 						self.amount['command'] += 1
@@ -623,14 +657,16 @@ class MyClient(discord.Client):
 					else:
 						self.logger.info(f"Inventory doesn't have enough gems")
 						self.checking['no_gem'] = True
-				else: self.logger.error(f"Couldn't get inventory")
+				else:
+					self.logger.error(f"Couldn't get inventory")
 
 		#Commands
 		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id == self.user.id):
 			command_message = message.content
 			if message.content.lower().startswith(f"<@{self.user.id}>"):
 				command_message = message.content.replace(f"<@{self.user.id}>", "", 1)
-				if command_message.startswith(" "): command_message = command_message[1:]
+				if command_message.startswith(" "):
+					command_message = command_message[1:]
 			#Help
 			if command_message.lower() == "help":
 				self.logger.info(f"Sent command menu via webhook")
@@ -689,7 +725,8 @@ class MyClient(discord.Client):
 			#Give
 			if message.author.id != self.user.id and command_message.lower().startswith("give"):
 				amount = int(re.findall("[0-9]+", command_message)[0])
-				await asyncio.sleep(self.rank * 10)
+				if not message.content.lower().startswith(f"<@{self.user.id}>"):
+					await asyncio.sleep(self.rank * 5)
 				if message.channel.id == self.discord['channel_id']:
 					await message.channel.send(f"{self.owo['prefix']}give <@{message.author.id}> {amount}")
 					self.logger.info(f"Sent {self.owo['prefix']}give <@{message.author.id}> {amount}")
@@ -697,12 +734,14 @@ class MyClient(discord.Client):
 					await message.channel.send(f"owogive <@{message.author.id}> {amount}")
 					self.logger.info(f"Sent owogive <@{message.author.id}> {amount}")
 				self.amount['command'] += 1
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(1, 2))
 				async for m in message.channel.history(limit = 10):
 					channel = self.get_channel(message.channel.id)
 					member = await channel.guild.fetch_member(self.user.id)
-					if member.nick: nickname = str(member.nick)
-					elif not member.nick: nickname = str(member.display_name)
+					if member.nick:
+						nickname = str(member.nick)
+					elif not member.nick:
+						nickname = str(member.display_name)
 					if m.author.id == self.owo['id'] and m.embeds:
 						if nickname in m.embeds[0].author.name and "you are about to give cowoncy" in m.embeds[0].author.name:
 							button = m.components[0].children[0]
@@ -718,7 +757,8 @@ class MyClient(discord.Client):
 					elif m.author.id == self.owo['id'] and nickname in m.content and "ongoing cowoncy transaction" in m.content:
 						self.logger.info(f"Ongoing cowoncy transaction")
 						break
-				else: self.logger.error(f"Couldn't get send cowoncy message")
+				else:
+					self.logger.error(f"Couldn't get send cowoncy message")
 
 		#Check the caught animals
 		if self.selfbot['work_status'] and self.owo['status'] and self.discord['user_nickname'] in message.content and "🌱" in message.content and "gained" in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
@@ -785,7 +825,7 @@ class MyClient(discord.Client):
 					color = discord.Colour.random()
 				)
 				choice = random.choice([1, 2])
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(1, 2))
 				if choice == 1:
 					if message.channel.id == self.discord['channel_id']:
 						await message.channel.send(f"{self.owo['prefix']}ab")
@@ -859,20 +899,23 @@ class MyClient(discord.Client):
 					)
 					self.logger.info(f"Joined A New Giveaway")
 				except Exception as e:
-					if "COMPONENT_VALIDATION_FAILED" in str(e): self.discord['giveaway_entered'].append(after.id)
+					if "COMPONENT_VALIDATION_FAILED" in str(e):
+						self.discord['giveaway_entered'].append(after.id)
 					pass
 
 	@tasks.loop(minutes = 1)
 	async def check_owo_status(self):
 		if self.selfbot['work_status'] and self.owo['status'] and self.check_owo_status.current_loop != 0:
 			async for message in self.discord['channel'].history(limit = 10):
-				if message.author.id == self.owo['id']: break
+				if message.author.id == self.owo['id']:
+					break
 			else:
 				command = random.choice(['h', 'b'])
 				await self.discord['channel'].send(f"{self.owo['prefix']}{command}")
 				self.logger.info(f"Sent {self.owo['prefix']}{command}")
 				self.amount['command'] += 1
-				try: await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
+				try:
+					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					self.logger.warning(f"!!! OwO doesn't respond !!!")
 					self.logger.info(f"Wait for 1 hour")
@@ -901,19 +944,22 @@ class MyClient(discord.Client):
 								"pollingInterval": 5
 					})
 					retry_times = 0
-					while retry_times << int(self.error_retry_times):
+					while retry_times < int(self.error_retry_times):
 						try:
 							balance = twocaptcha.balance()
 							if balance >= self.twocaptcha_balance['amount']:
 								enoguh_balance = True
 								break
-							else: break
+							else:
+								break
 						except Exception as e:
-							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY": break
+							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(3, 5))
-					if enoguh_balance: break
+								await asyncio.sleep(random.randint(1, 2))
+					if enoguh_balance:
+						break
 				else:
 					await self.notify()
 					self.logger.warning(f"!!! Image Captcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ !!!")
@@ -935,19 +981,22 @@ class MyClient(discord.Client):
 								"pollingInterval": 5
 					})
 					retry_times = 0
-					while retry_times << int(self.error_retry_times):
+					while retry_times < int(self.error_retry_times):
 						try:
 							balance = twocaptcha.balance()
 							if balance >= self.twocaptcha_balance['amount']:
 								enoguh_balance = True
 								break
-							else: break
+							else:
+								break
 						except Exception as e:
-							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY": break
+							if str(e) == "ERROR_KEY_DOES_NOT_EXIST" or str(e) == "ERROR_WRONG_USER_KEY":
+								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(3, 5))
-					if enoguh_balance: break
+								await asyncio.sleep(random.randint(1, 2))
+					if enoguh_balance:
+						break
 				else:
 					await self.notify()
 					self.logger.warning(f"!!! HCaptcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ !!!")
@@ -962,7 +1011,7 @@ class MyClient(discord.Client):
 
 	async def oauth_top_gg(self, oauth, oauth_req):
 		retry_times = 0
-		while retry_times << int(self.error_retry_times):
+		while retry_times < int(self.error_retry_times):
 			async with ClientSession() as session:
 				payload = {"permissions": "0", "authorize": True}
 				headers = {
@@ -996,8 +1045,9 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(3, 5))
-		else: await self.notify()
+			await asyncio.sleep(random.randint(1, 2))
+		else:
+			await self.notify()
 
 	@tasks.loop(hours = 12)
 	async def vote_top_gg(self):
@@ -1048,7 +1098,8 @@ class MyClient(discord.Client):
 					await self.discord['channel'].send(quote)
 					self.logger.info(f"Sent {quote[0:30]}...")
 					self.amount['command'] += 1
-			except: pass
+			except:
+				pass
 
 	@tasks.loop(minutes = 1)
 	async def claim_submit_huntbot(self):
@@ -1057,7 +1108,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}hb 1d")
 			self.amount['command'] += 1
 			huntbot_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and ("Please include your password" in message.content or "Here is your password!" in message.content or "BACK IN" in message.content or "BACK WITH" in message.content):
 					huntbot_message = message
@@ -1095,14 +1146,15 @@ class MyClient(discord.Client):
 							for x in range(large_array.shape[1] - small_w + 1):
 								segment = large_array[y:y + small_h, x:x + small_w]
 								if np.array_equal(segment[mask], small_array[mask]):
-									if not any((m[0] - small_w < x < m[0] + small_w) and (m[1] - small_h < y < m[1] + small_h) for m in matches): matches.append((x, y, letter))
+									if not any((m[0] - small_w < x < m[0] + small_w) and (m[1] - small_h < y < m[1] + small_h) for m in matches):
+										matches.append((x, y, letter))
 					matches = sorted(matches, key=lambda tup: tup[0])
 					answer = "".join([i[2] for i in matches])
 					await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d {answer}")
 					self.logger.info(f"Sent {self.owo['prefix']}hb 1d {answer}")
 					self.amount['command'] += 1
 					huntbot_verification_message = None
-					await asyncio.sleep(random.randint(3, 5))
+					await asyncio.sleep(random.randint(1, 2))
 					async for message in self.discord['channel'].history(limit = 10):
 						if message.author.id == self.owo['id'] and ("YOU SPENT" in message.content or "Wrong password" in message.content):
 							huntbot_verification_message = message
@@ -1126,12 +1178,15 @@ class MyClient(discord.Client):
 								color = discord.Colour.random(),
 								thumnail = huntbot_message.attachments[0]
 							)
-					else: self.logger.error(f"Couldn't get huntbot verification message")
+					else:
+						self.logger.error(f"Couldn't get huntbot verification message")
 				#Sumbit huntbot
 				elif "STILL HUNTING" in huntbot_message.content:
 					next_huntbot = re.findall("[0-9]+", re.findall("`(.*?)`", huntbot_message.content)[0])
-					if len(next_huntbot) == 1: next_huntbot = int(int(next_huntbot[0]) * 60)
-					else: next_huntbot = int(int(next_huntbot[0]) * 3600 + int(next_huntbot[1]) * 60)
+					if len(next_huntbot) == 1:
+						next_huntbot = int(int(next_huntbot[0]) * 60)
+					else:
+						next_huntbot = int(int(next_huntbot[0]) * 3600 + int(next_huntbot[1]) * 60)
 					self.selfbot['huntbot_time'] = next_huntbot + time.time()
 					self.logger.info(f"Huntbot'll be back in {str(datetime.timedelta(seconds = int(next_huntbot)))} seconds")
 					await self.send_webhooks(
@@ -1152,7 +1207,8 @@ class MyClient(discord.Client):
 						await self.discord['channel'].send(f"{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
 						self.logger.info(f"Sent {self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
 						self.amount['command'] += 1
-			else: self.logger.error(f"Couldn't get huntbot message")
+			else:
+				self.logger.error(f"Couldn't get huntbot message")
 
 	@tasks.loop(seconds = random.randint(600, 1200))
 	async def check_distorted_animal(self):
@@ -1161,7 +1217,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}dt")
 			self.amount['command'] += 1
 			glitch_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and ("are available" in message.content or "not available" in message.content):
 					glitch_message = message
@@ -1169,13 +1225,18 @@ class MyClient(discord.Client):
 			if glitch_message:
 				if "are available" in glitch_message.content:
 					glitch_end = [i for i in re.findall("[0-9]+", glitch_message.content) if int(i) <= 60]
-					if len(glitch_end) == 1: glitch_end = int(glitch_end[0])
-					elif len(glitch_end) == 2: glitch_end = int(int(glitch_end[0]) * 60 + int(glitch_end[1]))
-					elif len(glitch_end) == 3: glitch_end = int(int(glitch_end[0]) * 3600 + int(glitch_end[1]) * 60 + int(glitch_end[2]))
+					if len(glitch_end) == 1:
+						glitch_end = int(glitch_end[0])
+					elif len(glitch_end) == 2:
+						glitch_end = int(int(glitch_end[0]) * 60 + int(glitch_end[1]))
+					elif len(glitch_end) == 3:
+						glitch_end = int(int(glitch_end[0]) * 3600 + int(glitch_end[1]) * 60 + int(glitch_end[2]))
 					self.selfbot['glitch_time'] = glitch_end + time.time()
 					self.logger.info(f"Distorted animals are available for {str(datetime.timedelta(seconds = int(glitch_end)))} seconds")
-				elif "not available" in glitch_message.content: self.logger.info(f"Distorted animals aren't available")
-			else: self.logger.error(f"Couldn't get distorted animals message")
+				elif "not available" in glitch_message.content:
+					self.logger.info(f"Distorted animals aren't available")
+			else:
+				self.logger.error(f"Couldn't get distorted animals message")
 		self.current_loop['check_distorted_animal'] += 1
 
 	@tasks.loop(seconds = random.randint(1200, 3600))
@@ -1192,7 +1253,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}daily")
 			self.amount['command'] += 1
 			daily_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and self.discord['user_nickname'] in message.content and ("next daily" in message.content or "Nu" in message.content):
 					daily_message = message
@@ -1203,8 +1264,10 @@ class MyClient(discord.Client):
 					next_daily = int(int(next_daily[0]) * 3600 + int(next_daily[1]) * 60 + int(next_daily[2]))
 					self.selfbot['daily_time'] = next_daily + time.time()
 					self.logger.info(f"Claim daily after {str(datetime.timedelta(seconds = int(next_daily)))} seconds")
-				elif "Your next daily" in daily_message.content: self.logger.info(f"Claimed daily")
-			else: self.logger.error(f"Couldn't get daily message")
+				elif "Your next daily" in daily_message.content:
+					self.logger.info(f"Claimed daily")
+			else:
+				self.logger.error(f"Couldn't get daily message")
 		self.current_loop['daily'] += 1
 
 	@tasks.loop(minutes = 1)
@@ -1234,29 +1297,32 @@ class MyClient(discord.Client):
 	async def play_gamble(self):
 		#Slot
 		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['slot'] >= int(self.gamble['slot']['max']): self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
+			if self.current_gamble_bet['slot'] >= int(self.gamble['slot']['max']):
+				self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
 			self.logger.info(f"Sent {self.owo['prefix']}s {self.current_gamble_bet['slot']}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 		#Coinflip
 		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']): self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
+			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']):
+				self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 			side = random.choice(['h', 't'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
 			self.logger.info(f"Sent {self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
 			self.amount['command'] += 1
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
-			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']): self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
+			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']):
+				self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			self.logger.info(f"Sent {self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			self.amount['command'] += 1
 			self.checking['is_blackjack'] = False
 			while not self.checking['is_blackjack']:
 				blackjack_message = None
-				await asyncio.sleep(random.randint(3, 5))
+				await asyncio.sleep(random.randint(1, 2))
 				async for message in self.discord['channel'].history(limit = 10):
 					if message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'] and message.embeds:
 						if str(self.user) in message.embeds[0].author.name and "play blackjack" in message.embeds[0].author.name:
@@ -1268,13 +1334,18 @@ class MyClient(discord.Client):
 						if my_blackjack_point <= 17:
 							try:
 								if blackjack_message.reactions[0].emoji == "👊":
-									if blackjack_message.reactions[0].me: await blackjack_message.remove_reaction('👊', self.user)
-									else: await blackjack_message.add_reaction('👊')
+									if blackjack_message.reactions[0].me:
+										await blackjack_message.remove_reaction('👊', self.user)
+									else:
+										await blackjack_message.add_reaction('👊')
 								else:
-									if blackjack_message.reactions[1].me: await blackjack_message.remove_reaction('👊', self.user)
-									else: await blackjack_message.add_reaction('👊')
+									if blackjack_message.reactions[1].me:
+										await blackjack_message.remove_reaction('👊', self.user)
+									else:
+										await blackjack_message.add_reaction('👊')
 								self.logger.info(f"Blackjack turn has {my_blackjack_point} points (Hit)")
-							except IndexError: pass
+							except IndexError:
+								pass
 						else:
 							await blackjack_message.add_reaction('🛑')
 							self.logger.info(f"Blackjack turn has {my_blackjack_point} points (Stand)")
@@ -1291,7 +1362,8 @@ class MyClient(discord.Client):
 					elif "You tied" in blackjack_message.embeds[0].footer.text or "You both bust" in blackjack_message.embeds[0].footer.text:
 						self.logger.info(f"Blackjack turn draw {self.current_gamble_bet['blackjack']} cowoncy")
 						self.checking['is_blackjack'] = True
-				else: break
+				else:
+					break
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def start_pray_curse(self):
@@ -1319,7 +1391,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}run")
 			self.amount['command'] += 1
 			run_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "tired to run" in message.content:
 					run_message = message
@@ -1333,7 +1405,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}pup")
 			self.amount['command'] += 1
 			pup_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "no puppies" in message.content:
 					pup_message = message
@@ -1347,7 +1419,7 @@ class MyClient(discord.Client):
 			self.logger.info(f"Sent {self.owo['prefix']}piku")
 			self.amount['command'] += 1
 			piku_message = None
-			await asyncio.sleep(random.randint(3, 5))
+			await asyncio.sleep(random.randint(1, 2))
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id'] and "out of carrots" in message.content:
 					piku_message = message
