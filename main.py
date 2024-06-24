@@ -98,6 +98,7 @@ class MyClient(discord.Client):
 			"id": 408785106942164992,
 			"dm_channel_id": None,
 			"prefix": "owo",
+			"special_pet": True,
 			"status": True
 		}
 		
@@ -124,11 +125,11 @@ class MyClient(discord.Client):
 		self.checking = {
 			"captcha_attempts": 0,
 			"is_captcha": False,
-			"no_gem": False,
 			"is_blackjack": False,
 			"run_limit": False,
 			"pup_limit": False,
-			"piku_limit": False
+			"piku_limit": False,
+			"enough_gem": True,
 		}
 		
 		self.current_loop = {
@@ -519,60 +520,6 @@ class MyClient(discord.Client):
 							else:
 								await self.notify()
 
-	async def use_gem(self, empty = ["gem1", "gem3", "gem4", "star"]):
-		await self.discord['channel'].send(f"{self.owo['prefix']}inv")
-		self.logger.info(f"Sent {self.owo['prefix']}inv")
-		self.amount['command'] += 1
-		inv = None
-		await asyncio.sleep(random.randint(2, 3))
-		async for message in self.discord['channel'].history(limit = 10):
-			if message.author.id == self.owo['id'] and f"{self.discord['user_nickname']}'s Inventory" in message.content:
-				inv = message
-				self.discord['inventory'] = inv.content
-				break
-		if inv:
-			inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
-			if self.gem['open_box'] and 50 in inv:
-				await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
-				self.logger.info(f"Sent {self.owo['prefix']}lb all")
-				self.amount['command'] += 1
-				await asyncio.sleep(random.randint(2, 3))
-			if self.gem['open_crate'] and 100 in inv:
-				await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
-				self.logger.info(f"Sent {self.owo['prefix']}wc all")
-				self.amount['command'] += 1
-				await asyncio.sleep(random.randint(2, 3))
-			if self.gem['open_flootbox'] and 49 in inv:
-				await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
-				self.logger.info(f"Sent {self.owo['prefix']}lb f")
-				self.amount['command'] += 1
-				await asyncio.sleep(random.randint(2, 3))
-			gems_in_inv = None
-			if self.gem['sort'].lower() == "min":
-				gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
-			else:
-				gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse = True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
-			if gems_in_inv != [[], [], [], []]:
-				use_gem = ""
-				if "gem1" in empty and gems_in_inv[0] != []:
-					use_gem = use_gem + str(gems_in_inv[0][0]) + " "
-				if "gem3" in empty and gems_in_inv[1] != []:
-					use_gem = use_gem + str(gems_in_inv[1][0]) + " "
-				if "gem4" in empty and gems_in_inv[2] != []:
-					use_gem = use_gem + str(gems_in_inv[2][0]) + " "
-				if "star" in empty and gems_in_inv[3] != []:
-					use_gem = use_gem + str(gems_in_inv[3][0]) + " "
-				await self.discord['channel'].send(f"{self.owo['prefix']}use {use_gem}")
-				self.logger.info(f"Sent {self.owo['prefix']}use {use_gem}")
-				self.amount['command'] += 1
-				self.amount['gem'] += 1
-				self.checking['no_gem'] = False
-			else:
-				self.logger.info(f"Inventory doesn't have enough gems")
-				self.checking['no_gem'] = True
-		else:
-			self.logger.error(f"Couldn't get inventory")
-
 	async def on_message(self, message):
 		#Someone mentions
 		if self.someone_mentions and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
@@ -657,7 +604,7 @@ class MyClient(discord.Client):
 				self.selfbot['work_status'] = False
 
 		#Check gem
-		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (not self.checking['no_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (self.checking['enough_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
@@ -665,10 +612,65 @@ class MyClient(discord.Client):
 				empty.append("gem3")
 			if not "gem4" in message.content and "gem4" in self.discord['inventory']:
 				empty.append("gem4")
-			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star']:
+			if not "star" in message.content and "star" in self.discord['inventory'] and self.gem['star'] and self.owo['special_pet']:
 				empty.append("star")
 			if empty:
-				await self.use_gem(empty)
+				await self.discord['channel'].send(f"{self.owo['prefix']}inv")
+				self.logger.info(f"Sent {self.owo['prefix']}inv")
+				self.amount['command'] += 1
+				inv = None
+				await asyncio.sleep(random.randint(2, 3))
+				async for message in self.discord['channel'].history(limit = 10):
+					if message.author.id == self.owo['id'] and f"{self.discord['user_nickname']}'s Inventory" in message.content:
+						inv = message
+						self.discord['inventory'] = inv.content
+						break
+				if inv:
+					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
+					if self.gem['open_box'] and 50 in inv:
+						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
+						self.logger.info(f"Sent {self.owo['prefix']}lb all")
+						self.amount['command'] += 1
+						await asyncio.sleep(random.randint(2, 3))
+					if self.gem['open_crate'] and 100 in inv:
+						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
+						self.logger.info(f"Sent {self.owo['prefix']}wc all")
+						self.amount['command'] += 1
+						await asyncio.sleep(random.randint(2, 3))
+					if self.gem['open_flootbox'] and 49 in inv:
+						await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
+						self.logger.info(f"Sent {self.owo['prefix']}lb f")
+						self.amount['command'] += 1
+						await asyncio.sleep(random.randint(2, 3))
+					gems_in_inv = None
+					if self.gem['sort'].lower() == "min":
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+					else:
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse = True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+					if gems_in_inv != [[], [], [], []]:
+						use_gem = ""
+						if "gem1" in empty and gems_in_inv[0] != []:
+							use_gem = use_gem + str(gems_in_inv[0][0]) + " "
+						if "gem3" in empty and gems_in_inv[1] != []:
+							use_gem = use_gem + str(gems_in_inv[1][0]) + " "
+						if "gem4" in empty and gems_in_inv[2] != []:
+							use_gem = use_gem + str(gems_in_inv[2][0]) + " "
+						if "star" in empty and gems_in_inv[3] != []:
+							use_gem = use_gem + str(gems_in_inv[3][0]) + " "
+						await self.discord['channel'].send(f"{self.owo['prefix']}use {use_gem}")
+						self.logger.info(f"Sent {self.owo['prefix']}use {use_gem}")
+						self.amount['command'] += 1
+						self.amount['gem'] += 1
+						self.checking['enough_gem'] = True
+						await asyncio.sleep(random.randint(2, 3))
+						async for message in self.discord['channel'].history(limit = 10):
+							if message.author.id == self.owo['id'] and self.discord['user_nickname'] in message.content and "already have an active Special gem or you do not own this gem" in message.content:
+								self.owo['special_pet'] = False
+					else:
+						self.logger.info(f"Inventory doesn't have enough gems")
+						self.checking['enough_gem'] = False
+				else:
+					self.logger.error(f"Couldn't get inventory")
 
 		#Commands
 		if self.command['mode'] and (message.author.id in self.command['owner_id'] or message.author.id == self.user.id):
@@ -699,7 +701,7 @@ class MyClient(discord.Client):
 				self.selfbot['work_status'] = False
 				self.logger.info(f"Pause selfbot")
 				await self.send_webhooks(
-					title = f"🌙 PAUSE SELFBOT 🌙",
+					title = f"🌑 PAUSE SELFBOT 🌑",
 					color = discord.Colour.random()
 				)
 			#Stat
@@ -717,11 +719,11 @@ class MyClient(discord.Client):
 					description = "**Send setting via webhook including __token__, __TwoCaptcha API__, __webhook url__, ...**",
 					color = discord.Colour.random()
 				)
-				try: await self.wait_for("message", check=lambda m: m.content.lower() in ['yes', 'y'] and m.author.id in self.command['owner_id'], timeout = 10)
+				try: await self.wait_for("message", check=lambda message: message.content.lower() in ['yes', 'y'] and message.author.id in self.command['owner_id'], timeout = 10)
 				except asyncio.TimeoutError: pass
 				else:
 					self.logger.info(f"Sent setting via webhook")
-					config = json.load(open("config.json"))
+					config = json.load(open("config.json", "r"))
 					await self.send_webhooks(
 						title = f"💾 SETTING 💾",
 						description = config[self.token],
@@ -745,26 +747,26 @@ class MyClient(discord.Client):
 					self.logger.info(f"Sent owogive <@{message.author.id}> {amount}")
 				self.amount['command'] += 1
 				await asyncio.sleep(random.randint(2, 3))
-				async for m in message.channel.history(limit = 10):
+				async for message in message.channel.history(limit = 10):
 					channel = self.get_channel(message.channel.id)
 					member = await channel.guild.fetch_member(self.user.id)
 					if member.nick:
 						nickname = str(member.nick)
 					elif not member.nick:
 						nickname = str(member.display_name)
-					if m.author.id == self.owo['id'] and m.embeds:
-						if nickname in m.embeds[0].author.name and "you are about to give cowoncy" in m.embeds[0].author.name:
-							button = m.components[0].children[0]
+					if message.author.id == self.owo['id'] and message.embeds:
+						if nickname in message.embeds[0].author.name and "you are about to give cowoncy" in message.embeds[0].author.name:
+							button = message.components[0].children[0]
 							await button.click()
 							self.logger.info(f"Gived cowoncy successfully")
 							break
-					elif m.author.id == self.owo['id'] and nickname in m.content and "you can only send" in m.content:
+					elif message.author.id == self.owo['id'] and nickname in message.content and "you can only send" in message.content:
 						self.logger.info(f"Amount of giving cowoncy for today is over")
 						break
-					elif m.author.id == self.owo['id'] and nickname in m.content and "you silly hooman" in m.content:
+					elif message.author.id == self.owo['id'] and nickname in message.content and "you silly hooman" in message.content:
 						self.logger.info(f"Don't have enough cowoncy to give")
 						break
-					elif m.author.id == self.owo['id'] and nickname in m.content and "ongoing cowoncy transaction" in m.content:
+					elif message.author.id == self.owo['id'] and nickname in message.content and "ongoing cowoncy transaction" in message.content:
 						self.logger.info(f"Ongoing cowoncy transaction")
 						break
 				else:
@@ -773,42 +775,37 @@ class MyClient(discord.Client):
 			if command_message.lower().startswith("use_gem "):
 				part = command_message.split(" ")
 				if part[1].lower() == "on" or part[1].lower() == "off":
-					config = json.load(open("config.json"))
-					self.gem['mode'] = part[1].lower() == "on"
-					config[self.token]['gem']['mode'] = part[1].lower() == "on"
-					json.dump(config, open("config.json", "w"), indent = 5)
-					self.logger.info(f"Changed config successfully")
+					setting = part[1].lower() == "on"
+					self.checking['enough_gem'] = setting
+					self.gem['mode'] = setting
+					self.logger.info(f"Use gem: {part[1].lower()}")
 					await self.send_webhooks(
 						title = f"🛸 CHANGED CONFIG 🛸",
-						description = f"**{self.arrow}Send `setting` or `<@{self.user.id}> setting` to see the change**",
+						description = f"**{self.arrow}Use gem: {part[1].lower()}**",
 						color = discord.Colour.random()
 					)
 			#Sort gem
 			if command_message.lower().startswith("sort_gem "):
 				part = command_message.split(" ")
 				if part[1].lower() == "min" or part[1].lower() == "max":
-					config = json.load(open("config.json"))
 					self.gem['sort'] = part[1].lower()
-					config[self.token]['gem']['sort'] = part[1].lower()
-					json.dump(config, open("config.json", "w"), indent = 5)
-					self.logger.info(f"Changed config successfully")
+					self.logger.info(f"Sort gem: {part[1].lower()}")
 					await self.send_webhooks(
 						title = f"🛸 CHANGED CONFIG 🛸",
-						description = f"**{self.arrow}Send `setting` or `<@{self.user.id}> setting` to see the change**",
+						description = f"**{self.arrow}Sort gem: {part[1].lower()}**",
 						color = discord.Colour.random()
 					)
 			#Star gem
 			if command_message.lower().startswith("star_gem "):
 				part = command_message.split(" ")
 				if part[1].lower() == "on" or part[1].lower() == "off":
-					config = json.load(open("config.json"))
-					self.gem['star'] = part[1].lower() == "on"
-					config[self.token]['gem']['star'] = part[1].lower() == "on"
-					json.dump(config, open("config.json", "w"), indent = 5)
-					self.logger.info(f"Changed config successfully")
+					setting = part[1].lower() == "on"
+					self.owo['special_pet'] = setting
+					self.gem['star'] = setting
+					self.logger.info(f"Star gem: {part[1].lower()}")
 					await self.send_webhooks(
 						title = f"🛸 CHANGED CONFIG 🛸",
-						description = f"**{self.arrow}Send `setting` or `<@{self.user.id}> setting` to see the change**",
+						description = f"**{self.arrow}Star gem: {part[1].lower()}**",
 						color = discord.Colour.random()
 					)
 
@@ -967,7 +964,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Sent {self.owo['prefix']}{command}")
 				self.amount['command'] += 1
 				try:
-					await self.wait_for("message", check=lambda m: m.channel.id == self.discord['channel_id'] and m.author.id == self.owo['id'], timeout = 10)
+					await self.wait_for("message", check=lambda m: message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					self.logger.warning(f"!!! OwO doesn't respond !!!")
 					self.logger.info(f"Wait for 1 hour")
@@ -1485,7 +1482,7 @@ print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.re
 print(f"{color.bold}Created With{color.reset} {color.yellow}Great Contributions{color.reset} {color.bold}From{color.reset} {color.green}aduck (ahihiyou20){color.reset} {color.bold}And{color.reset} {color.green}Cex (cesxos){color.reset} {color.bold}And{color.reset} {color.green}Nouzanlong - 努赞龙 (tcb_nouzanlong){color.reset}")
 print()
 
-config = json.load(open("config.json"))
+config = json.load(open("config.json", "r"))
 threads = []
 for index, value in enumerate(config):
 	Client = MyClient(index, value)
