@@ -1,19 +1,16 @@
 {
-	"MTExMDE0NTMyMTE3NNTk1MA.GNR5wvwoG_Y7vDxXAFwvOJPX8tH3peLIP-g4": {
+	"MTExMDE0NTMyMTE3NjE0NT1MA.Gb6a-t.dJFttd0d8wkbvxJ_Gs": {
 		"get_owo_prefix": {
 			"mode": false,
-			"default": "owo"
+			"default": "o"
 		},
 
 		"channel_id": [
-			120480060847007795,
-			113781422214410636,
-			120263257530315550,
-			114211619960384533,
-			117507619458442566,
-			104896382146828840,
-			118518258434015794,
-			119537925663933837
+			78519121930785905,
+			78519289627817562,
+			78519850798782736,
+			78729831801854316,
+			79086977542874724
 		],
 
 		"someone_mentions": true,
@@ -21,13 +18,13 @@
 		"image_captcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bbd47b9d867c49087702"]
+			"twocaptcha": ["7d32d9f5ba5e8fa0d83453353yhfghfgh"]
 		},
 
 		"hcaptcha": {
 			"mode": true,
 			"attempts": 3,
-			"twocaptcha": ["618458dff81bd477b9d867c49087702"]
+			"twocaptcha": ["7d32d9f5ba5e8fa0d83453353yhfghfgh"]
 		},
 
 		"twocaptcha_balance": {
@@ -57,7 +54,8 @@
 			"sort": "max",
 			"star": false,
 			"open_box": false,
-			"open_crate": false
+			"open_crate": false,
+			"open_flootbox": false
 		},
 
 		"distorted_animals": true,
@@ -107,19 +105,21 @@
 
 		"command": {
 			"mode": true,
-			"owner_id": [119170368637290086, 119174403463737456]
+			"owner_id": [119170368163790086, 119174403463737456]
 		},
 
 		"webhook": {
 			"mode": true,
-			"mentioner_id": [119170368137290086, 119174440463737456],
-			"url": "https://discord.com/api/webhooks/1247141017279270983/HD2LA7kC2kCu_q_0gsp3HtxTYUQ-S3sSDgoQHT6DhsYt19NSEAzcDfL8xzWoC2_eQZ"
+			"mentioner_id": [119170368163290086, 119174403463737456],
+			"url": "https://discord.com/api/webhooks/1247141017279270983/HD2LA7k2kCu_q_0gsp3HtxTYUQ-S3sSDgoQHT6hsYt19NSzcDfUwL8xzWoC2_eQZ"
 		},
 
 		"join_giveaway": true,
 
 		"someone_challenges": true,
 
-		"music_notification": false
+		"music_notification": false,
+
+		"error_retry_times": 10
 	}
 }
