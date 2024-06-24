@@ -542,6 +542,11 @@ class MyClient(discord.Client):
 				self.logger.info(f"Sent {self.owo['prefix']}wc all")
 				self.amount['command'] += 1
 				await asyncio.sleep(random.randint(2, 3))
+			if self.gem['open_flootbox'] and 49 in inv:
+				await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
+				self.logger.info(f"Sent {self.owo['prefix']}lb f")
+				self.amount['command'] += 1
+				await asyncio.sleep(random.randint(2, 3))
 			gems_in_inv = None
 			if self.gem['sort'].lower() == "min":
 				gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
@@ -769,6 +774,7 @@ class MyClient(discord.Client):
 				part = command_message.split(" ")
 				if part[1].lower() == "on" or part[1].lower() == "off":
 					config = json.load(open("config.json"))
+					self.gem['mode'] = part[1].lower() == "on"
 					config[self.token]['gem']['mode'] = part[1].lower() == "on"
 					json.dump(config, open("config.json", "w"), indent = 5)
 					self.logger.info(f"Changed config successfully")
@@ -782,6 +788,7 @@ class MyClient(discord.Client):
 				part = command_message.split(" ")
 				if part[1].lower() == "min" or part[1].lower() == "max":
 					config = json.load(open("config.json"))
+					self.gem['sort'] = part[1].lower()
 					config[self.token]['gem']['sort'] = part[1].lower()
 					json.dump(config, open("config.json", "w"), indent = 5)
 					self.logger.info(f"Changed config successfully")
@@ -795,6 +802,7 @@ class MyClient(discord.Client):
 				part = command_message.split(" ")
 				if part[1].lower() == "on" or part[1].lower() == "off":
 					config = json.load(open("config.json"))
+					self.gem['star'] = part[1].lower() == "on"
 					config[self.token]['gem']['star'] = part[1].lower() == "on"
 					json.dump(config, open("config.json", "w"), indent = 5)
 					self.logger.info(f"Changed config successfully")
