@@ -153,7 +153,7 @@ class MyClient(discord.Client):
 			"hidden": ['hkoala', 'hlizard','hmonkey', 'hsnake', 'hsquid']
 		}
 
-		self.amount = {
+		self.stat = {
 			"command": 0,
 			"captcha": 0,
 			"huntbot": 0,
@@ -236,20 +236,24 @@ class MyClient(discord.Client):
 
 	async def send_webhooks(self, content = None, title = None, description = None, color = None, image = None, thumnail = None):
 		if self.webhook['mode']:
-			async with aiohttp.ClientSession() as session:
-				webhook = Webhook.from_url(self.webhook['url'], session=session)
-				if title:
-					embed = discord.Embed(title = title, description = description, color = color)
-					embed.set_author(name = self.user, icon_url = self.user.avatar)
-					if image:
-						embed.set_image(url = image)
-					if thumnail:
-						embed.set_thumbnail(url = thumnail)
-					embed.timestamp = datetime.datetime.now()
-					embed.set_footer(text = self.owo['name'], icon_url = self.owo['name'].avatar)
-					await webhook.send(content = content, embed = embed)
-				else:
-					await webhook.send(content = content)
+			try:
+				async with aiohttp.ClientSession() as session:
+					webhook = Webhook.from_url(self.webhook['url'], session=session)
+					if title:
+						embed = discord.Embed(title = title, description = description, color = color)
+						embed.set_author(name = self.user, icon_url = self.user.avatar)
+						if image:
+							embed.set_image(url = image)
+						if thumnail:
+							embed.set_thumbnail(url = thumnail)
+						embed.timestamp = datetime.datetime.now()
+						embed.set_footer(text = self.owo['name'], icon_url = self.owo['name'].avatar)
+						await webhook.send(content = content, embed = embed)
+					else:
+						await webhook.send(content = content)
+			except Exception as e:
+				if "Invalid Webhook Token" in str(e):
+					pass
 
 	async def startup_channel(self):
 		self.discord['channel_id'] = int(random.choice(self.channel_id))
@@ -262,7 +266,7 @@ class MyClient(discord.Client):
 		if self.get_owo_prefix['mode']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}prefix")
 			self.logger.info(f"Sent {self.owo['prefix']}prefix")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			owo_prefix_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -287,7 +291,7 @@ class MyClient(discord.Client):
 				description = f"{self.arrow}<#{self.discord['channel_id']}>",
 				color = discord.Colour.random()
 			)
-			self.amount['change_channel'] += 1
+			self.stat['change_channel'] += 1
 		self.current_loop['change_channel'] += 1
 
 	async def solve_image_captcha(self, image, captcha, lenghth, wrong_answer = []):
@@ -333,7 +337,7 @@ class MyClient(discord.Client):
 		if result:
 			await self.owo['name'].send(result['code'])
 			self.logger.info(f"Sent {result['code']}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.owo['name'].dm_channel.history(limit = 1):
 				if message.author.id == self.user.id:
@@ -349,7 +353,7 @@ class MyClient(discord.Client):
 						thumnail = image
 					)
 					twocaptcha.report(result['captchaId'], True)
-					self.amount['captcha'] += 1
+					self.stat['captcha'] += 1
 					self.checking['is_captcha'] = False
 					self.selfbot['work_status'] = True
 					self.checking['captcha_attempts'] = 0
@@ -501,7 +505,7 @@ class MyClient(discord.Client):
 								color = discord.Colour.random()
 							)
 							twocaptcha.report(result['captchaId'], True)
-							self.amount['captcha'] += 1
+							self.stat['captcha'] += 1
 							self.checking['is_captcha'] = False
 							self.selfbot['work_status'] = True
 							self.checking['captcha_attempts'] = 0
@@ -617,7 +621,7 @@ class MyClient(discord.Client):
 			if empty:
 				await self.discord['channel'].send(f"{self.owo['prefix']}inv")
 				self.logger.info(f"Sent {self.owo['prefix']}inv")
-				self.amount['command'] += 1
+				self.stat['command'] += 1
 				inv = None
 				await asyncio.sleep(random.randint(2, 3))
 				async for message in self.discord['channel'].history(limit = 10):
@@ -630,17 +634,17 @@ class MyClient(discord.Client):
 					if self.gem['open_box'] and 50 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
 						self.logger.info(f"Sent {self.owo['prefix']}lb all")
-						self.amount['command'] += 1
+						self.stat['command'] += 1
 						await asyncio.sleep(random.randint(2, 3))
 					if self.gem['open_crate'] and 100 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
 						self.logger.info(f"Sent {self.owo['prefix']}wc all")
-						self.amount['command'] += 1
+						self.stat['command'] += 1
 						await asyncio.sleep(random.randint(2, 3))
 					if self.gem['open_flootbox'] and 49 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
 						self.logger.info(f"Sent {self.owo['prefix']}lb f")
-						self.amount['command'] += 1
+						self.stat['command'] += 1
 						await asyncio.sleep(random.randint(2, 3))
 					gems_in_inv = None
 					if self.gem['sort'].lower() == "min":
@@ -659,8 +663,8 @@ class MyClient(discord.Client):
 							use_gem = use_gem + str(gems_in_inv[3][0]) + " "
 						await self.discord['channel'].send(f"{self.owo['prefix']}use {use_gem}")
 						self.logger.info(f"Sent {self.owo['prefix']}use {use_gem}")
-						self.amount['command'] += 1
-						self.amount['gem'] += 1
+						self.stat['command'] += 1
+						self.stat['gem'] += 1
 						self.checking['enough_gem'] = True
 						await asyncio.sleep(random.randint(2, 3))
 						async for message in self.discord['channel'].history(limit = 10):
@@ -709,7 +713,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Sent stat via webhook")
 				await self.send_webhooks(
 					title = f"📊 STAT 📊",
-					description = f"**Worked <t:{int(self.selfbot['turn_on_time'])}:R> with:\n{self.arrow}Sent __{self.amount['command']}__ Commands\n{self.arrow}Solved __{self.amount['captcha']}__ Captchas\n{self.arrow}Claimed Huntbot __{self.amount['huntbot']}__ Times\n{self.arrow}Used Gem __{self.amount['gem']}__ Times\n{self.arrow}Gambled __{self.amount['gamble']}__ Cowoncy\n{self.arrow}Changed Channel __{self.amount['change_channel']}__ Times\n{self.arrow}Slept __{self.amount['sleep']}__ Times**",
+					description = f"**Worked <t:{int(self.selfbot['turn_on_time'])}:R> with:\n{self.arrow}Sent __{self.stat['command']}__ Commands\n{self.arrow}Solved __{self.stat['captcha']}__ Captchas\n{self.arrow}Claimed Huntbot __{self.stat['huntbot']}__ Times\n{self.arrow}Used Gem __{self.stat['gem']}__ Times\n{self.arrow}Gambled __{self.stat['gamble']}__ Cowoncy\n{self.arrow}Changed Channel __{self.stat['change_channel']}__ Times\n{self.arrow}Slept __{self.stat['sleep']}__ Times**",
 					color = discord.Colour.random()
 				)
 			#Setting
@@ -745,7 +749,7 @@ class MyClient(discord.Client):
 				else:
 					await message.channel.send(f"owogive <@{message.author.id}> {amount}")
 					self.logger.info(f"Sent owogive <@{message.author.id}> {amount}")
-				self.amount['command'] += 1
+				self.stat['command'] += 1
 				await asyncio.sleep(random.randint(2, 3))
 				async for message in message.channel.history(limit = 10):
 					channel = self.get_channel(message.channel.id)
@@ -882,7 +886,7 @@ class MyClient(discord.Client):
 					else:
 						await message.channel.send(f"owoab")
 						self.logger.info(f"Sent owoab")
-					self.amount['command'] += 1
+					self.stat['command'] += 1
 				if choice == 2:
 					button = message.components[0].children[0]
 					await button.click()
@@ -895,7 +899,7 @@ class MyClient(discord.Client):
 				#Lost
 				if "won nothing" in after.content:
 					self.logger.info(f"Slot turn lost {self.current_gamble_bet['slot']} cowoncy")
-					self.amount['gamble'] -= self.current_gamble_bet['slot']
+					self.stat['gamble'] -= self.current_gamble_bet['slot']
 					self.current_gamble_bet['slot'] *= int(self.gamble['slot']['rate'])
 				#Draw
 				if "<:eggplant:417475705719226369> <:eggplant:417475705719226369> <:eggplant:417475705719226369>" in after.content:
@@ -903,22 +907,22 @@ class MyClient(discord.Client):
 				#Won x2
 				if "<:heart:417475705899712522> <:heart:417475705899712522> <:heart:417475705899712522>" in after.content:
 					self.logger.info(f"Slot turn won {self.current_gamble_bet['slot']} cowoncy (x2)")
-					self.amount['gamble'] += self.current_gamble_bet['slot']
+					self.stat['gamble'] += self.current_gamble_bet['slot']
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x3
 				if "<:cherry:417475705178161162> <:cherry:417475705178161162> <:cherry:417475705178161162>" in after.content:
 					self.logger.info(f"Slot turn won {self.current_gamble_bet['slot'] * 2} cowoncy (x3)")
-					self.amount['gamble'] += self.current_gamble_bet['slot'] * 2
+					self.stat['gamble'] += self.current_gamble_bet['slot'] * 2
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x4
 				if "<:cowoncy:417475705912426496> <:cowoncy:417475705912426496> <:cowoncy:417475705912426496>" in after.content:
 					self.logger.info(f"Slot turn won {self.current_gamble_bet['slot'] * 3} cowoncy (x4)")
-					self.amount['gamble'] += self.current_gamble_bet['slot'] * 3
+					self.stat['gamble'] += self.current_gamble_bet['slot'] * 3
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 				#Won x10
 				if "<:o_:417475705899843604> <:w_:417475705920684053> <:o_:417475705899843604>" in after.content:
 					self.logger.info(f"Slot turn won {self.current_gamble_bet['slot'] * 9} cowoncy (x10)")
-					self.amount['gamble'] += self.current_gamble_bet['slot'] * 9
+					self.stat['gamble'] += self.current_gamble_bet['slot'] * 9
 					self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 
 			#Coinflip
@@ -926,12 +930,12 @@ class MyClient(discord.Client):
 				#Lost
 				if "you lost" in after.content:
 					self.logger.info(f"Coinflip turn lost {self.current_gamble_bet['coinflip']} cowoncy")
-					self.amount['gamble'] -= self.current_gamble_bet['coinflip']
+					self.stat['gamble'] -= self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] *= int(self.gamble['coinflip']['rate'])
 				#Won
 				if "you won" in after.content:
 					self.logger.info(f"Coinflip turn won {self.current_gamble_bet['coinflip']} cowoncy")
-					self.amount['gamble'] += self.current_gamble_bet['coinflip']
+					self.stat['gamble'] += self.current_gamble_bet['coinflip']
 					self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 
 		#Join giveaway
@@ -962,7 +966,7 @@ class MyClient(discord.Client):
 				command = random.choice(['h', 'b'])
 				await self.discord['channel'].send(f"{self.owo['prefix']}{command}")
 				self.logger.info(f"Sent {self.owo['prefix']}{command}")
-				self.amount['command'] += 1
+				self.stat['command'] += 1
 				try:
 					await self.wait_for("message", check=lambda m: message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
@@ -1125,17 +1129,17 @@ class MyClient(discord.Client):
 			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
 			await self.discord['channel'].send(say)
 			self.logger.info(f"Sent {say}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}h")
 			self.logger.info(f"Sent {self.owo['prefix']}h")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}b")
 			self.logger.info(f"Sent {self.owo['prefix']}b")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(5, 10))
 		if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
 			try:
@@ -1146,7 +1150,7 @@ class MyClient(discord.Client):
 					quote = data['q']
 					await self.discord['channel'].send(quote)
 					self.logger.info(f"Sent {quote[0:30]}...")
-					self.amount['command'] += 1
+					self.stat['command'] += 1
 			except:
 				pass
 
@@ -1155,7 +1159,7 @@ class MyClient(discord.Client):
 		if self.huntbot['claim_submit'] and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['huntbot_time']) - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d")
 			self.logger.info(f"Sent {self.owo['prefix']}hb 1d")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			huntbot_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -1201,7 +1205,7 @@ class MyClient(discord.Client):
 					answer = "".join([i[2] for i in matches])
 					await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d {answer}")
 					self.logger.info(f"Sent {self.owo['prefix']}hb 1d {answer}")
-					self.amount['command'] += 1
+					self.stat['command'] += 1
 					huntbot_verification_message = None
 					await asyncio.sleep(random.randint(2, 3))
 					async for message in self.discord['channel'].history(limit = 10):
@@ -1251,11 +1255,11 @@ class MyClient(discord.Client):
 						description = huntbot_message.content,
 						color = discord.Colour.random()
 						)
-					self.amount['huntbot'] += 1
+					self.stat['huntbot'] += 1
 					if self.selfbot['work_status'] and self.huntbot['upgrade']['mode']:
 						await self.discord['channel'].send(f"{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
 						self.logger.info(f"Sent {self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
-						self.amount['command'] += 1
+						self.stat['command'] += 1
 			else:
 				self.logger.error(f"Couldn't get huntbot message")
 
@@ -1264,7 +1268,7 @@ class MyClient(discord.Client):
 		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
 			self.logger.info(f"Sent {self.owo['prefix']}dt")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			glitch_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -1293,14 +1297,14 @@ class MyClient(discord.Client):
 		if self.animals['mode'] and self.selfbot['work_status'] and self.owo['status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}{self.animals['type']} {self.animals['rank']}")
 			self.logger.info(f"Sent {self.owo['prefix']}{self.animals['type']} {self.animals['rank']}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self):
 		if self.daily and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['daily_time']) - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}daily")
 			self.logger.info(f"Sent {self.owo['prefix']}daily")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			daily_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -1340,7 +1344,7 @@ class MyClient(discord.Client):
 			)
 			self.selfbot['work_time'] += time.time()
 			self.selfbot['work_status'] = True
-			self.amount['sleep'] += 1
+			self.stat['sleep'] += 1
 
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def play_gamble(self):
@@ -1350,7 +1354,7 @@ class MyClient(discord.Client):
 				self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
 			self.logger.info(f"Sent {self.owo['prefix']}s {self.current_gamble_bet['slot']}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(2, 3))
 		#Coinflip
 		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
@@ -1359,7 +1363,7 @@ class MyClient(discord.Client):
 			side = random.choice(['h', 't'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
 			self.logger.info(f"Sent {self.owo['prefix']}cf {self.current_gamble_bet['coinflip']} {side}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(2, 3))
 		#Blackjack
 		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
@@ -1367,7 +1371,7 @@ class MyClient(discord.Client):
 				self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
 			self.logger.info(f"Sent {self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			self.checking['is_blackjack'] = False
 			while not self.checking['is_blackjack']:
 				blackjack_message = None
@@ -1400,12 +1404,12 @@ class MyClient(discord.Client):
 							self.logger.info(f"Blackjack turn has {my_blackjack_point} points (Stand)")
 					elif "You won" in blackjack_message.embeds[0].footer.text:
 						self.logger.info(f"Blackjack turn won {self.current_gamble_bet['blackjack']} cowoncy")
-						self.amount['gamble'] += self.current_gamble_bet['blackjack']
+						self.stat['gamble'] += self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 						self.checking['is_blackjack'] = True
 					elif "You lost" in blackjack_message.embeds[0].footer.text:
 						self.logger.info(f"Blackjack turn lost {self.current_gamble_bet['blackjack']} cowoncy")
-						self.amount['gamble'] -= self.current_gamble_bet['blackjack']
+						self.stat['gamble'] -= self.current_gamble_bet['blackjack']
 						self.current_gamble_bet['blackjack'] *= int(self.gamble['blackjack']['rate'])
 						self.checking['is_blackjack'] = True
 					elif "You tied" in blackjack_message.embeds[0].footer.text or "You both bust" in blackjack_message.embeds[0].footer.text:
@@ -1421,12 +1425,12 @@ class MyClient(discord.Client):
 			if self.pray_curse['type'].lower() == "pray":
 				await self.discord['channel'].send(f"{self.owo['prefix']}pray {self.pray_curse['user_id']}")
 				self.logger.info(f"Sent {self.owo['prefix']}pray {self.pray_curse['user_id']}")
-				self.amount['command'] += 1
+				self.stat['command'] += 1
 			#Curse
 			else:
 				await self.discord['channel'].send(f"{self.owo['prefix']}curse <@{self.pray_curse['user_id']}>")
 				self.logger.info(f"Sent {self.owo['prefix']}curse <@{self.pray_curse['user_id']}>")
-				self.amount['command'] += 1
+				self.stat['command'] += 1
 
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def start_entertainment(self):
@@ -1438,7 +1442,7 @@ class MyClient(discord.Client):
 		if self.selfbot['work_status'] and self.entertainment['run'] and not self.checking['run_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}run")
 			self.logger.info(f"Sent {self.owo['prefix']}run")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			run_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -1452,7 +1456,7 @@ class MyClient(discord.Client):
 		if self.selfbot['work_status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}pup")
 			self.logger.info(f"Sent {self.owo['prefix']}pup")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			pup_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
@@ -1466,7 +1470,7 @@ class MyClient(discord.Client):
 		if self.selfbot['work_status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}piku")
 			self.logger.info(f"Sent {self.owo['prefix']}piku")
-			self.amount['command'] += 1
+			self.stat['command'] += 1
 			piku_message = None
 			await asyncio.sleep(random.randint(2, 3))
 			async for message in self.discord['channel'].history(limit = 10):
