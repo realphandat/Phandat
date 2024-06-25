@@ -1,5 +1,7 @@
 {
 	"MTExMDE0NTMyMTE3NjE0NT1MA.Gb6a-t.dJFttd0d8wkbvxJ_Gs": {
+		"check_owo_status": true,
+
 		"get_owo_prefix": {
 			"mode": false,
 			"default": "o"
