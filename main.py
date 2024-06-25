@@ -331,7 +331,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(2, 3))
+						await asyncio.sleep(20)
 			if result:
 				break
 		else:
@@ -399,7 +399,7 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 			retry_times += 1
-			await asyncio.sleep(random.randint(2, 3))
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
@@ -440,7 +440,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(2, 3))
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
@@ -488,7 +488,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
 						retry_times += 1
-						await asyncio.sleep(random.randint(2, 3))
+						await asyncio.sleep(20)
 			if result:
 				break
 		else:
@@ -1012,7 +1012,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(2, 3))
+								await asyncio.sleep(20)
 					if enoguh_balance:
 						break
 				else:
@@ -1049,7 +1049,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(random.randint(2, 3))
+								await asyncio.sleep(20)
 					if enoguh_balance:
 						break
 				else:
@@ -1100,7 +1100,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(random.randint(2, 3))
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
