@@ -1279,7 +1279,7 @@ class MyClient(discord.Client):
 					break
 			if glitch_message:
 				if "are available" in glitch_message.content:
-					glitch_end = [i for i in re.findall("[0-9]+", glitch_message.content) if int(i) <= 60]
+					glitch_end = re.findall("[0-9]+", re.findall(r"\*\*(.*?)\*\*", glitch_message.content)[2])
 					if len(glitch_end) == 1:
 						glitch_end = int(glitch_end[0])
 					elif len(glitch_end) == 2:
@@ -1315,7 +1315,7 @@ class MyClient(discord.Client):
 					break
 			if daily_message:
 				if "Nu" in daily_message.content:
-					next_daily = re.findall("[0-9]+", daily_message.content)
+					next_daily = re.findall("[0-9]+", re.findall(r"\*\*(.*?)\*\*", daily_message.content)[2])
 					next_daily = int(int(next_daily[0]) * 3600 + int(next_daily[1]) * 60 + int(next_daily[2]))
 					self.selfbot['daily_time'] = next_daily + time.time()
 					self.logger.info(f"Claim daily after {str(datetime.timedelta(seconds = int(next_daily)))} seconds")
