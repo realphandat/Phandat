@@ -632,17 +632,17 @@ class MyClient(discord.Client):
 						break
 				if inv:
 					inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
-					if self.gem['open_box'] and 50 in inv:
+					if self.selfbot['work_status'] and self.gem['open_box'] and 50 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb all")
 						self.logger.info(f"Sent {self.owo['prefix']}lb all")
 						self.stat['command'] += 1
 						await asyncio.sleep(random.randint(2, 3))
-					if self.gem['open_crate'] and 100 in inv:
+					if self.selfbot['work_status'] and self.gem['open_crate'] and 100 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}wc all")
 						self.logger.info(f"Sent {self.owo['prefix']}wc all")
 						self.stat['command'] += 1
 						await asyncio.sleep(random.randint(2, 3))
-					if self.gem['open_flootbox'] and 49 in inv:
+					if self.selfbot['work_status'] and self.gem['open_flootbox'] and 49 in inv:
 						await self.discord['channel'].send(f"{self.owo['prefix']}lb f")
 						self.logger.info(f"Sent {self.owo['prefix']}lb f")
 						self.stat['command'] += 1
