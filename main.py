@@ -51,6 +51,7 @@ class MyClient(discord.Client):
 		self.token = token
 		with open("config.json", "r") as file:
 			data = json.load(file)
+			self.check_owo_status = data[token]['check_owo_status']
 			self.get_owo_prefix = data[token]['get_owo_prefix']
 			self.channel_id = data[token]['channel_id']
 			self.someone_mentions = data[token]['someone_mentions']
@@ -76,7 +77,7 @@ class MyClient(discord.Client):
 			self.error_retry_times = data[token]['error_retry_times']
 
 		self.tasks = [
-			self.check_owo_status,
+			self.check_status,
 			self.check_2captcha_balance,
 			self.vote_top_gg,
 			self.change_channel,
@@ -958,8 +959,8 @@ class MyClient(discord.Client):
 					pass
 
 	@tasks.loop(minutes = 1)
-	async def check_owo_status(self):
-		if self.selfbot['work_status'] and self.owo['status'] and self.check_owo_status.current_loop != 0:
+	async def check_status(self):
+		if self.check_owo_status and self.selfbot['work_status'] and self.owo['status'] and self.check_status.current_loop != 0:
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id']:
 					break
