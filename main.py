@@ -253,6 +253,7 @@ class MyClient(discord.Client):
 						await webhook.send(content = content)
 			except Exception as e:
 				if "Invalid Webhook Token" in str(e):
+					self.logger.error(f"Invalid webhook url")
 					pass
 
 	async def startup_channel(self):
@@ -648,9 +649,9 @@ class MyClient(discord.Client):
 						await asyncio.sleep(random.randint(2, 3))
 					gems_in_inv = None
 					if self.gem['sort'].lower() == "min":
-						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]]) for range in [(50, 58), (64, 72), (71, 79), (78, 86)]]
 					else:
-						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse = True) for range in [(50, 58), (64, 72), (71, 79), (79, 86)]]
+						gems_in_inv = [sorted([gem for gem in inv if range[0] < gem < range[1]], reverse = True) for range in [(50, 58), (64, 72), (71, 79), (78, 86)]]
 					if gems_in_inv != [[], [], [], []]:
 						use_gem = ""
 						if "gem1" in empty and gems_in_inv[0] != []:
