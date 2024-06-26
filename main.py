@@ -51,6 +51,7 @@ class MyClient(discord.Client):
 		self.token = token
 		with open("config.json", "r") as file:
 			data = json.load(file)
+			self.log_file = data[token]['log_file']
 			self.check_owo_status = data[token]['check_owo_status']
 			self.get_owo_prefix = data[token]['get_owo_prefix']
 			self.channel_id = data[token]['channel_id']
@@ -167,13 +168,16 @@ class MyClient(discord.Client):
 		if int(self.error_retry_times) <= 0:
 			self.error_retry_times = 1
 
-	async def log(self):
+	async def setup_logger(self):
 		self.logger = logging.getLogger(str(self.user))
-		file_log = logging.handlers.WatchedFileHandler(f"logs/{str(self.user)}.log", encoding='utf-8', mode='a+')
-		file_log.setFormatter(FileFormatter())
+		if self.log_file:
+			file = f"logs/{str(self.user)}.log"
+			file_log = logging.handlers.WatchedFileHandler(file, encoding='utf-8', mode='a+')
+			file_log.setFormatter(FileFormatter())
+			self.logger.addHandler(file_log)
+			self.logger.info(f"Created logs/{file}")
 		print_log = logging.StreamHandler()
 		print_log.setFormatter(CustomFormatter())
-		self.logger.addHandler(file_log)
 		self.logger.addHandler(print_log)
 		self.logger.setLevel(logging.DEBUG)
 
@@ -187,6 +191,7 @@ class MyClient(discord.Client):
 	async def on_ready(self):
 		if self.selfbot['on_ready']:
 			self.selfbot['on_ready'] = False
+			await self.setup_logger()
 			self.owo['name'] = self.get_user(self.owo['id'])
 			self.owo['dm_channel_id'] = self.owo['name'].dm_channel.id
 			for i in self.webhook['mentioner_id']:
@@ -194,7 +199,6 @@ class MyClient(discord.Client):
 			if str(self.user.id) not in self.selfbot['mentioner']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{self.user.id}>"
 			await self.startup_channel()
-			await self.log()
 			webhook = f"{self.arrow}<#{self.discord['channel_id']}>"
 			if self.sleep:
 				webhook = f"**{self.arrow}Work for __{self.selfbot['work_time']}__ seconds**\n" + webhook
@@ -329,7 +333,7 @@ class MyClient(discord.Client):
 						self.logger.error(f"TwoCaptcha API ({api_key}) ran out of money")
 						break
 					else:
-						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
+						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
 						await asyncio.sleep(20)
 			if result:
@@ -391,7 +395,7 @@ class MyClient(discord.Client):
 				if res2.status in (302, 307):
 					return session
 				else:
-					self.logger.error(f"!!! Failed to add token to HCaptcha oauth !!! | {res2.status}")
+					self.logger.error(f"Failed to add token to HCaptcha oauth | {res2.status}")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "⚙️ SUMBIT HCAPTCHA OAUTH ⚙️",
@@ -432,7 +436,7 @@ class MyClient(discord.Client):
 						result_session = await self.submit_oauth(res)
 						return result_session
 					else:
-						self.logger.error(f"!!! Getting HCaptcha oauth has the problem !!! | {await res.text()}")
+						self.logger.error(f"Getting HCaptcha oauth has the problem | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
 							title = "⚙️ GET HCAPTCHA OAUTH ⚙️",
@@ -486,7 +490,7 @@ class MyClient(discord.Client):
 						self.logger.error(f"TwoCaptcha API ({api_key}) run out of money")
 						break
 					else:
-						self.logger.error(f"!!! TwoCaptcha API ({api_key}) has the problem !!! | {e}")
+						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
 						await asyncio.sleep(20)
 			if result:
@@ -1017,7 +1021,7 @@ class MyClient(discord.Client):
 						break
 				else:
 					await self.notify()
-					self.logger.warning(f"!!! Image Captcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ !!!")
+					self.logger.warning(f"Image Captcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ ")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
@@ -1054,7 +1058,7 @@ class MyClient(discord.Client):
 						break
 				else:
 					await self.notify()
-					self.logger.warning(f"!!! HCaptcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ !!!")
+					self.logger.warning(f"HCaptcha's TwoCaptcha API has under {self.twocaptcha_balance['amount']}$ ")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "💸 NOT ENOUGH BALANCE 💸",
@@ -1092,7 +1096,7 @@ class MyClient(discord.Client):
 						result_session = response.get("location")
 						return result_session
 					else:
-						self.logger.error(f"!!! Getting top.gg oauth has the problem !!! | {await res.text()}")
+						self.logger.error(f"Getting top.gg oauth has the problem | {await res.text()}")
 						await self.send_webhooks(
 							content = self.selfbot['mentioner'],
 							title = "⚙️ TOP.GG OAUTH ⚙️",
@@ -1127,34 +1131,42 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
-		if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
-			say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
-			await self.discord['channel'].send(say)
-			self.logger.info(f"Sent {say}")
-			self.stat['command'] += 1
-			await asyncio.sleep(random.randint(5, 10))
-		if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
-			await self.discord['channel'].send(f"{self.owo['prefix']}h")
-			self.logger.info(f"Sent {self.owo['prefix']}h")
-			self.stat['command'] += 1
-			await asyncio.sleep(random.randint(5, 10))
-		if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
-			await self.discord['channel'].send(f"{self.owo['prefix']}b")
-			self.logger.info(f"Sent {self.owo['prefix']}b")
-			self.stat['command'] += 1
-			await asyncio.sleep(random.randint(5, 10))
-		if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
-			try:
-				response = get("https://zenquotes.io/api/random")
-				if response.status_code == 200:
-					json_data = response.json()
-					data = json_data[0]
-					quote = data['q']
-					await self.discord['channel'].send(quote)
-					self.logger.info(f"Sent {quote[0:30]}...")
-					self.stat['command'] += 1
-			except:
-				pass
+		try:
+			if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
+				say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
+				await self.discord['channel'].send(say)
+				self.logger.info(f"Sent {say}")
+				self.stat['command'] += 1
+				await asyncio.sleep(random.randint(5, 10))
+			if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
+				await self.discord['channel'].send(f"{self.owo['prefix']}h")
+				self.logger.info(f"Sent {self.owo['prefix']}h")
+				self.stat['command'] += 1
+				await asyncio.sleep(random.randint(5, 10))
+			if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
+				await self.discord['channel'].send(f"{self.owo['prefix']}b")
+				self.logger.info(f"Sent {self.owo['prefix']}b")
+				self.stat['command'] += 1
+				await asyncio.sleep(random.randint(5, 10))
+			if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
+				try:
+					response = get("https://zenquotes.io/api/random")
+					if response.status_code == 200:
+						json_data = response.json()
+						data = json_data[0]
+						quote = data['q']
+						await self.discord['channel'].send(quote)
+						self.logger.info(f"Sent {quote[0:30]}...")
+						self.stat['command'] += 1
+				except:
+					pass
+		except Exception as e:
+			self.logger.error(f"Grind Has Error | {str(e)}")
+			await self.send_webhooks(
+				title = "⚙️ GRIND ⚙️",
+				description = f"**{self.arrow}Error: {str(e)}**",
+				color = discord.Colour.random()
+			)
 
 	@tasks.loop(minutes = 1)
 	async def claim_submit_huntbot(self):
