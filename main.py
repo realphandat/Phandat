@@ -335,7 +335,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
-						await asyncio.sleep(20)
+						await asyncio.sleep(10)
 			if result:
 				break
 		else:
@@ -374,7 +374,7 @@ class MyClient(discord.Client):
 					)
 					twocaptcha.report(result['captchaId'], False)
 					self.checking['captcha_attempts'] += 1
-					if self.checking['captcha_attempts'] <= int(self.image_captcha['attempts']):
+					if self.checking['captcha_attempts'] < int(self.image_captcha['attempts']):
 						wrong_answer.append(result['code'].lower())
 						await self.solve_image_captcha(image, captcha, lenghth, wrong_answer)
 					else:
@@ -403,7 +403,7 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 			retry_times += 1
-			await asyncio.sleep(20)
+			await asyncio.sleep(10)
 		else:
 			await self.notify()
 
@@ -444,7 +444,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(20)
+			await asyncio.sleep(10)
 		else:
 			await self.notify()
 
@@ -492,7 +492,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
-						await asyncio.sleep(20)
+						await asyncio.sleep(10)
 			if result:
 				break
 		else:
@@ -525,7 +525,7 @@ class MyClient(discord.Client):
 							)
 							twocaptcha.report(result['captchaId'], False)
 							self.checking['captcha_attempts'] += 1
-							if self.checking['captcha_attempts'] <= int(self.hcaptcha['attempts']):
+							if self.checking['captcha_attempts'] < int(self.hcaptcha['attempts']):
 								await self.solve_hcaptcha()
 							else:
 								await self.notify()
@@ -969,12 +969,12 @@ class MyClient(discord.Client):
 				if message.author.id == self.owo['id']:
 					break
 			else:
-				command = random.choice(['h', 'b'])
+				command = random.choice(['h', 'b', 'ping'])
 				await self.discord['channel'].send(f"{self.owo['prefix']}{command}")
 				self.logger.info(f"Sent {self.owo['prefix']}{command}")
 				self.stat['command'] += 1
 				try:
-					await self.wait_for("message", check=lambda m: message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'], timeout = 10)
+					await self.wait_for("message", check=lambda message: message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					self.logger.warning(f"!!! OwO doesn't respond !!!")
 					self.logger.info(f"Wait for 1 hour")
@@ -1016,7 +1016,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(20)
+								await asyncio.sleep(10)
 					if enoguh_balance:
 						break
 				else:
@@ -1053,7 +1053,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(20)
+								await asyncio.sleep(10)
 					if enoguh_balance:
 						break
 				else:
@@ -1104,7 +1104,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(20)
+			await asyncio.sleep(10)
 		else:
 			await self.notify()
 
@@ -1119,15 +1119,15 @@ class MyClient(discord.Client):
 			async with webdriver.Chrome(options=options) as driver:
 				await driver.get(top_gg, wait_load = True, timeout = 10)
 				self.logger.info(f"Loaded top.gg homepage")
-				await asyncio.sleep(20)
+				await asyncio.sleep(10)
 				button = await driver.find_element(by = By.XPATH, value = '//a[@href="/bot/408785106942164992/vote"]')
 				await button.click()
 				self.logger.info(f"Loaded OwO vote page on top.gg")
-				await asyncio.sleep(20)
+				await asyncio.sleep(10)
 				button = await driver.find_element(by=By.XPATH, value=".//button[contains(text(),'Vote')]")
 				await button.click()
 				self.logger.info(f"Voted OwO on top.gg")
-				await asyncio.sleep(20)
+				await asyncio.sleep(10)
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
