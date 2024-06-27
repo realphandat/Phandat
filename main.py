@@ -59,6 +59,7 @@ class MyClient(discord.Client):
 			self.image_captcha = data[token]['image_captcha']
 			self.hcaptcha = data[token]['hcaptcha']
 			self.twocaptcha_balance = data[token]['twocaptcha_balance']
+			self.sleep_after_captcha = data[token]['sleep_after_captcha']
 			self.top_gg = data[token]['top_gg']
 			self.grind = data[token]['grind']
 			self.huntbot = data[token]['huntbot']
@@ -76,22 +77,6 @@ class MyClient(discord.Client):
 			self.someone_challenges = data[token]['someone_challenges']
 			self.music_notification = data[token]['music_notification']
 			self.error_retry_times = data[token]['error_retry_times']
-
-		self.tasks = [
-			self.check_status,
-			self.check_2captcha_balance,
-			self.vote_top_gg,
-			self.change_channel,
-			self.start_grind,
-			self.claim_submit_huntbot,
-			self.check_distorted_animal,
-			self.sell_sac_animal,
-			self.claim_daily,
-			self.go_to_sleep,
-			self.play_gamble,
-			self.start_pray_curse,
-			self.start_entertainment
-		]
 
 		self.arrow = "<a:Arrow:1065047400714088479>"
 
@@ -117,7 +102,8 @@ class MyClient(discord.Client):
 			"work_status": True,
 			"turn_on_time": time.time(),
 			"work_time": random.randint(600, 1200),
-			"sleep_time": "",
+			"sleep_time": None,
+			"captcha_time": 0,
 			"huntbot_time": 0,
 			"glitch_time": 0,
 			"daily_time": 0,
@@ -188,10 +174,41 @@ class MyClient(discord.Client):
 			except:
 				pass
 
+	async def create_tasks(self):
+		self.tasks = [
+		]
+		if self.check_owo_status:
+			self.tasks.append(self.check_status)
+		if self.twocaptcha_balance['mode']:
+			self.tasks.append(self.check_twocaptcha_balance)
+		if self.top_gg:
+			self.tasks.append(self.vote_top_gg)
+		if len(self.channel_id) > 1:
+			self.tasks.append(self.change_channel)
+		if self.grind['owo'] or self.grind['hunt'] or self.grind['battle'] or self.grind['quote']:
+			self.tasks.append(self.start_grind)
+		if self.huntbot['claim_submit']:
+			self.tasks.append(self.claim_submit_huntbot)
+		if self.distorted_animals:
+			self.tasks.append(self.check_distorted_animal)
+		if self.animals['mode']:
+			self.tasks.append(self.sell_sac_animal)
+		if self.daily:
+			self.tasks.append(self.claim_daily)
+		if self.sleep:
+			self.tasks.append(self.go_to_sleep)
+		if self.gamble['slot']['mode'] or self.gamble['coinflip']['mode'] or self.gamble['blackjack']['mode']:
+			self.tasks.append(self.play_gamble)
+		if self.pray_curse['mode']:
+			self.tasks.append(self.start_pray_curse)
+		if self.entertainment['run'] or self.entertainment['pup'] or self.entertainment['piku'] or self.entertainment['common_ring']:
+			self.tasks.append(self.start_entertainment)
+
 	async def on_ready(self):
 		if self.selfbot['on_ready']:
 			self.selfbot['on_ready'] = False
 			await self.setup_logger()
+			await self.create_tasks()
 			self.owo['name'] = self.get_user(self.owo['id'])
 			self.owo['dm_channel_id'] = self.owo['name'].dm_channel.id
 			for i in self.webhook['mentioner_id']:
@@ -363,6 +380,8 @@ class MyClient(discord.Client):
 					self.checking['is_captcha'] = False
 					self.selfbot['work_status'] = True
 					self.checking['captcha_attempts'] = 0
+					if self.sleep_after_captcha:
+						await self.go_to_sleep(skip = True)
 				elif "🚫" in message.content:
 					self.logger.info(f"Solved Image Captcha failed")
 					await self.send_webhooks(
@@ -515,6 +534,8 @@ class MyClient(discord.Client):
 							self.checking['is_captcha'] = False
 							self.selfbot['work_status'] = True
 							self.checking['captcha_attempts'] = 0
+							if self.sleep_after_captcha:
+								await self.go_to_sleep(skip = True)
 						else:
 							self.logger.info(f"Solved HCaptcha failed")
 							await self.send_webhooks(
@@ -991,7 +1012,7 @@ class MyClient(discord.Client):
 					self.selfbot['work_status'] = True
 
 	@tasks.loop(minutes = 1)
-	async def check_2captcha_balance(self):
+	async def check_twocaptcha_balance(self):
 		if self.selfbot['work_status'] and self.twocaptcha_balance['mode']:
 			if self.image_captcha['mode']:
 				enoguh_balance = False
@@ -1338,25 +1359,27 @@ class MyClient(discord.Client):
 		self.current_loop['daily'] += 1
 
 	@tasks.loop(minutes = 1)
-	async def go_to_sleep(self):
-		if self.sleep and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['work_time']) - time.time() <= 0:
-			self.selfbot['sleep_time'] = random.randint(300, 600)
-			self.logger.info(f"Take A Break For {self.selfbot['sleep_time']} Seconds")
+	async def go_to_sleep(self, skip = False):
+		if (skip or self.sleep) and self.selfbot['work_status'] and self.owo['status'] and ((skip and int(self.selfbot['captcha_time']) - time.time() <= 0) or int(self.selfbot['work_time']) - time.time() <= 0):
+			sleep = random.randint(300, 600)
+			self.selfbot['sleep_time'] = sleep
+			self.logger.info(f"Take A Break For {sleep} Seconds")
 			await self.send_webhooks(
 				title = "🛌 TAKE A BREAK 🛌",
-				description = f"**{self.arrow}Take a break for __{self.selfbot['sleep_time']}__ seconds**",
+				description = f"**{self.arrow}Take a break for __{sleep}__ seconds**",
 				color = discord.Colour.random()
 				)
 			self.selfbot['work_status'] = False
-			await asyncio.sleep(self.selfbot['sleep_time'])
-			self.selfbot['work_time'] = random.randint(600, 1200)
-			self.logger.info(f"Done! Work for {self.selfbot['work_time']} seconds")
+			await asyncio.sleep(sleep)
+			work = random.randint(600, 1200)
+			self.selfbot['captcha_time'] = work + time.time()
+			self.selfbot['work_time'] = work + time.time()
+			self.logger.info(f"Done! Work for {work} seconds")
 			await self.send_webhooks(
 				title = "🌄 WOKE UP 🌄",
-				description = f"**{self.arrow}Work for __{self.selfbot['work_time']}__ seconds**",
+				description = f"**{self.arrow}Work for __{work}__ seconds**",
 				color = discord.Colour.random()
 			)
-			self.selfbot['work_time'] += time.time()
 			self.selfbot['work_status'] = True
 			self.stat['sleep'] += 1
 
@@ -1453,7 +1476,7 @@ class MyClient(discord.Client):
 			self.checking['pup_limit'] = False
 			self.checking['piku_limit'] = False
 		#Run
-		if self.selfbot['work_status'] and self.entertainment['run'] and not self.checking['run_limit']:
+		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['run'] and not self.checking['run_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}run")
 			self.logger.info(f"Sent {self.owo['prefix']}run")
 			self.stat['command'] += 1
@@ -1467,7 +1490,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Run for today is over")
 				self.checking['run_limit'] = True
 		#Pup
-		if self.selfbot['work_status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
+		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}pup")
 			self.logger.info(f"Sent {self.owo['prefix']}pup")
 			self.stat['command'] += 1
@@ -1481,7 +1504,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Pup for today is over")
 				self.checking['pup_limit'] = True
 		#Piku
-		if self.selfbot['work_status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
+		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}piku")
 			self.logger.info(f"Sent {self.owo['prefix']}piku")
 			self.stat['command'] += 1
@@ -1494,6 +1517,11 @@ class MyClient(discord.Client):
 			if piku_message:
 				self.logger.info(f"Piku for today is over")
 				self.checking['piku_limit'] = True
+		#Common ring
+		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['common_ring']:
+			await self.discord['channel'].send(f"{self.owo['prefix']}buy 1")
+			self.logger.info(f"Sent {self.owo['prefix']}buy 1")
+			self.stat['command'] += 1
 
 print()
 print(f"{color.bold}You Are Using{color.reset} {color.red}OwO's Selfbot{color.reset} {color.bold}By{color.reset} {color.blue}Phandat (realphandat){color.reset} {color.bold}And{color.reset} {color.pink}His Love (selena){color.reset}")
