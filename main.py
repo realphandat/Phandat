@@ -101,7 +101,7 @@ class MyClient(discord.Client):
 			"on_ready": True,
 			"work_status": True,
 			"turn_on_time": time.time(),
-			"work_time": random.randint(1200, 3600),
+			"work_time": random.randint(600, 1200),
 			"sleep_time": None,
 			"huntbot_time": 0,
 			"glitch_time": 0,
@@ -1367,7 +1367,7 @@ class MyClient(discord.Client):
 	async def go_to_sleep(self, skip = False):
 		if (skip or self.sleep) and self.selfbot['work_status'] and self.owo['status'] and ((skip and self.checking['slept_after_captcha']) or int(self.selfbot['work_time']) - time.time() <= 0):
 			self.checking['slept_after_captcha'] = False
-			sleep = random.randint(600, 1200)
+			sleep = random.randint(300, 600)
 			self.selfbot['sleep_time'] = sleep
 			self.logger.info(f"Take A Break For {sleep} Seconds")
 			await self.send_webhooks(
@@ -1378,7 +1378,7 @@ class MyClient(discord.Client):
 			self.selfbot['work_status'] = False
 			await asyncio.sleep(sleep)
 			self.checking['slept_after_captcha'] = True
-			work = random.randint(1200, 3600)
+			work = random.randint(600, 1200)
 			self.selfbot['work_time'] = work + time.time()
 			self.logger.info(f"Done! Work for {work} seconds")
 			await self.send_webhooks(
