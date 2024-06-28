@@ -101,9 +101,8 @@ class MyClient(discord.Client):
 			"on_ready": True,
 			"work_status": True,
 			"turn_on_time": time.time(),
-			"work_time": random.randint(600, 1200),
+			"work_time": random.randint(1200, 3600),
 			"sleep_time": None,
-			"captcha_time": 0,
 			"huntbot_time": 0,
 			"glitch_time": 0,
 			"daily_time": 0,
@@ -112,6 +111,7 @@ class MyClient(discord.Client):
 
 		self.checking = {
 			"captcha_attempts": 0,
+			"slept_after_captcha": True,
 			"is_captcha": False,
 			"is_blackjack": False,
 			"run_limit": False,
@@ -175,8 +175,7 @@ class MyClient(discord.Client):
 				pass
 
 	async def create_tasks(self):
-		self.tasks = [
-		]
+		self.tasks = []
 		if self.check_owo_status:
 			self.tasks.append(self.check_status)
 		if self.twocaptcha_balance['mode']:
@@ -204,35 +203,41 @@ class MyClient(discord.Client):
 		if self.entertainment['run'] or self.entertainment['pup'] or self.entertainment['piku'] or self.entertainment['common_ring']:
 			self.tasks.append(self.start_entertainment)
 
+	async def startup_intro(self):
+		#Print
+		cmd = f"Start at channel {self.discord['channel']}"
+		if self.sleep:
+			cmd = cmd + f" for {self.selfbot['work_time']} seconds"
+		self.logger.info(cmd)
+		if self.command['mode']:
+			self.logger.info(f"Send help or <@{self.user.id}> help")
+		#Webhook
+		webhook = f"{self.arrow}<#{self.discord['channel_id']}>"
+		if self.sleep:
+			webhook = f"**{self.arrow}Work for __{self.selfbot['work_time']}__ seconds**\n" + webhook
+		if self.command['mode']:
+			webhook = f"**{self.arrow}Send `help` or `<@{self.user.id}> help`**\n" + webhook
+		await self.send_webhooks(
+			title = f"🚀 STARTED <t:{int(self.selfbot['turn_on_time'])}:R> 🚀",
+			description = webhook,
+			color = discord.Colour.random()
+		)
+		self.selfbot['work_time'] += time.time()
+
+
 	async def on_ready(self):
 		if self.selfbot['on_ready']:
 			self.selfbot['on_ready'] = False
-			await self.setup_logger()
-			await self.create_tasks()
 			self.owo['name'] = self.get_user(self.owo['id'])
 			self.owo['dm_channel_id'] = self.owo['name'].dm_channel.id
 			for i in self.webhook['mentioner_id']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{i}>"
 			if str(self.user.id) not in self.selfbot['mentioner']:
 				self.selfbot['mentioner'] = self.selfbot['mentioner'] + f"<@{self.user.id}>"
+			await self.setup_logger()
 			await self.startup_channel()
-			webhook = f"{self.arrow}<#{self.discord['channel_id']}>"
-			if self.sleep:
-				webhook = f"**{self.arrow}Work for __{self.selfbot['work_time']}__ seconds**\n" + webhook
-			if self.command['mode']:
-				webhook = f"**{self.arrow}Send `help` or `<@{self.user.id}> help`**\n" + webhook
-			cmd = f"Start at channel {self.discord['channel']}"
-			if self.sleep:
-				cmd = cmd + f" for {self.selfbot['work_time']} seconds"
-			self.logger.info(cmd)
-			if self.command['mode']:
-				self.logger.info(f"Send help or <@{self.user.id}> help")
-			await self.send_webhooks(
-				title = f"🚀 STARTED <t:{int(self.selfbot['turn_on_time'])}:R> 🚀",
-				description = webhook,
-				color = discord.Colour.random()
-				)
-			self.selfbot['work_time'] += time.time()
+			await self.startup_intro()
+			await self.create_tasks()
 			await self.worker(True)
 
 	async def worker(self, mode, skip = []):
@@ -1281,7 +1286,7 @@ class MyClient(discord.Client):
 						title = "📌 SUBMITTED HUNTBOT 📌",
 						description = huntbot_message.content,
 						color = discord.Colour.random()
-						)
+					)
 				#Claim huntbot
 				elif "BACK WITH" in huntbot_message.content:
 					self.logger.info(f"Claimed huntbot")
@@ -1289,7 +1294,7 @@ class MyClient(discord.Client):
 						title = "📦 CLAIMED HUNTBOT 📦",
 						description = huntbot_message.content,
 						color = discord.Colour.random()
-						)
+					)
 					self.stat['huntbot'] += 1
 					if self.selfbot['work_status'] and self.huntbot['upgrade']['mode']:
 						await self.discord['channel'].send(f"{self.owo['prefix']}upgrade {self.huntbot['upgrade']['type']} all")
@@ -1360,19 +1365,20 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def go_to_sleep(self, skip = False):
-		if (skip or self.sleep) and self.selfbot['work_status'] and self.owo['status'] and ((skip and int(self.selfbot['captcha_time']) - time.time() <= 0) or int(self.selfbot['work_time']) - time.time() <= 0):
-			sleep = random.randint(300, 600)
+		if (skip or self.sleep) and self.selfbot['work_status'] and self.owo['status'] and ((skip and self.checking['slept_after_captcha']) or int(self.selfbot['work_time']) - time.time() <= 0):
+			self.checking['slept_after_captcha'] = False
+			sleep = random.randint(600, 1200)
 			self.selfbot['sleep_time'] = sleep
 			self.logger.info(f"Take A Break For {sleep} Seconds")
 			await self.send_webhooks(
 				title = "🛌 TAKE A BREAK 🛌",
 				description = f"**{self.arrow}Take a break for __{sleep}__ seconds**",
 				color = discord.Colour.random()
-				)
+			)
 			self.selfbot['work_status'] = False
 			await asyncio.sleep(sleep)
-			work = random.randint(600, 1200)
-			self.selfbot['captcha_time'] = work + time.time()
+			self.checking['slept_after_captcha'] = True
+			work = random.randint(1200, 3600)
 			self.selfbot['work_time'] = work + time.time()
 			self.logger.info(f"Done! Work for {work} seconds")
 			await self.send_webhooks(
