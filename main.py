@@ -248,7 +248,7 @@ class MyClient(discord.Client):
 					continue
 				try:
 					task.start()
-					await asyncio.sleep(10)
+					await asyncio.sleep(20)
 				except RuntimeError:
 					pass
 		else:
@@ -357,7 +357,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
-						await asyncio.sleep(10)
+						await asyncio.sleep(20)
 			if result:
 				break
 		else:
@@ -427,7 +427,7 @@ class MyClient(discord.Client):
 						color = discord.Colour.random()
 					)
 			retry_times += 1
-			await asyncio.sleep(10)
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
@@ -468,7 +468,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(10)
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
@@ -516,7 +516,7 @@ class MyClient(discord.Client):
 					else:
 						self.logger.error(f"TwoCaptcha API ({api_key}) has the problem | {e}")
 						retry_times += 1
-						await asyncio.sleep(10)
+						await asyncio.sleep(20)
 			if result:
 				break
 		else:
@@ -1042,7 +1042,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(10)
+								await asyncio.sleep(20)
 					if enoguh_balance:
 						break
 				else:
@@ -1079,7 +1079,7 @@ class MyClient(discord.Client):
 								break
 							else:
 								retry_times += 1
-								await asyncio.sleep(10)
+								await asyncio.sleep(20)
 					if enoguh_balance:
 						break
 				else:
@@ -1130,7 +1130,7 @@ class MyClient(discord.Client):
 							color = discord.Colour.random()
 						)
 			retry_times += 1
-			await asyncio.sleep(10)
+			await asyncio.sleep(20)
 		else:
 			await self.notify()
 
@@ -1145,15 +1145,15 @@ class MyClient(discord.Client):
 			async with webdriver.Chrome(options=options) as driver:
 				await driver.get(top_gg, wait_load = True, timeout = 10)
 				self.logger.info(f"Loaded top.gg homepage")
-				await asyncio.sleep(10)
+				await asyncio.sleep(20)
 				button = await driver.find_element(by = By.XPATH, value = '//a[@href="/bot/408785106942164992/vote"]')
 				await button.click()
 				self.logger.info(f"Loaded OwO vote page on top.gg")
-				await asyncio.sleep(10)
+				await asyncio.sleep(20)
 				button = await driver.find_element(by=By.XPATH, value=".//button[contains(text(),'Vote')]")
 				await button.click()
 				self.logger.info(f"Voted OwO on top.gg")
-				await asyncio.sleep(10)
+				await asyncio.sleep(20)
 
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
