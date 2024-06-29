@@ -205,7 +205,7 @@ class MyClient(discord.Client):
 
 	async def startup_intro(self):
 		#Print
-		cmd = f"Start at channel {self.discord['channel']}"
+		cmd = f"Start at channel {self.discord['channel']} ({self.discord['channel_id']})"
 		if self.sleep:
 			cmd = cmd + f" for {self.selfbot['work_time']} seconds"
 		self.logger.info(cmd)
@@ -313,7 +313,7 @@ class MyClient(discord.Client):
 	async def change_channel(self):
 		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.current_loop['change_channel'] > 0:
 			await self.startup_channel()
-			self.logger.info(f"Changed channel to {self.discord['channel']}")
+			self.logger.info(f"Changed channel to {self.discord['channel']} ({self.discord['channel_id']})")
 			await self.send_webhooks(
 				title = "🏠 CHANGED CHANNEL 🏠",
 				description = f"{self.arrow}<#{self.discord['channel_id']}>",
