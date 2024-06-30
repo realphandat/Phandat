@@ -1536,7 +1536,7 @@ config = json.load(open("config.json", "r"))
 threads = []
 for index, value in enumerate(config):
 	Client = MyClient(index, value)
-	thread = threading.Thread(target=Client.run, args=(value,))
+	thread = threading.Thread(target = Client.run, daemon = True, args = (value,))
 	threads.append(thread)
 	thread.start()
 for thread in threads:
