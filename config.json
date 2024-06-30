@@ -36,7 +36,7 @@
 			"amount": 0.01
 		},
 
-		"sleep_after_captcha": true,
+		"sleep_after_captcha": false,
 
 		"top_gg": false,
 
