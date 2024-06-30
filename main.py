@@ -311,7 +311,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(600, 1200))
 	async def change_channel(self):
-		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.owo['status'] and self.current_loop['change_channel'] > 0:
+		if len(self.channel_id) > 1 and self.selfbot['work_status'] and self.current_loop['change_channel'] > 0:
 			await self.startup_channel()
 			self.logger.info(f"Changed channel to {self.discord['channel']} ({self.discord['channel_id']})")
 			await self.send_webhooks(
@@ -558,7 +558,7 @@ class MyClient(discord.Client):
 
 	async def on_message(self, message):
 		#Someone mentions
-		if self.someone_mentions and message.mentions and self.selfbot['work_status'] and self.owo['status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
+		if self.someone_mentions and message.mentions and self.selfbot['work_status'] and not message.author.bot and message.channel.id == self.discord['channel_id']:
 			if message.mentions[0].id == self.user.id or f"<@{self.user.id}>" in message.content:
 				self.logger.info(f"Someone mentions")
 				await self.send_webhooks(
@@ -640,7 +640,7 @@ class MyClient(discord.Client):
 				self.selfbot['work_status'] = False
 
 		#Check gem
-		if self.selfbot['work_status'] and self.owo['status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (self.checking['enough_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and (self.gem['mode'] or (self.distorted_animals and not self.selfbot['glitch_time'] - time.time() <= 0 and self.current_loop['check_distorted_animal'] > 0)) and (self.checking['enough_gem'] or (self.sleep and self.daily and int(self.selfbot['daily_time']) - time.time() <= 0 and self.current_loop['daily'] > 0)) and "🌱" in message.content and "gained" in message.content and self.discord['user_nickname'] in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			empty = []
 			if not "gem1" in message.content and "gem1" in self.discord['inventory']:
 				empty.append("gem1")
@@ -846,7 +846,7 @@ class MyClient(discord.Client):
 					)
 
 		#Check the caught animals
-		if self.selfbot['work_status'] and self.owo['status'] and self.discord['user_nickname'] in message.content and "🌱" in message.content and "gained" in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and self.discord['user_nickname'] in message.content and "🌱" in message.content and "gained" in message.content and message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id']:
 			filter = message.content.split("**|**")
 			pet = filter[0]
 			#Legendary
@@ -901,7 +901,7 @@ class MyClient(discord.Client):
 					break
 
 		#Someone challenges
-		if self.someone_challenges and self.selfbot['work_status'] and self.owo['status'] and message.embeds and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
+		if self.someone_challenges and self.selfbot['work_status'] and message.embeds and f"<@{self.user.id}>" in message.content and message.author.id == self.owo['id']:
 			if "owo ab" in message.embeds[0].description and "owo db" in message.embeds[0].description:
 				self.logger.info(f"Someone challenges")
 				await self.send_webhooks(
@@ -925,7 +925,7 @@ class MyClient(discord.Client):
 					self.logger.info(f"Clicked accept button")
 
 	async def on_message_edit(self, before, after):
-		if self.selfbot['work_status'] and self.owo['status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
+		if self.selfbot['work_status'] and after.channel.id == self.discord['channel_id'] and after.author.id == self.owo['id']:
 			#Slot
 			if self.gamble['slot']['mode'] and self.discord['user_nickname'] in after.content:
 				#Lost
@@ -990,7 +990,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def check_status(self):
-		if self.check_owo_status and self.selfbot['work_status'] and self.owo['status'] and self.check_status.current_loop != 0:
+		if self.check_owo_status and self.selfbot['work_status'] and self.check_status.current_loop != 0:
 			async for message in self.discord['channel'].history(limit = 10):
 				if message.author.id == self.owo['id']:
 					break
@@ -1010,10 +1010,8 @@ class MyClient(discord.Client):
 						description = f"**{self.arrow}Wait for 1 hour**",
 						color = discord.Colour.random()
 					)
-					self.owo['status'] = False
 					self.selfbot['work_status'] = False
 					await asyncio.sleep(3600)
-					self.owo['status'] = True
 					self.selfbot['work_status'] = True
 
 	@tasks.loop(minutes = 1)
@@ -1158,23 +1156,23 @@ class MyClient(discord.Client):
 	@tasks.loop(seconds = random.randint(18, 25))
 	async def start_grind(self):
 		try:
-			if self.grind['owo'] and self.selfbot['work_status'] and self.owo['status']:
+			if self.grind['owo'] and self.selfbot['work_status']:
 				say = random.choice(['owo', 'Owo', 'uwu', 'Uwu'])
 				await self.discord['channel'].send(say)
 				self.logger.info(f"Sent {say}")
 				self.stat['command'] += 1
 				await asyncio.sleep(random.randint(5, 10))
-			if self.grind['hunt'] and self.selfbot['work_status'] and self.owo['status']:
+			if self.grind['hunt'] and self.selfbot['work_status']:
 				await self.discord['channel'].send(f"{self.owo['prefix']}h")
 				self.logger.info(f"Sent {self.owo['prefix']}h")
 				self.stat['command'] += 1
 				await asyncio.sleep(random.randint(5, 10))
-			if self.grind['battle'] and self.selfbot['work_status'] and self.owo['status']:
+			if self.grind['battle'] and self.selfbot['work_status']:
 				await self.discord['channel'].send(f"{self.owo['prefix']}b")
 				self.logger.info(f"Sent {self.owo['prefix']}b")
 				self.stat['command'] += 1
 				await asyncio.sleep(random.randint(5, 10))
-			if self.grind['quote'] and self.selfbot['work_status'] and self.owo['status']:
+			if self.grind['quote'] and self.selfbot['work_status']:
 				try:
 					response = get("https://zenquotes.io/api/random")
 					if response.status_code == 200:
@@ -1196,7 +1194,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def claim_submit_huntbot(self):
-		if self.huntbot['claim_submit'] and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['huntbot_time']) - time.time() <= 0:
+		if self.huntbot['claim_submit'] and self.selfbot['work_status'] and int(self.selfbot['huntbot_time']) - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}hb 1d")
 			self.logger.info(f"Sent {self.owo['prefix']}hb 1d")
 			self.stat['command'] += 1
@@ -1305,7 +1303,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(600, 1200))
 	async def check_distorted_animal(self):
-		if self.distorted_animals and self.selfbot['work_status'] and self.owo['status'] and self.selfbot['glitch_time'] - time.time() <= 0:
+		if self.distorted_animals and self.selfbot['work_status'] and self.selfbot['glitch_time'] - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}dt")
 			self.logger.info(f"Sent {self.owo['prefix']}dt")
 			self.stat['command'] += 1
@@ -1334,14 +1332,14 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(1200, 3600))
 	async def sell_sac_animal(self):
-		if self.animals['mode'] and self.selfbot['work_status'] and self.owo['status']:
+		if self.animals['mode'] and self.selfbot['work_status']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}{self.animals['type']} {self.animals['rank']}")
 			self.logger.info(f"Sent {self.owo['prefix']}{self.animals['type']} {self.animals['rank']}")
 			self.stat['command'] += 1
 
 	@tasks.loop(minutes = 1)
 	async def claim_daily(self):
-		if self.daily and self.selfbot['work_status'] and self.owo['status'] and int(self.selfbot['daily_time']) - time.time() <= 0:
+		if self.daily and self.selfbot['work_status'] and int(self.selfbot['daily_time']) - time.time() <= 0:
 			await self.discord['channel'].send(f"{self.owo['prefix']}daily")
 			self.logger.info(f"Sent {self.owo['prefix']}daily")
 			self.stat['command'] += 1
@@ -1365,7 +1363,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(minutes = 1)
 	async def go_to_sleep(self, skip = False):
-		if (skip or self.sleep) and self.selfbot['work_status'] and self.owo['status'] and ((skip and self.checking['slept_after_captcha']) or int(self.selfbot['work_time']) - time.time() <= 0):
+		if (skip or self.sleep) and self.selfbot['work_status'] and ((skip and self.checking['slept_after_captcha']) or int(self.selfbot['work_time']) - time.time() <= 0):
 			self.checking['slept_after_captcha'] = False
 			sleep = random.randint(300, 600)
 			self.selfbot['sleep_time'] = sleep
@@ -1392,7 +1390,7 @@ class MyClient(discord.Client):
 	@tasks.loop(seconds = random.randint(60, 120))
 	async def play_gamble(self):
 		#Slot
-		if self.gamble['slot']['mode'] and self.selfbot['work_status'] and self.owo['status']:
+		if self.gamble['slot']['mode'] and self.selfbot['work_status']:
 			if self.current_gamble_bet['slot'] >= int(self.gamble['slot']['max']):
 				self.current_gamble_bet['slot'] = int(self.gamble['slot']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}s {self.current_gamble_bet['slot']}")
@@ -1400,7 +1398,7 @@ class MyClient(discord.Client):
 			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(2, 3))
 		#Coinflip
-		if self.gamble['coinflip']['mode'] and self.selfbot['work_status'] and self.owo['status']:
+		if self.gamble['coinflip']['mode'] and self.selfbot['work_status']:
 			if self.current_gamble_bet['coinflip'] >= int(self.gamble['coinflip']['max']):
 				self.current_gamble_bet['coinflip'] = int(self.gamble['coinflip']['bet'])
 			side = random.choice(['h', 't'])
@@ -1409,7 +1407,7 @@ class MyClient(discord.Client):
 			self.stat['command'] += 1
 			await asyncio.sleep(random.randint(2, 3))
 		#Blackjack
-		if self.gamble['blackjack']['mode'] and self.selfbot['work_status'] and self.owo['status']:
+		if self.gamble['blackjack']['mode'] and self.selfbot['work_status']:
 			if self.current_gamble_bet['blackjack'] >= int(self.gamble['blackjack']['max']):
 				self.current_gamble_bet['blackjack'] = int(self.gamble['blackjack']['bet'])
 			await self.discord['channel'].send(f"{self.owo['prefix']}bj {self.current_gamble_bet['blackjack']}")
@@ -1463,7 +1461,7 @@ class MyClient(discord.Client):
 
 	@tasks.loop(seconds = random.randint(300, 600))
 	async def start_pray_curse(self):
-		if self.pray_curse['mode'] and self.selfbot['work_status'] and self.owo['status']:
+		if self.pray_curse['mode'] and self.selfbot['work_status']:
 			#Pray
 			if self.pray_curse['type'].lower() == "pray":
 				await self.discord['channel'].send(f"{self.owo['prefix']}pray {self.pray_curse['user_id']}")
@@ -1482,7 +1480,7 @@ class MyClient(discord.Client):
 			self.checking['pup_limit'] = False
 			self.checking['piku_limit'] = False
 		#Run
-		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['run'] and not self.checking['run_limit']:
+		if self.selfbot['work_status'] and self.entertainment['run'] and not self.checking['run_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}run")
 			self.logger.info(f"Sent {self.owo['prefix']}run")
 			self.stat['command'] += 1
@@ -1496,7 +1494,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Run for today is over")
 				self.checking['run_limit'] = True
 		#Pup
-		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
+		if self.selfbot['work_status'] and self.entertainment['pup'] and not self.checking['pup_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}pup")
 			self.logger.info(f"Sent {self.owo['prefix']}pup")
 			self.stat['command'] += 1
@@ -1510,7 +1508,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Pup for today is over")
 				self.checking['pup_limit'] = True
 		#Piku
-		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
+		if self.selfbot['work_status'] and self.entertainment['piku'] and not self.checking['piku_limit']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}piku")
 			self.logger.info(f"Sent {self.owo['prefix']}piku")
 			self.stat['command'] += 1
@@ -1524,7 +1522,7 @@ class MyClient(discord.Client):
 				self.logger.info(f"Piku for today is over")
 				self.checking['piku_limit'] = True
 		#Common ring
-		if self.selfbot['work_status'] and self.owo['status'] and self.entertainment['common_ring']:
+		if self.selfbot['work_status'] and self.entertainment['common_ring']:
 			await self.discord['channel'].send(f"{self.owo['prefix']}buy 1")
 			self.logger.info(f"Sent {self.owo['prefix']}buy 1")
 			self.stat['command'] += 1
