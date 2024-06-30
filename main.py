@@ -85,8 +85,7 @@ class MyClient(discord.Client):
 			"id": 408785106942164992,
 			"dm_channel_id": None,
 			"prefix": "owo",
-			"special_pet": True,
-			"status": True
+			"special_pet": True
 		}
 		
 		self.discord = {
@@ -1003,15 +1002,15 @@ class MyClient(discord.Client):
 					await self.wait_for("message", check=lambda message: message.channel.id == self.discord['channel_id'] and message.author.id == self.owo['id'], timeout = 10)
 				except asyncio.TimeoutError:
 					self.logger.warning(f"!!! OwO doesn't respond !!!")
-					self.logger.info(f"Wait for 1 hour")
+					self.logger.info(f"Wait for 30 minutes")
 					await self.send_webhooks(
 						content = self.selfbot['mentioner'],
 						title = "**💀 OWO'S OFFLINE 💀**",
-						description = f"**{self.arrow}Wait for 1 hour**",
+						description = f"**{self.arrow}Wait for 30 minutes**",
 						color = discord.Colour.random()
 					)
 					self.selfbot['work_status'] = False
-					await asyncio.sleep(3600)
+					await asyncio.sleep(1800)
 					self.selfbot['work_status'] = True
 
 	@tasks.loop(minutes = 1)
